@@ -1,0 +1,55 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+
+@theme {
+    --font-heading: 'Space Grotesk', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    --color-neo-bg: #FFFDF8;
+    --color-neo-yellow: #FFE600;
+    --color-neo-orange: #FF6B4A;
+    --color-neo-cyan: #00F0FF;
+    --color-neo-pink: #FF70A6;
+    --color-neo-green: #57EB74;
+    --color-neo-purple: #A78BFA;
+    --color-neo-black: #000000;
+}
+
+@layer utilities {
+    .neo-shadow {
+        box-shadow: 4px 4px 0px 0px #000000;
+    }
+    .neo-shadow-lg {
+        box-shadow: 6px 6px 0px 0px #000000;
+    }
+    .neo-shadow-sm {
+        box-shadow: 2px 2px 0px 0px #000000;
+    }
+    .neo-shadow-hover:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0px 0px #000000;
+    }
+    .neo-shadow-active:active {
+        transform: translate(2px, 2px);
+        box-shadow: 0px 0px 0px 0px #000000;
+    }
+}
+
+body {
+    background-color: var(--color-neo-bg);
+    color: #000000;
+    font-family: var(--font-heading), system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading), system-ui, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+code, .font-tech {
+    font-family: var(--font-mono), monospace;
+}
