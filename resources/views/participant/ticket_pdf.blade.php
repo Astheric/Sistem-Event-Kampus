@@ -109,7 +109,7 @@
     <div class="ticket-container">
         <div class="ticket-header">
             <span class="tag-status">{{ $registration->status }}</span>
-            <div class="logo-box">⚡ EventHub • E-TICKET RESMI</div>
+            <div class="logo-box"><x-icon name="zap" class="size-4" /> EventHub • E-TICKET RESMI</div>
         </div>
 
         <div class="event-title">{{ $registration->event->title }}</div>
