@@ -8,85 +8,85 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div class="lg:col-span-7 space-y-6">
-                <div class="inline-flex items-center gap-2 bg-[#FFE600] border-2 border-black px-3 py-1 text-xs font-black uppercase tracking-wider shadow-[3px_3px_0px_0px_#000]">
-                    <span>⚡ THE ULTIMATE CAMPUS EVENT PLATFORM</span>
+                <div class="inline-flex items-center gap-2 bg-surface border border-line px-3 py-1 text-xs font-bold  tracking-wider shadow-card rounded-2xl">
+                    <span><x-icon name="zap" class="size-4" /> THE ULTIMATE CAMPUS EVENT PLATFORM</span>
                 </div>
 
-                <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-[1.05]">
+                <h1 class="text-4xl sm:text-6xl font-bold tracking-tight leading-[1.05]">
                     CREATE.<br>
-                    <span class="bg-[#00F0FF] px-2 py-0.5 border-3 border-black shadow-[4px_4px_0px_0px_#000] inline-block mt-1">MANAGE.</span><br>
+                    <span class="bg-surface px-2 py-0.5 border border-line shadow-card inline-block mt-1 rounded-2xl">MANAGE.</span><br>
                     JOIN EVENT.
                 </h1>
 
-                <p class="text-base sm:text-lg font-bold text-zinc-700 max-w-xl leading-relaxed">
+                <p class="text-base sm:text-lg font-bold text-muted max-w-xl leading-relaxed">
                     Sistem satu pintu untuk seluruh aktivitas kampus. Temukan seminar, workshop, festival, dan kompetisi. Dapatkan tiket QR real-time dan unduh e-sertifikat terverifikasi langsung setelah hadir!
                 </p>
 
                 <div class="flex flex-wrap items-center gap-4 pt-2">
                     <a href="{{ route('events.index') }}"
-                        class="bg-[#FFE600] hover:bg-[#FFD700] border-3 border-black px-6 py-4 font-black text-base uppercase tracking-wider shadow-[5px_5px_0px_0px_#000] hover:-translate-y-0.5 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
-                        🔍 Jelajah Katalog Event →
+                        class="bg-brand-600 text-white hover:bg-brand-600 text-white border border-line px-6 py-4 font-bold text-base  tracking-wider shadow-card hover:-translate-y-0.5 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all rounded-full">
+                        <x-icon name="search" class="size-4" /> Jelajah Katalog Event →
                     </a>
                     <a href="{{ route('register') }}"
-                        class="bg-white hover:bg-zinc-100 border-3 border-black px-6 py-4 font-black text-base uppercase tracking-wider shadow-[5px_5px_0px_0px_#000] hover:-translate-y-0.5 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
-                        🏢 Buat Event Kampus
+                        class="bg-brand-600 text-white hover:bg-brand-600 text-white-soft border border-line px-6 py-4 font-bold text-base  tracking-wider shadow-card hover:-translate-y-0.5 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all rounded-full">
+                        <x-icon name="home" class="size-4" /> Buat Event Kampus
                     </a>
                 </div>
 
                 <!-- Feature Badges -->
-                <div class="flex flex-wrap items-center gap-3 pt-4 text-xs font-black">
-                    <span class="bg-white border-2 border-black px-3 py-1 shadow-[2px_2px_0px_0px_#000]">
-                        ✓ Anti-Double Check-in
+                <div class="flex flex-wrap items-center gap-3 pt-4 text-xs font-bold">
+                    <span class="bg-surface border border-line px-3 py-1 shadow-card rounded-2xl">
+                        <x-icon name="check" class="size-4" /> Anti-Double Check-in
                     </span>
-                    <span class="bg-[#57EB74] border-2 border-black px-3 py-1 shadow-[2px_2px_0px_0px_#000]">
-                        ✓ E-Sertifikat Otomatis
+                    <span class="bg-surface border border-line px-3 py-1 shadow-card rounded-2xl">
+                        <x-icon name="check" class="size-4" /> E-Sertifikat Otomatis
                     </span>
-                    <span class="bg-[#FF70A6] border-2 border-black px-3 py-1 shadow-[2px_2px_0px_0px_#000]">
-                        ✓ Verifikasi Publik
+                    <span class="bg-surface border border-line px-3 py-1 shadow-card rounded-2xl">
+                        <x-icon name="check" class="size-4" /> Verifikasi Publik
                     </span>
                 </div>
             </div>
 
             <!-- Hero Graphic Card (Neo-Brutalism Ticket Mockup) -->
             <div class="lg:col-span-5">
-                <div class="bg-white border-4 border-black p-6 shadow-[10px_10px_0px_0px_#000] relative">
+                <div class="bg-surface border border-line p-6 shadow-card relative rounded-2xl">
                     <!-- Sticker -->
-                    <div class="absolute -top-4 -right-4 bg-[#FF6B4A] text-white border-3 border-black px-3 py-1 text-xs font-black uppercase tracking-widest rotate-6 shadow-[3px_3px_0px_0px_#000]">
+                    <div class="absolute -top-4 -right-4 bg-surface text-white border border-line px-3 py-1 text-xs font-bold  tracking-widest rotate-6 shadow-card rounded-2xl">
                         TIKET RESMI
                     </div>
 
-                    <div class="border-b-3 border-black pb-4">
-                        <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500">EVENT RESMI KAMPUS</span>
-                        <h3 class="text-xl font-black mt-1 leading-snug">National Tech Summit 2026: AI & Cyber Security Horizons</h3>
-                        <p class="text-xs font-bold text-zinc-600 mt-1">Oleh: BEM Fakultas Ilmu Komputer</p>
+                    <div class="border-b border-line pb-4">
+                        <span class="text-[10px] font-bold  tracking-widest text-muted">EVENT RESMI KAMPUS</span>
+                        <h3 class="text-xl font-bold mt-1 leading-snug">National Tech Summit 2026: AI & Cyber Security Horizons</h3>
+                        <p class="text-xs font-bold text-muted mt-1">Oleh: BEM Fakultas Ilmu Komputer</p>
                     </div>
 
-                    <div class="py-4 space-y-3 text-xs font-bold border-b-3 border-dashed border-black">
+                    <div class="py-4 space-y-3 text-xs font-bold border-b border-dashed border-line">
                         <div class="flex justify-between">
-                            <span class="text-zinc-500">WAKTU:</span>
-                            <span class="font-mono font-black">14 Hari Lagi • 09:00 WIB</span>
+                            <span class="text-muted">WAKTU:</span>
+                            <span class="font-mono font-bold">14 Hari Lagi • 09:00 WIB</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-zinc-500">LOKASI:</span>
-                            <span class="font-black">Auditorium Graha Sasana</span>
+                            <span class="text-muted">LOKASI:</span>
+                            <span class="font-bold">Auditorium Graha Sasana</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-zinc-500">KODE TIKET:</span>
-                            <span class="font-mono bg-[#FFE600] px-1 border border-black font-black">EVT-2026-TK8812</span>
+                            <span class="text-muted">KODE TIKET:</span>
+                            <span class="font-mono bg-surface px-1 border border-line font-bold">EVT-2026-TK8812</span>
                         </div>
                     </div>
 
                     <!-- Bottom Mockup Details with QR Frame -->
                     <div class="pt-4 flex items-center justify-between">
                         <div>
-                            <span class="text-[10px] font-black uppercase text-zinc-500">STATUS TIKET:</span>
-                            <div class="bg-[#57EB74] border-2 border-black px-2 py-0.5 text-xs font-black uppercase inline-block mt-0.5">
+                            <span class="text-[10px] font-bold  text-muted">STATUS TIKET:</span>
+                            <div class="bg-surface border border-line px-2 py-0.5 text-xs font-bold  inline-block mt-0.5">
                                 CONFIRMED
                             </div>
                         </div>
 
                         <!-- Simulated QR Code Icon Box -->
-                        <div class="w-16 h-16 bg-[#00F0FF] border-3 border-black p-1 flex items-center justify-center font-mono text-[10px] font-black shadow-[3px_3px_0px_0px_#000] text-center">
+                        <div class="w-16 h-16 bg-surface border border-line p-1 flex items-center justify-center font-mono text-[10px] font-bold shadow-card text-center rounded-2xl">
                             QR SCAN VALID
                         </div>
                     </div>
@@ -96,24 +96,24 @@
     </section>
 
     <!-- Platform Stats Bar -->
-    <section class="border-y-4 border-black bg-[#FFE600] py-8">
+    <section class="border-y border-line bg-surface py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-                <div class="bg-white border-3 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
-                    <div class="text-3xl sm:text-4xl font-black font-mono">{{ $stats['total_events'] }}</div>
-                    <div class="text-xs font-black uppercase mt-1">Event Terlaksana</div>
+                <div class="bg-surface border border-line p-4 shadow-card rounded-2xl">
+                    <div class="text-3xl sm:text-4xl font-bold font-mono">{{ $stats['total_events'] }}</div>
+                    <div class="text-xs font-bold  mt-1">Event Terlaksana</div>
                 </div>
-                <div class="bg-white border-3 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
-                    <div class="text-3xl sm:text-4xl font-black font-mono">{{ $stats['total_participants'] }}</div>
-                    <div class="text-xs font-black uppercase mt-1">Mahasiswa Bergabung</div>
+                <div class="bg-surface border border-line p-4 shadow-card rounded-2xl">
+                    <div class="text-3xl sm:text-4xl font-bold font-mono">{{ $stats['total_participants'] }}</div>
+                    <div class="text-xs font-bold  mt-1">Mahasiswa Bergabung</div>
                 </div>
-                <div class="bg-white border-3 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
-                    <div class="text-3xl sm:text-4xl font-black font-mono">{{ $stats['certificates_issued'] }}</div>
-                    <div class="text-xs font-black uppercase mt-1">Sertifikat Terbit</div>
+                <div class="bg-surface border border-line p-4 shadow-card rounded-2xl">
+                    <div class="text-3xl sm:text-4xl font-bold font-mono">{{ $stats['certificates_issued'] }}</div>
+                    <div class="text-xs font-bold  mt-1">Sertifikat Terbit</div>
                 </div>
-                <div class="bg-white border-3 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
-                    <div class="text-3xl sm:text-4xl font-black font-mono">{{ $stats['active_organizers'] }}</div>
-                    <div class="text-xs font-black uppercase mt-1">Organisasi Kampus</div>
+                <div class="bg-surface border border-line p-4 shadow-card rounded-2xl">
+                    <div class="text-3xl sm:text-4xl font-bold font-mono">{{ $stats['active_organizers'] }}</div>
+                    <div class="text-xs font-bold  mt-1">Organisasi Kampus</div>
                 </div>
             </div>
         </div>
@@ -123,12 +123,12 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-                <span class="bg-[#4DEEEA] border-2 border-black px-3 py-1 text-xs font-black uppercase shadow-[2px_2px_0px_0px_#000]">
+                <span class="bg-surface border border-line px-3 py-1 text-xs font-bold  shadow-card rounded-2xl">
                     Kategori Pilihan
                 </span>
-                <h2 class="text-3xl font-black mt-2">Temukan Minat & Bakatmu</h2>
+                <h2 class="text-3xl font-bold mt-2">Temukan Minat & Bakatmu</h2>
             </div>
-            <a href="{{ route('events.index') }}" class="font-black text-sm hover:underline flex items-center gap-1">
+            <a href="{{ route('events.index') }}" class="font-bold text-sm hover:underline flex items-center gap-1">
                 Lihat Semua Kategori →
             </a>
         </div>
@@ -136,10 +136,10 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             @foreach($categories as $category)
                 <a href="{{ route('events.index', ['category' => $category->slug]) }}"
-                    class="bg-white border-3 border-black p-4 shadow-[4px_4px_0px_0px_#000] hover:bg-[#FFE600] hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all text-center group">
-                    <span class="text-3xl block mb-2">{{ $category->icon ?? '📌' }}</span>
-                    <h3 class="font-black text-sm group-hover:underline">{{ $category->name }}</h3>
-                    <span class="inline-block mt-2 text-[10px] font-mono font-bold bg-black text-white px-2 py-0.5">
+                    class="bg-brand-600 text-white border border-line p-4 shadow-card hover:bg-brand-600 text-white hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all text-center group rounded-full">
+                    <span class="text-3xl block mb-2">{{ $category->icon ?? '<x-icon name="map-pin" class="size-4" />' }}</span>
+                    <h3 class="font-bold text-sm group-hover:underline">{{ $category->name }}</h3>
+                    <span class="inline-block mt-2 text-[10px] font-mono font-bold bg-danger text-white px-2 py-0.5">
                         {{ $category->events_count }} Event
                     </span>
                 </a>
@@ -151,31 +151,31 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-                <span class="bg-[#FF70A6] border-2 border-black px-3 py-1 text-xs font-black uppercase shadow-[2px_2px_0px_0px_#000]">
+                <span class="bg-surface border border-line px-3 py-1 text-xs font-bold  shadow-card rounded-2xl">
                     Mendatang
                 </span>
-                <h2 class="text-3xl font-black mt-2">Event Pilihan Terhangat</h2>
+                <h2 class="text-3xl font-bold mt-2">Event Pilihan Terhangat</h2>
             </div>
-            <a href="{{ route('events.index') }}" class="font-black text-sm hover:underline flex items-center gap-1">
+            <a href="{{ route('events.index') }}" class="font-bold text-sm hover:underline flex items-center gap-1">
                 Buka Katalog Lengkap →
             </a>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @forelse($featuredEvents as $event)
-                <div class="bg-white border-4 border-black shadow-[6px_6px_0px_0px_#000] flex flex-col justify-between hover:-translate-y-1 transition-transform">
+                <div class="bg-surface border border-line shadow-card flex flex-col justify-between hover:-translate-y-1 transition-transform rounded-2xl">
                     <div>
                         <!-- Card Header & Badges -->
-                        <div class="p-4 border-b-3 border-black bg-zinc-50 flex items-center justify-between">
-                            <span class="bg-[#00F0FF] border-2 border-black px-2 py-0.5 text-xs font-black uppercase">
+                        <div class="p-4 border-b border-line bg-surface-soft flex items-center justify-between">
+                            <span class="bg-surface border border-line px-2 py-0.5 text-xs font-bold ">
                                 {{ $event->category->name }}
                             </span>
                             @if($event->isFree())
-                                <span class="bg-[#57EB74] border-2 border-black px-2 py-0.5 text-xs font-black uppercase font-mono">
+                                <span class="bg-surface border border-line px-2 py-0.5 text-xs font-bold  font-mono">
                                     GRATIS
                                 </span>
                             @else
-                                <span class="bg-[#FFE600] border-2 border-black px-2 py-0.5 text-xs font-black uppercase font-mono">
+                                <span class="bg-surface border border-line px-2 py-0.5 text-xs font-bold  font-mono">
                                     Mulai Rp {{ number_format($event->min_price, 0, ',', '.') }}
                                 </span>
                             @endif
@@ -183,44 +183,44 @@
 
                         <!-- Card Body -->
                         <div class="p-6 space-y-4">
-                            <h3 class="text-xl font-black leading-snug line-clamp-2 hover:text-[#FF6B4A]">
+                            <h3 class="text-xl font-bold leading-snug line-clamp-2 hover:text-ink">
                                 <a href="{{ route('events.show', $event->slug) }}">
                                     {{ $event->title }}
                                 </a>
                             </h3>
 
-                            <p class="text-xs font-bold text-zinc-600 line-clamp-3 leading-relaxed">
+                            <p class="text-xs font-bold text-muted line-clamp-3 leading-relaxed">
                                 {{ $event->description }}
                             </p>
 
-                            <div class="pt-2 border-t-2 border-dashed border-black space-y-2 text-xs font-bold">
+                            <div class="pt-2 border-t border-dashed border-line space-y-2 text-xs font-bold">
                                 <div class="flex items-center gap-2">
-                                    <span>📅</span>
+                                    <span><x-icon name="calendar" class="size-4" /></span>
                                     <span class="font-mono">{{ $event->start_time->format('d M Y, H:i') }} WIB</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span>📍</span>
+                                    <span><x-icon name="map-pin" class="size-4" /></span>
                                     <span class="truncate">{{ $event->venue ? $event->venue->name : 'Daring / Online' }}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <span>🏢</span>
-                                    <span class="text-zinc-500 truncate">{{ $event->organization->name }}</span>
+                                    <span><x-icon name="home" class="size-4" /></span>
+                                    <span class="text-muted truncate">{{ $event->organization->name }}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Card Footer Button -->
-                    <div class="p-4 border-t-3 border-black bg-zinc-50">
+                    <div class="p-4 border-t border-line bg-surface-soft">
                         <a href="{{ route('events.show', $event->slug) }}"
-                            class="block w-full text-center bg-[#FFE600] hover:bg-[#ffd000] border-2 border-black py-2.5 font-black text-sm uppercase tracking-wider shadow-[3px_3px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
+                            class="block w-full text-center bg-brand-600 text-white hover:bg-brand-600 text-white border border-line py-2.5 font-bold text-sm  tracking-wider shadow-card active:translate-x-1 active:translate-y-1 active:shadow-none transition-all rounded-full">
                             Lihat Tiket & Detail →
                         </a>
                     </div>
                 </div>
             @empty
-                <div class="col-span-3 text-center py-12 bg-white border-3 border-black shadow-[4px_4px_0px_0px_#000] p-6">
-                    <p class="font-black text-base">Belum ada event mendatang yang dipublikasikan.</p>
+                <div class="col-span-3 text-center py-12 bg-surface border border-line shadow-card p-6 rounded-2xl">
+                    <p class="font-bold text-base">Belum ada event mendatang yang dipublikasikan.</p>
                 </div>
             @endforelse
         </div>
@@ -230,24 +230,24 @@
     @if($pastEvents->isNotEmpty())
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-6">
-                <span class="bg-[#57EB74] border-2 border-black px-3 py-1 text-xs font-black uppercase shadow-[2px_2px_0px_0px_#000]">
+                <span class="bg-surface border border-line px-3 py-1 text-xs font-bold  shadow-card rounded-2xl">
                     Evaluasi & Ulasan
                 </span>
-                <h2 class="text-3xl font-black mt-2">Event Sukses Sebelumnya</h2>
+                <h2 class="text-3xl font-bold mt-2">Event Sukses Sebelumnya</h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 @foreach($pastEvents as $past)
-                    <div class="bg-white border-3 border-black p-5 shadow-[5px_5px_0px_0px_#000]">
+                    <div class="bg-surface border border-line p-5 shadow-card rounded-2xl">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="bg-black text-white px-2 py-0.5 text-[10px] font-black uppercase font-mono">SELESAI</span>
-                            <div class="flex text-amber-500 font-black text-sm">
-                                ★ {{ number_format($past->average_rating, 1) }} ({{ $past->review_count }})
+                            <span class="bg-danger text-white px-2 py-0.5 text-[10px] font-bold  font-mono">SELESAI</span>
+                            <div class="flex text-amber-500 font-bold text-sm">
+                                <x-icon name="star" class="size-4" /> {{ number_format($past->average_rating, 1) }} ({{ $past->review_count }})
                             </div>
                         </div>
-                        <h4 class="font-black text-base leading-snug line-clamp-2">{{ $past->title }}</h4>
+                        <h4 class="font-bold text-base leading-snug line-clamp-2">{{ $past->title }}</h4>
                         @if($past->reviews->isNotEmpty())
-                            <p class="mt-3 text-xs italic font-bold text-zinc-700 bg-zinc-100 p-3 border-2 border-black">
+                            <p class="mt-3 text-xs italic font-bold text-muted bg-surface-soft p-3 border border-line">
                                 "{{ mb_strimwidth($past->reviews->first()->comment, 0, 100, '...') }}"
                             </p>
                         @endif
