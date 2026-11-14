@@ -27,6 +27,8 @@ class User extends Authenticatable
         'avatar',
         'phone',
         'bio',
+        'verified_at',
+        'nidn',
     ];
 
     /**
@@ -49,6 +51,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'verified_at' => 'datetime',
         ];
     }
 
@@ -65,6 +68,32 @@ class User extends Authenticatable
     public function isParticipant(): bool
     {
         return $this->role === 'participant';
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->verified_at !== null;
+    }
+
+    public function isLecturer(): bool
+    {
+        return $this->role === 'dosen';
+    }
+
+    public function isVerifiedLecturer(): bool
+    {
+        return $this->isLecturer() && $this->isVerified();
+    }
+
+    public function roleLabel(): string
+    {
+        return match ($this->role) {
+            'admin' => 'Admin',
+            'organizer' => 'Organizer',
+            'participant' => 'Mahasiswa',
+            'dosen' => 'Dosen',
+            default => ucfirst((string) $this->role),
+        };
     }
 
     public function organization(): HasOne

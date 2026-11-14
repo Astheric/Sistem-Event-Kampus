@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Capacity;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,7 @@ class Event extends Model
         'capacity',
         'status',
         'rejection_reason',
+        'audience',
     ];
 
     protected function casts(): array
@@ -73,6 +75,20 @@ class Event extends Model
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('status', 'PUBLISHED');
+    }
+
+    public function scopeWithSeatCount(Builder $query): Builder
+    {
+        return $query->withCount([
+            'registrations as registered_count' => function ($q) {
+                $q->whereIn('status', ['PENDING', 'CONFIRMED', 'ATTENDED', 'COMPLETED']);
+            },
+        ]);
+    }
+
+    public function capacity(): Capacity
+    {
+        return Capacity::forEvent($this);
     }
 
     public function getAverageRatingAttribute(): float

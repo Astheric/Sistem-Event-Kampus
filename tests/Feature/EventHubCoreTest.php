@@ -81,8 +81,8 @@ class EventHubCoreTest extends TestCase
             'title' => 'AI Innovation Summit 2026',
             'slug' => 'ai-innovation-summit-2026',
             'description' => 'Event deskripsi lengkap pengujian otomatis.',
-            'start_time' => $now->copy()->addDays(5),
-            'end_time' => $now->copy()->addDays(5)->addHours(4),
+            'start_time' => $now->copy(),
+            'end_time' => $now->copy()->addHours(4),
             'capacity' => 100,
             'status' => 'PUBLISHED',
         ]);
@@ -263,9 +263,31 @@ class EventHubCoreTest extends TestCase
         $this->assertEquals('REJECTED', $submittedEvent->fresh()->status);
         $this->assertEquals('Perbaiki informasi ruangan dan narahubung panitia.', $submittedEvent->fresh()->rejection_reason);
 
-        // 2. Admin approves event
-        $approveResponse = $this->post(route('admin.moderation.approve', $submittedEvent->id));
+        // 2. Admin approves a submitted event
+        $anotherSubmitted = Event::create([
+            'organization_id' => $this->organization->id,
+            'category_id' => $this->category->id,
+            'title' => 'Workshop Pending Approval',
+            'slug' => 'workshop-pending-approval',
+            'description' => 'Menunggu persetujuan admin kampus.',
+            'start_time' => Carbon::now()->addDays(10),
+            'end_time' => Carbon::now()->addDays(10)->addHours(2),
+            'capacity' => 50,
+            'status' => 'SUBMITTED',
+        ]);
+
+        Ticket::create([
+            'event_id' => $anotherSubmitted->id,
+            'name' => 'Regular',
+            'price' => 20000,
+            'quota' => 50,
+            'available_quota' => 50,
+            'start_sale' => Carbon::now(),
+            'end_sale' => Carbon::now()->addDays(9),
+        ]);
+
+        $approveResponse = $this->post(route('admin.moderation.approve', $anotherSubmitted->id));
         $approveResponse->assertRedirect(route('admin.moderation.index'));
-        $this->assertEquals('PUBLISHED', $submittedEvent->fresh()->status);
+        $this->assertEquals('PUBLISHED', $anotherSubmitted->fresh()->status);
     }
 }

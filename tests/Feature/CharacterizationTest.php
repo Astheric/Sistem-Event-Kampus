@@ -11,6 +11,7 @@ use App\Services\CertificateService;
 use App\Services\CheckinService;
 use App\Services\TicketService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
 
 class CharacterizationTest extends TestCase
@@ -51,9 +52,12 @@ class CharacterizationTest extends TestCase
             'available_quota' => 10,
         ]);
 
+        $file = UploadedFile::fake()->image('proof.jpg');
+
         $this->actingAs($user);
         $response = $this->post(route('events.checkout.store', [$event, $ticket]), [
             'payment_method' => 'Bank Transfer',
+            'proof_file' => $file,
         ]);
 
         $response->assertRedirect(route('participant.tickets.index'));
@@ -113,7 +117,11 @@ class CharacterizationTest extends TestCase
     {
         $user = User::factory()->create(['role' => 'participant']);
         $scanner = User::factory()->create(['role' => 'organizer']);
-        $event = Event::factory()->create(['status' => 'PUBLISHED']);
+        $event = Event::factory()->create([
+            'status' => 'PUBLISHED',
+            'start_time' => now(),
+            'end_time' => now()->addHours(4),
+        ]);
         $ticket = Ticket::factory()->create([
             'event_id' => $event->id,
             'price' => 0,
