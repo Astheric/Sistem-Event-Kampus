@@ -5,69 +5,39 @@
 @source '../views/**/*.blade.php';
 
 @theme {
-    --font-sans: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: 'TikTok Sans', system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-    /* Brand (violet) */
-    --color-brand-50: #F5F0FF;
-    --color-brand-100: #EDE4FF;
-    --color-brand-200: #D9C8FF;
-    --color-brand-300: #C4A8FF;
-    --color-brand-400: #A78BFA;
-    --color-brand-500: #8B5CF6;
-    --color-brand-600: #6D2AEF;
-    --color-brand-700: #5B21B6;
-
-    /* Canvas & surfaces */
-    --color-canvas: #F4F2FA;
-    --color-surface: #FFFFFF;
-    --color-surface-soft: #F7F5FC;
-    --color-line: #E6E1F0;
-    --color-ink: #17142A;
-    --color-muted: #6B6480;
-    --color-subtle: #9B95AD;
-
-    /* Pastel */
-    --color-mint-soft: #B9F5D8;
-    --color-mint-ink: #0F5132;
-    --color-lavender-soft: #D9C8FF;
-    --color-lavender-ink: #3B1D8F;
-    --color-peach-soft: #FFD9C8;
-    --color-peach-ink: #7C2D12;
-    --color-sky-soft: #C8E6FF;
-    --color-sky-ink: #1E3A8A;
-
-    /* Status */
-    --color-success: #16A34A;
-    --color-warning: #D97706;
-    --color-danger: #DC2626;
-
-    --radius-card: 24px;
-    --radius-inner: 16px;
-    --radius-chip: 12px;
-    --radius-pill: 9999px;
-
-    --shadow-card: 0 8px 30px -12px rgb(109 42 239 / 0.18);
-    --shadow-pop: 0 16px 40px -16px rgb(23 20 42 / 0.28);
+    --color-bg: #ffffff;
+    --color-surface: #f6f6f6;
+    --color-ink: #000000;
+    --color-muted: #5f5f5f;
+    --color-accent: #fe7141;
+    --color-accent-ink: #000000;
+    --color-field-1: #fe7141;
+    --color-field-1-ink: #000000;
+    --color-field-2: #d1ddd3;
+    --color-field-2-ink: #000000;
+    --color-field-3: #f0ff1c;
+    --color-field-3-ink: #000000;
+    --color-field-4: #000000;
+    --color-field-4-ink: #f4f4f4;
+    --color-line: #000000;
+    --color-canvas: #ffffff;
 }
 
 @layer base {
     body {
         font-family: var(--font-sans);
-        font-feature-settings: 'tnum' 1;
-        font-size: 16px;
-        line-height: 1.6;
+        background: var(--color-bg);
         color: var(--color-ink);
+        font-size: 18px;
+        line-height: 1.45;
+        font-stretch: normal;
     }
-}
-
-@layer utilities {
-    .page-blob {
-        position: fixed;
-        border-radius: 9999px;
-        filter: blur(80px);
-        pointer-events: none;
-        z-index: 0;
+    h1, h2, h3 {
+        font-weight: 800;
+        letter-spacing: -0.01em;
     }
 }
 
@@ -76,5 +46,6 @@
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
 }
