@@ -101,9 +101,11 @@ class EventHubCoreTest extends TestCase
     public function test_landing_page_and_catalog_are_accessible_publicly(): void
     {
         $response = $this->get(route('home'));
-        $response->assertStatus(200);
-        $response->assertSee('EventHub');
-        $response->assertSee('AI Innovation Summit 2026');
+        $response->assertRedirect(route('login'));
+
+        $loginResponse = $this->get(route('login'));
+        $loginResponse->assertStatus(200);
+        $loginResponse->assertSee('EventHub');
 
         $catalogResponse = $this->get(route('events.index'));
         $catalogResponse->assertStatus(200);

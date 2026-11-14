@@ -52,7 +52,7 @@ class AuthController extends Controller
                 return redirect()->intended(route('organizer.dashboard'));
             }
 
-            return redirect()->intended(route('home'));
+            return redirect()->intended(route('participant.tickets.index'));
         }
 
         return back()->withErrors([
@@ -112,7 +112,7 @@ class AuthController extends Controller
             return redirect()->route('organizer.dashboard')->with('success', 'Selamat datang! Akun Organizer Anda telah aktif.');
         }
 
-        return redirect()->route('home')->with('success', 'Pendaftaran akun berhasil! Selamat menjelajah event kampus.');
+        return redirect()->route('participant.tickets.index')->with('success', 'Pendaftaran akun berhasil! Selamat datang di EventHub.');
     }
 
     /**
