@@ -29,6 +29,10 @@ class RegistrationController extends Controller
 
         $user = Auth::user();
 
+        if ($event->status !== 'PUBLISHED' || $event->end_time < now()) {
+            return redirect()->route('events.show', $event->slug)->with('error', 'Event tidak tersedia untuk pendaftaran.');
+        }
+
         // BR-01: One participant cannot register for the same event multiple times
         $existing = Registration::where('event_id', $event->id)
             ->where('user_id', $user->id)
@@ -55,18 +59,22 @@ class RegistrationController extends Controller
             abort(404);
         }
 
+        if ($event->status !== 'PUBLISHED' || $event->end_time < now()) {
+            return back()->with('error', 'Event tidak tersedia untuk pendaftaran.');
+        }
+
         $user = Auth::user();
         $isFree = $ticket->price == 0;
 
         $validated = $request->validate([
             'notes' => ['nullable', 'string', 'max:500'],
             'payment_method' => [$isFree ? 'nullable' : 'required', 'string', 'max:100'],
-            'proof_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:3072'],
+            'proof_file' => [$isFree ? 'nullable' : 'required', 'image', 'mimes:jpeg,png,jpg,webp', 'max:3072'],
         ]);
 
         $proofPath = null;
         if ($request->hasFile('proof_file')) {
-            $proofPath = $request->file('proof_file')->store('proofs', 'public');
+            $proofPath = $request->file('proof_file')->store('proofs', 'private');
         }
 
         try {

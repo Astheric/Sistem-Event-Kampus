@@ -52,6 +52,10 @@ class ModerationController extends Controller
      */
     public function approve(Event $event): RedirectResponse
     {
+        if ($event->status !== 'SUBMITTED') {
+            return back()->with('error', 'Event tidak dapat disetujui dari status saat ini.');
+        }
+
         $event->update([
             'status' => 'PUBLISHED',
             'rejection_reason' => null,
@@ -78,6 +82,10 @@ class ModerationController extends Controller
      */
     public function reject(Request $request, Event $event): RedirectResponse
     {
+        if ($event->status !== 'SUBMITTED') {
+            return back()->with('error', 'Event tidak dapat ditolak dari status saat ini.');
+        }
+
         $validated = $request->validate([
             'rejection_reason' => ['required', 'string', 'max:1000'],
         ]);

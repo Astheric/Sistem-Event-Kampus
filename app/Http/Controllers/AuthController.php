@@ -77,8 +77,9 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:participant,organizer'],
+            'role' => ['required', 'in:participant,organizer,dosen'],
             'phone' => ['nullable', 'string', 'max:20'],
+            'nidn' => ['required_if:role,dosen', 'nullable', 'string', 'max:50', 'unique:users,nidn'],
             'organization_name' => ['required_if:role,organizer', 'nullable', 'string', 'max:255'],
         ]);
 
@@ -88,6 +89,7 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
             'phone' => $validated['phone'] ?? null,
+            'nidn' => $validated['nidn'] ?? null,
         ]);
 
         if ($user->isOrganizer()) {

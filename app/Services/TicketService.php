@@ -2,13 +2,19 @@
 
 namespace App\Services;
 
+use App\Exceptions\AlreadyRegisteredException;
+use App\Exceptions\AudienceMismatchException;
+use App\Exceptions\EventClosedException;
+use App\Exceptions\EventFullException;
 use App\Models\Event;
 use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\Registration;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Support\Capacity;
 use Exception;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -23,19 +29,45 @@ class TicketService
      */
     public function register(User $user, Ticket $ticket, array $options = []): Registration
     {
-        // BR-01: One participant cannot register for the same event multiple times
-        $existing = Registration::where('user_id', $user->id)
-            ->where('event_id', $ticket->event_id)
-            ->first();
-
-        if ($existing) {
-            throw new Exception('Anda sudah terdaftar pada event ini dengan kode registrasi '.$existing->registration_code);
-        }
-
         return DB::transaction(function () use ($user, $ticket, $options) {
-            // Lock ticket row for update to prevent race conditions (BR-02)
+            // Lock event and ticket rows to prevent race conditions
+            $event = Event::where('id', $ticket->event_id)->lockForUpdate()->firstOrFail();
             /** @var Ticket $lockedTicket */
             $lockedTicket = Ticket::where('id', $ticket->id)->lockForUpdate()->firstOrFail();
+
+            // BR-01: One participant cannot register for the same event multiple times (inside transaction)
+            $existing = Registration::where('user_id', $user->id)
+                ->where('event_id', $ticket->event_id)
+                ->lockForUpdate()
+                ->first();
+
+            if ($existing) {
+                throw new AlreadyRegisteredException('Anda sudah terdaftar pada event ini dengan kode registrasi '.$existing->registration_code);
+            }
+
+            // Event must be open for registration
+            if ($event->status !== 'PUBLISHED' || $event->end_time < now()) {
+                throw new EventClosedException('Event tidak tersedia untuk pendaftaran.');
+            }
+
+            // Audience eligibility
+            $eligibilities = app()->tagged('audience.eligibility');
+            $eligible = false;
+            foreach ($eligibilities as $eligibility) {
+                if ($eligibility->supports((string) $event->audience) && $eligibility->eligible($user)) {
+                    $eligible = true;
+                    break;
+                }
+            }
+            if (! $eligible) {
+                throw new AudienceMismatchException('Anda tidak memenuhi syarat audiens untuk event ini.');
+            }
+
+            // Capacity check
+            $capacity = Capacity::forEvent($event);
+            if ($capacity->remaining <= 0) {
+                throw new EventFullException('Kapasitas event telah penuh.');
+            }
 
             if (! $lockedTicket->isAvailable()) {
                 if ($lockedTicket->isSoldOut()) {
@@ -61,14 +93,21 @@ class TicketService
             $isFree = $lockedTicket->price == 0;
             $status = $isFree ? 'CONFIRMED' : 'PENDING';
 
-            $registration = Registration::create([
-                'ticket_id' => $lockedTicket->id,
-                'user_id' => $user->id,
-                'event_id' => $lockedTicket->event_id,
-                'registration_code' => $code,
-                'status' => $status,
-                'notes' => $options['notes'] ?? null,
-            ]);
+            try {
+                $registration = Registration::create([
+                    'ticket_id' => $lockedTicket->id,
+                    'user_id' => $user->id,
+                    'event_id' => $lockedTicket->event_id,
+                    'registration_code' => $code,
+                    'status' => $status,
+                    'notes' => $options['notes'] ?? null,
+                ]);
+            } catch (UniqueConstraintViolationException $e) {
+                $existing = Registration::where('user_id', $user->id)
+                    ->where('event_id', $lockedTicket->event_id)
+                    ->first();
+                throw new AlreadyRegisteredException('Anda sudah terdaftar pada event ini'.($existing ? ' dengan kode registrasi '.$existing->registration_code : ''));
+            }
 
             // Create Payment record if paid
             if (! $isFree) {

@@ -10,6 +10,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Models\Venue;
 use App\Services\AuditLogger;
+use App\Services\TicketService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -94,7 +95,7 @@ class EventController extends Controller
             $bannerPath = $request->file('banner')->store('banners', 'public');
         }
 
-        $status = $validated['action'] === 'submit' ? 'SUBMITTED' : 'DRAFT';
+        $status = 'DRAFT';
 
         $event = Event::create([
             'organization_id' => $org->id,
@@ -114,20 +115,6 @@ class EventController extends Controller
             'title' => $event->title,
             'status' => $status,
         ]);
-
-        // If submitted, notify admins
-        if ($status === 'SUBMITTED') {
-            $admins = User::where('role', 'admin')->get();
-            foreach ($admins as $admin) {
-                Notification::create([
-                    'user_id' => $admin->id,
-                    'title' => 'Pengajuan Event Baru',
-                    'message' => 'Event "'.$event->title.'" diajukan oleh '.$org->name.' untuk ditinjau.',
-                    'link' => route('admin.moderation.index'),
-                    'is_read' => false,
-                ]);
-            }
-        }
 
         return redirect()->route('organizer.events.tickets', $event->id)
             ->with('success', 'Event berhasil disimpan! Sekarang, silakan atur tipe tiket untuk event ini.');
@@ -184,11 +171,27 @@ class EventController extends Controller
     {
         $this->authorizeEvent($event);
 
+        $user = Auth::user();
+        if ($user->isOrganizer() && ! $user->isVerified()) {
+            return back()->with('error', 'Akun organizer belum diverifikasi oleh admin.');
+        }
+
         if ($event->tickets()->count() === 0) {
             return back()->with('error', 'Event wajib memiliki minimal 1 tipe tiket sebelum diajukan ke Admin.');
         }
 
         $event->update(['status' => 'SUBMITTED', 'rejection_reason' => null]);
+
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'title' => 'Pengajuan Event Baru',
+                'message' => 'Event "'.$event->title.'" diajukan oleh '.$event->organization->name.' untuk ditinjau.',
+                'link' => route('admin.moderation.index'),
+                'is_read' => false,
+            ]);
+        }
 
         AuditLogger::log('event.submitted', 'Event', $event->id, [
             'title' => $event->title,
@@ -205,15 +208,11 @@ class EventController extends Controller
         $this->authorizeEvent($event);
 
         $validated = $request->validate([
-            'status' => ['required', 'in:SUBMITTED,PUBLISHED,COMPLETED,CANCELLED,DRAFT'],
+            'status' => ['required', 'in:COMPLETED,CANCELLED'],
         ]);
 
         $newStatus = $validated['status'];
         $oldStatus = $event->status;
-
-        if ($newStatus === 'PUBLISHED' && ! in_array($oldStatus, ['APPROVED', 'COMPLETED'])) {
-            return back()->with('error', 'Event harus berstatus APPROVED terlebih dahulu sebelum dipublikasikan.');
-        }
 
         if ($newStatus === 'COMPLETED' && $oldStatus !== 'PUBLISHED') {
             return back()->with('error', 'Hanya event berstatus PUBLISHED yang dapat diselesaikan.');
@@ -221,6 +220,19 @@ class EventController extends Controller
 
         if ($newStatus === 'CANCELLED' && in_array($oldStatus, ['COMPLETED', 'CANCELLED'])) {
             return back()->with('error', 'Event yang telah selesai atau sudah dibatalkan tidak dapat diubah.');
+        }
+
+        if ($newStatus === 'CANCELLED') {
+            foreach ($event->registrations()->whereIn('status', ['PENDING', 'CONFIRMED'])->get() as $registration) {
+                app(TicketService::class)->cancel($registration, 'Event dibatalkan');
+                Notification::create([
+                    'user_id' => $registration->user_id,
+                    'title' => 'Event Dibatalkan',
+                    'message' => 'Event '.$event->title.' dibatalkan. Pendaftaran Anda dibatalkan.',
+                    'link' => route('participant.tickets.index'),
+                    'is_read' => false,
+                ]);
+            }
         }
 
         $event->update(['status' => $newStatus]);
@@ -259,6 +271,11 @@ class EventController extends Controller
             'start_sale' => ['required', 'date'],
             'end_sale' => ['required', 'date', 'after:start_sale'],
         ]);
+
+        $currentTotal = $event->tickets()->sum('quota');
+        if ($currentTotal + (int) $validated['quota'] > (int) $event->capacity && (int) $event->capacity > 0) {
+            return back()->with('error', 'Total kuota tiket melebihi kapasitas event.')->withInput();
+        }
 
         $ticket = Ticket::create([
             'event_id' => $event->id,
