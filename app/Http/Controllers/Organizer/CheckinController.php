@@ -41,7 +41,7 @@ class CheckinController extends Controller
      */
     public function scanner(Event $event): View
     {
-        $this->authorizeEvent($event);
+        $this->authorize('checkin', $event);
 
         $recentCheckins = Checkin::with(['registration.user', 'registration.ticket'])
             ->whereHas('registration', function ($q) use ($event) {
@@ -64,7 +64,7 @@ class CheckinController extends Controller
      */
     public function processScan(Request $request, Event $event): JsonResponse
     {
-        $this->authorizeEvent($event);
+        $this->authorize('checkin', $event);
 
         $code = $request->input('code');
         if (! $code) {

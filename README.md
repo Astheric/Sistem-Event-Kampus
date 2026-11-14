@@ -14,7 +14,7 @@ EventHub adalah platform terpadu untuk ekosistem event kampus yang mendukung sel
 ## 🚀 2. Panduan Instalasi & Konfigurasi Lingkungan
 
 ### Prasyarat Sistem:
-- **PHP**: ^8.2 (Direkomendasikan PHP 8.4) dengan ekstensi `pdo_sqlite` / `pdo_mysql`, `gd`, `zip`, `mbstring`.
+- **PHP**: ^8.3 (Direkomendasikan PHP 8.4) dengan ekstensi `pdo_sqlite` / `pdo_mysql`, `gd`, `zip`, `mbstring`.
 - **Node.js**: ^18.x atau ^20.x
 - **Composer**: ^2.x
 - **NPM** atau **Yarn**
@@ -62,6 +62,8 @@ Sistem telah dilengkapi seeder akun untuk 4 role pengguna:
 | **Organizer** | `organizer@eventhub.test` | `password` | Manajemen event, multi-tier tiket, verifikasi bayar, scanner QR, delegasi panitia, penerbitan sertifikat. |
 | **Panitia (Staff)** | `panitia@eventhub.test` | `password` | Operasional check-in scan peserta pada event yang didelegasikan. |
 | **Peserta** | `participant@eventhub.test` | `password` | Katalog event, checkout tiket, download E-Ticket PDF, klaim sertifikat, beri ulasan bintang & komentar. |
+| **Dosen (terverifikasi)** | `dosen@eventhub.test` | `password` | Mengikuti event khusus dosen. |
+| **Dosen (belum terverifikasi)** | `dosen.baru@eventhub.test` | `password` | Akun dosen menunggu verifikasi admin. |
 
 ---
 

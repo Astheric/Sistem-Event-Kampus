@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
             'phone' => '081234567890',
             'bio' => 'Super Administrator Sistem Event Kampus EventHub.',
+            'verified_at' => $now,
         ]);
 
         $organizerUser = User::create([
@@ -46,6 +47,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'organizer',
             'phone' => '082198765432',
             'bio' => 'Badan Eksekutif Mahasiswa Fakultas Ilmu Komputer.',
+            'verified_at' => $now,
         ]);
 
         $panitiaUser = User::create([
@@ -55,6 +57,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'participant', // Participant delegated as event committee
             'phone' => '083811223344',
             'bio' => 'Koordinator Divisi Registrasi & Check-in Lapangan.',
+            'verified_at' => $now,
         ]);
 
         $participantUser = User::create([
@@ -64,6 +67,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'participant',
             'phone' => '085712345678',
             'bio' => 'Mahasiswa Teknik Informatika Angkatan 2023.',
+            'verified_at' => $now,
         ]);
 
         $participant2 = User::create([
@@ -73,6 +77,30 @@ class DatabaseSeeder extends Seeder
             'role' => 'participant',
             'phone' => '087812349988',
             'bio' => 'Mahasiswi Sistem Informasi Angkatan 2024.',
+            'verified_at' => $now,
+        ]);
+
+        // Dosen demo accounts
+        $dosenVerified = User::create([
+            'name' => 'Dr. Budi Santoso',
+            'email' => 'dosen@eventhub.test',
+            'password' => Hash::make('password'),
+            'role' => 'dosen',
+            'phone' => '081200001111',
+            'bio' => 'Dosen Fakultas Ilmu Komputer.',
+            'nidn' => '0123456789',
+            'verified_at' => $now,
+        ]);
+
+        $dosenUnverified = User::create([
+            'name' => 'Dosen Baru',
+            'email' => 'dosen.baru@eventhub.test',
+            'password' => Hash::make('password'),
+            'role' => 'dosen',
+            'phone' => '081200002222',
+            'bio' => 'Dosen baru belum diverifikasi.',
+            'nidn' => '0987654321',
+            'verified_at' => null,
         ]);
 
         // 2. Organizations
@@ -129,6 +157,7 @@ class DatabaseSeeder extends Seeder
             'end_time' => $now->copy()->addDays(14)->setTime(16, 30),
             'capacity' => 300,
             'status' => 'PUBLISHED',
+            'audience' => 'ALL',
         ]);
 
         $t1Early = Ticket::create([
@@ -181,6 +210,7 @@ class DatabaseSeeder extends Seeder
             'end_time' => $now->copy()->addDays(7)->setTime(17, 0),
             'capacity' => 60,
             'status' => 'PUBLISHED',
+            'audience' => 'STUDENT',
         ]);
 
         $t2Free = Ticket::create([
@@ -206,6 +236,7 @@ class DatabaseSeeder extends Seeder
             'end_time' => $now->copy()->addDays(30)->setTime(18, 0),
             'capacity' => 100,
             'status' => 'SUBMITTED', // Needs admin moderation approval!
+            'audience' => 'LECTURER',
         ]);
 
         Ticket::create([

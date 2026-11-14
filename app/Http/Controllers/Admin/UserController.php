@@ -68,4 +68,19 @@ class UserController extends Controller
 
         return back()->with('success', 'Peran pengguna '.$user->name.' berhasil diubah menjadi '.strtoupper($validated['role']).'.');
     }
+
+    public function verify(User $user): RedirectResponse
+    {
+        if ($user->isVerified()) {
+            return back()->with('info', 'Akun sudah terverifikasi.');
+        }
+
+        $user->update(['verified_at' => now()]);
+
+        AuditLogger::log('user.verified', 'User', $user->id, [
+            'name' => $user->name,
+        ]);
+
+        return back()->with('success', 'Akun '.$user->name.' berhasil diverifikasi.');
+    }
 }
