@@ -2,14 +2,14 @@
 
 @php
 $classes = match ($variant) {
-    'primary' => 'bg-brand-600 text-white hover:bg-brand-700 shadow-sm',
-    'secondary' => 'bg-surface text-ink border border-line hover:bg-surface-soft',
-    'ghost' => 'bg-transparent text-ink hover:bg-surface-soft',
-    'danger' => 'bg-danger text-white hover:opacity-90',
-    default => 'bg-brand-600 text-white hover:bg-brand-700 shadow-sm',
+    'primary' => 'bg-accent text-accent-ink hover:brightness-95',
+    'secondary' => 'bg-surface text-ink border border-line hover:bg-bg',
+    'ghost' => 'bg-transparent text-ink underline hover:no-underline',
+    'danger' => 'bg-ink text-white hover:bg-accent hover:text-accent-ink',
+    default => 'bg-accent text-accent-ink hover:brightness-95',
 };
 @endphp
 
-<button {{ $attributes->merge(['class' => 'inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-colors ' . $classes]) }}>
+<button {{ $attributes->merge(['class' => 'inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold transition-colors ' . $classes]) }}>
     {{ $slot }}
 </button>
