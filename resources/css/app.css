@@ -5,51 +5,73 @@
 @source '../views/**/*.blade.php';
 
 @theme {
-    --font-heading: 'Space Grotesk', system-ui, sans-serif;
+    --font-sans: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
-    --color-neo-bg: #FFFDF8;
-    --color-neo-yellow: #FFE600;
-    --color-neo-orange: #FF6B4A;
-    --color-neo-cyan: #00F0FF;
-    --color-neo-pink: #FF70A6;
-    --color-neo-green: #57EB74;
-    --color-neo-purple: #A78BFA;
-    --color-neo-black: #000000;
+    /* Brand (violet) */
+    --color-brand-50: #F5F0FF;
+    --color-brand-100: #EDE4FF;
+    --color-brand-200: #D9C8FF;
+    --color-brand-300: #C4A8FF;
+    --color-brand-400: #A78BFA;
+    --color-brand-500: #8B5CF6;
+    --color-brand-600: #6D2AEF;
+    --color-brand-700: #5B21B6;
+
+    /* Canvas & surfaces */
+    --color-canvas: #F4F2FA;
+    --color-surface: #FFFFFF;
+    --color-surface-soft: #F7F5FC;
+    --color-line: #E6E1F0;
+    --color-ink: #17142A;
+    --color-muted: #6B6480;
+    --color-subtle: #9B95AD;
+
+    /* Pastel */
+    --color-mint-soft: #B9F5D8;
+    --color-mint-ink: #0F5132;
+    --color-lavender-soft: #D9C8FF;
+    --color-lavender-ink: #3B1D8F;
+    --color-peach-soft: #FFD9C8;
+    --color-peach-ink: #7C2D12;
+    --color-sky-soft: #C8E6FF;
+    --color-sky-ink: #1E3A8A;
+
+    /* Status */
+    --color-success: #16A34A;
+    --color-warning: #D97706;
+    --color-danger: #DC2626;
+
+    --radius-card: 24px;
+    --radius-inner: 16px;
+    --radius-chip: 12px;
+    --radius-pill: 9999px;
+
+    --shadow-card: 0 8px 30px -12px rgb(109 42 239 / 0.18);
+    --shadow-pop: 0 16px 40px -16px rgb(23 20 42 / 0.28);
+}
+
+@layer base {
+    body {
+        font-family: var(--font-sans);
+        font-feature-settings: 'tnum' 1;
+    }
 }
 
 @layer utilities {
-    .neo-shadow {
-        box-shadow: 4px 4px 0px 0px #000000;
-    }
-    .neo-shadow-lg {
-        box-shadow: 6px 6px 0px 0px #000000;
-    }
-    .neo-shadow-sm {
-        box-shadow: 2px 2px 0px 0px #000000;
-    }
-    .neo-shadow-hover:hover {
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0px 0px #000000;
-    }
-    .neo-shadow-active:active {
-        transform: translate(2px, 2px);
-        box-shadow: 0px 0px 0px 0px #000000;
+    .page-blob {
+        position: fixed;
+        border-radius: 9999px;
+        filter: blur(80px);
+        pointer-events: none;
+        z-index: 0;
     }
 }
 
-body {
-    background-color: var(--color-neo-bg);
-    color: #000000;
-    font-family: var(--font-heading), system-ui, sans-serif;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading), system-ui, sans-serif;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-}
-
-code, .font-tech {
-    font-family: var(--font-mono), monospace;
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
