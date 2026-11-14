@@ -1,184 +1,111 @@
 @extends('layouts.app')
 
-@section('title', 'Katalog Event Kampus — EventHub')
+@section('title', 'Event — EventHub')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Header Title -->
-    <div class="mb-8 border-b border-line pb-6">
-        <span class="bg-surface border border-line px-3 py-1 text-xs font-bold  tracking-wider shadow-card rounded-2xl">
-            Katalog Lengkap
-        </span>
-        <h1 class="text-4xl font-bold mt-2">Jelajah Event Kampus</h1>
-        <p class="text-sm font-bold text-muted mt-1">Temukan berbagai event resmi kampus: seminar, workshop, festival, hingga kompetisi.</p>
-    </div>
+<div class="bg-bg">
+    <section class="px-6 pt-16 pb-10 sm:px-8 sm:pt-20">
+        <h1 class="max-w-4xl font-extrabold uppercase leading-[0.9] tracking-[-0.04em]" style="font-size:clamp(48px,10vw,140px); font-stretch:150%;">
+            SEMUA EVENT
+        </h1>
+        <p class="mt-6 max-w-xl text-[20px] leading-[1.4] text-ink">Seminar, workshop, festival, dan kompetisi kampus. Pilih, daftar, hadir.</p>
+    </section>
 
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <!-- Sidebar Filter Form -->
-        <aside class="lg:col-span-1">
-            <form action="{{ route('events.index') }}" method="GET" class="bg-surface border border-line p-5 shadow-card space-y-5 rounded-2xl">
-                <div class="flex items-center justify-between border-b border-line pb-2">
-                    <span class="font-bold text-sm ">Filter Pencarian</span>
-                    <a href="{{ route('events.index') }}" class="text-xs font-bold text-ink hover:underline">Reset</a>
+    <section class="grid gap-0 lg:grid-cols-[320px_1fr]">
+        <aside class="bg-field-2 px-6 py-10 text-field-2-ink sm:px-8 lg:min-h-[60vh]">
+            <form action="{{ route('events.index') }}" method="GET" class="space-y-6">
+                <div>
+                    <label for="q" class="block text-sm font-medium">Cari</label>
+                    <input id="q" type="text" name="q" value="{{ request('q') }}" placeholder="Judul event"
+                        class="mt-2 w-full bg-bg px-3 py-3 text-base text-ink outline-none placeholder:text-muted">
                 </div>
 
-                <!-- Search Input -->
                 <div>
-                    <label class="block font-bold text-xs  mb-1">Cari Kata Kunci</label>
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Judul / topik event..."
-                        class="w-full bg-surface border border-line p-2 font-bold text-xs focus:outline-none focus:bg-surface">
-                </div>
-
-                <!-- Category Filter -->
-                <div>
-                    <label class="block font-bold text-xs  mb-1">Kategori</label>
-                    <select name="category" class="w-full bg-surface border border-line p-2 font-bold text-xs focus:outline-none focus:bg-surface">
-                        <option value="">Semua Kategori</option>
+                    <label for="category" class="block text-sm font-medium">Kategori</label>
+                    <select id="category" name="category" class="mt-2 w-full bg-bg px-3 py-3 text-base text-ink outline-none">
+                        <option value="">Semua kategori</option>
                         @foreach($categories as $cat)
-                            <option value="{{ $cat->slug }}" {{ request('category') === $cat->slug ? 'selected' : '' }}>
-                                {{ $cat->name }}
-                            </option>
+                            <option value="{{ $cat->slug }}" {{ request('category') === $cat->slug ? 'selected' : '' }}>{{ $cat->name }}</option>
                         @endforeach
                     </select>
                 </div>
 
-                <!-- Price Filter -->
                 <div>
-                    <label class="block font-bold text-xs  mb-1">Harga Tiket</label>
-                    <div class="space-y-1 text-xs font-bold">
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="price" value="" {{ !request('price') ? 'checked' : '' }} class="border border-line accent-black">
-                            <span>Semua Harga</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="price" value="free" {{ request('price') === 'free' ? 'checked' : '' }} class="border border-line accent-black">
-                            <span class="text-ink">Gratis Saja</span>
-                        </label>
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" name="price" value="paid" {{ request('price') === 'paid' ? 'checked' : '' }} class="border border-line accent-black">
-                            <span>Berbayar</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Date Range Filter -->
-                <div>
-                    <label class="block font-bold text-xs  mb-1">Waktu Pelaksanaan</label>
-                    <select name="date" class="w-full bg-surface border border-line p-2 font-bold text-xs focus:outline-none focus:bg-surface">
-                        <option value="upcoming" {{ request('date') === 'upcoming' ? 'selected' : '' }}>Event Mendatang</option>
-                        <option value="today" {{ request('date') === 'today' ? 'selected' : '' }}>Hari Ini</option>
-                        <option value="this_week" {{ request('date') === 'this_week' ? 'selected' : '' }}>Minggu Ini</option>
+                    <label for="price" class="block text-sm font-medium">Harga</label>
+                    <select id="price" name="price" class="mt-2 w-full bg-bg px-3 py-3 text-base text-ink outline-none">
+                        <option value="">Semua</option>
+                        <option value="free" {{ request('price') === 'free' ? 'selected' : '' }}>Gratis</option>
+                        <option value="paid" {{ request('price') === 'paid' ? 'selected' : '' }}>Berbayar</option>
                     </select>
                 </div>
 
-                <!-- City Filter -->
+                <div>
+                    <label for="date" class="block text-sm font-medium">Waktu</label>
+                    <select id="date" name="date" class="mt-2 w-full bg-bg px-3 py-3 text-base text-ink outline-none">
+                        <option value="upcoming" {{ request('date', 'upcoming') === 'upcoming' ? 'selected' : '' }}>Mendatang</option>
+                        <option value="today" {{ request('date') === 'today' ? 'selected' : '' }}>Hari ini</option>
+                        <option value="this_week" {{ request('date') === 'this_week' ? 'selected' : '' }}>Minggu ini</option>
+                    </select>
+                </div>
+
                 @if($cities->isNotEmpty())
-                    <div>
-                        <label class="block font-bold text-xs  mb-1">Kota / Lokasi</label>
-                        <select name="city" class="w-full bg-surface border border-line p-2 font-bold text-xs focus:outline-none focus:bg-surface">
-                            <option value="">Semua Lokasi</option>
-                            @foreach($cities as $city)
-                                <option value="{{ $city }}" {{ request('city') === $city ? 'selected' : '' }}>
-                                    {{ $city }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                <div>
+                    <label for="city" class="block text-sm font-medium">Kota</label>
+                    <select id="city" name="city" class="mt-2 w-full bg-bg px-3 py-3 text-base text-ink outline-none">
+                        <option value="">Semua lokasi</option>
+                        @foreach($cities as $city)
+                            <option value="{{ $city }}" {{ request('city') === $city ? 'selected' : '' }}>{{ $city }}</option>
+                        @endforeach
+                    </select>
+                </div>
                 @endif
 
-                <!-- Sorting -->
                 <div>
-                    <label class="block font-bold text-xs  mb-1">Urutan</label>
-                    <select name="sort" class="w-full bg-surface border border-line p-2 font-bold text-xs focus:outline-none focus:bg-surface">
-                        <option value="date_asc" {{ request('sort') === 'date_asc' ? 'selected' : '' }}>Tanggal Terdekat</option>
-                        <option value="newest" {{ request('sort') === 'newest' ? 'selected' : '' }}>Paling Baru Dibuat</option>
-                        <option value="popular" {{ request('sort') === 'popular' ? 'selected' : '' }}>Paling Banyak Peminat</option>
+                    <label for="sort" class="block text-sm font-medium">Urutan</label>
+                    <select id="sort" name="sort" class="mt-2 w-full bg-bg px-3 py-3 text-base text-ink outline-none">
+                        <option value="date_asc" {{ request('sort', 'date_asc') === 'date_asc' ? 'selected' : '' }}>Tanggal terdekat</option>
+                        <option value="newest" {{ request('sort') === 'newest' ? 'selected' : '' }}>Terbaru</option>
+                        <option value="popular" {{ request('sort') === 'popular' ? 'selected' : '' }}>Paling diminati</option>
                     </select>
                 </div>
 
-                <button type="submit"
-                    class="w-full bg-brand-600 text-white hover:bg-brand-700 border border-line p-2.5 font-bold text-xs  tracking-wider shadow-card active:translate-x-1 active:translate-y-1 active:shadow-none transition-all rounded-full">
-                    Terapkan Filter
-                </button>
+                <div class="flex gap-3 pt-2">
+                    <button type="submit" class="bg-ink px-5 py-3 font-semibold text-white">Terapkan</button>
+                    <a href="{{ route('events.index') }}" class="px-5 py-3 font-semibold underline">Reset</a>
+                </div>
             </form>
         </aside>
 
-        <!-- Events Grid -->
-        <main class="lg:col-span-3 space-y-6">
-            <div class="flex items-center justify-between text-xs font-bold">
-                <span>Ditemukan <span class="bg-surface px-1.5 py-0.5 border border-line font-mono">{{ $events->total() }}</span> event aktif</span>
-            </div>
+        <div class="px-6 py-10 sm:px-8">
+            <p class="mb-8 text-lg"><span class="font-semibold">{{ $events->total() }}</span> event ditemukan</p>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="space-y-0">
                 @forelse($events as $event)
-                    <div class="bg-surface border border-line shadow-card flex flex-col justify-between hover:-translate-y-1 transition-transform rounded-2xl">
-                        <div>
-                            <!-- Header & Category Badge -->
-                            <div class="p-3 border-b border-line bg-surface-soft flex items-center justify-between">
-                                <span class="bg-surface border border-line px-2 py-0.5 text-[11px] font-bold ">
-                                    {{ $event->category->name }}
-                                </span>
-                                @if($event->isFree())
-                                    <span class="bg-surface border border-line px-2 py-0.5 text-[11px] font-bold font-mono">
-                                        GRATIS
-                                    </span>
-                                @else
-                                    <span class="bg-surface border border-line px-2 py-0.5 text-[11px] font-bold font-mono">
-                                        Rp {{ number_format($event->min_price, 0, ',', '.') }}
-                                    </span>
-                                @endif
-                            </div>
-
-                            <!-- Body -->
-                            <div class="p-4 space-y-3">
-                                <h3 class="font-bold text-base leading-snug line-clamp-2 hover:text-ink">
-                                    <a href="{{ route('events.show', $event->slug) }}">
-                                        {{ $event->title }}
-                                    </a>
-                                </h3>
-
-                                <p class="text-xs font-bold text-muted line-clamp-2">
-                                    {{ $event->description }}
-                                </p>
-
-                                <div class="pt-2 border-t border-line space-y-1 text-[11px] font-bold">
-                                    <div class="flex items-center gap-1.5">
-                                        <span><x-icon name="calendar" class="size-4" /></span>
-                                        <span class="font-mono">{{ $event->start_time->format('d M Y, H:i') }} WIB</span>
-                                    </div>
-                                    <div class="flex items-center gap-1.5">
-                                        <span><x-icon name="map-pin" class="size-4" /></span>
-                                        <span class="truncate">{{ $event->venue ? $event->venue->name : 'Daring / Online' }}</span>
-                                    </div>
-                                </div>
-                            </div>
+                    <a href="{{ route('events.show', $event->slug) }}" class="grid grid-cols-12 gap-y-2 border-t border-ink/15 py-6 transition hover:bg-surface">
+                        <div class="col-span-12 lg:col-span-6">
+                            <h2 class="text-[clamp(22px,2.4vw,34px)] font-extrabold leading-[1.1]">{{ $event->title }}</h2>
+                            <p class="mt-2 max-w-xl text-base text-muted line-clamp-2">{{ $event->description }}</p>
                         </div>
-
-                        <!-- Footer Link Button -->
-                        <div class="p-3 border-t border-line bg-surface-soft">
-                            <a href="{{ route('events.show', $event->slug) }}"
-                                class="block w-full text-center bg-brand-600 text-white hover:bg-brand-600 text-white border border-line py-2 font-bold text-xs  tracking-wider shadow-card active:translate-x-1 active:translate-y-1 active:shadow-none transition-all rounded-full">
-                                Buka Tiket →
-                            </a>
+                        <div class="col-span-6 text-base lg:col-span-2 lg:pt-1">{{ $event->category->name }}</div>
+                        <div class="col-span-6 text-base lg:col-span-2 lg:pt-1">{{ $event->venue ? $event->venue->name : 'Online' }}</div>
+                        <div class="col-span-12 flex items-baseline justify-between gap-4 pt-2 lg:col-span-2 lg:block lg:pt-1 lg:text-right">
+                            <div class="text-base">{{ $event->start_time->format('d M Y') }}</div>
+                            <div class="mt-1 font-semibold">@if($event->isFree()) Gratis @else Rp {{ number_format($event->min_price, 0, ',', '.') }} @endif</div>
                         </div>
-                    </div>
+                    </a>
                 @empty
-                    <div class="col-span-3 text-center py-16 bg-surface border border-line shadow-card p-6 rounded-2xl">
-                        <span class="text-4xl block mb-2"><x-icon name="search" class="size-4" /></span>
-                        <h3 class="font-bold text-lg">Tidak ada event yang sesuai</h3>
-                        <p class="text-xs font-bold text-muted mt-1">Coba gunakan kata kunci lain atau reset filter pencarian.</p>
-                        <a href="{{ route('events.index') }}" class="inline-block mt-4 bg-surface border border-line px-4 py-2 font-bold text-xs  shadow-card rounded-2xl">
-                            Reset Semua Filter
-                        </a>
+                    <div class="border-t border-ink/15 py-16">
+                        <p class="text-2xl font-bold">Tidak ada event yang sesuai.</p>
+                        <p class="mt-2 text-base text-muted">Coba ubah filter atau kata kunci.</p>
+                        <a href="{{ route('events.index') }}" class="mt-6 inline-block bg-ink px-5 py-3 font-semibold text-white">Reset filter</a>
                     </div>
                 @endforelse
             </div>
 
-            <!-- Pagination -->
-            <div class="pt-4">
+            <div class="mt-10 border-t border-ink/15 pt-8">
                 {{ $events->links() }}
             </div>
-        </main>
-    </div>
+        </div>
+    </section>
 </div>
 @endsection
