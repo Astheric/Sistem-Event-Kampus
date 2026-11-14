@@ -4,54 +4,54 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Source Sans 3', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
-    --color-canvas: #f3f4f6;
-    --color-bg: #f3f4f6;
+    --color-canvas: #f4f6f8;
+    --color-bg: #f4f6f8;
     --color-surface: #ffffff;
     --color-surface-soft: #f8fafc;
-    --color-ink: #111827;
-    --color-muted: #4b5563;
-    --color-subtle: #6b7280;
-    --color-line: #d1d5db;
+    --color-ink: #101828;
+    --color-muted: #475467;
+    --color-subtle: #667085;
+    --color-line: #d0d5dd;
 
-    --color-brand-50: #eff6ff;
-    --color-brand-100: #dbeafe;
-    --color-brand-200: #bfdbfe;
-    --color-brand-500: #2563eb;
-    --color-brand-600: #1e40af;
-    --color-brand-700: #1e3a8a;
-    --color-brand-900: #172554;
-    --color-accent: #1e40af;
+    --color-brand-50: #eef4ff;
+    --color-brand-100: #d9e7ff;
+    --color-brand-200: #bcd4ff;
+    --color-brand-500: #2e5eaa;
+    --color-brand-600: #1f4e95;
+    --color-brand-700: #163b76;
+    --color-brand-900: #102a56;
+    --color-accent: #163b76;
     --color-accent-ink: #ffffff;
 
-    --color-success: #166534;
-    --color-success-soft: #dcfce7;
-    --color-success-ink: #166534;
-    --color-warning: #92400e;
-    --color-warning-soft: #fef3c7;
-    --color-warning-ink: #92400e;
-    --color-danger: #991b1b;
-    --color-danger-soft: #fee2e2;
-    --color-danger-ink: #991b1b;
+    --color-success: #067647;
+    --color-success-soft: #ecfdf3;
+    --color-success-ink: #067647;
+    --color-warning: #b54708;
+    --color-warning-soft: #fffaeb;
+    --color-warning-ink: #b54708;
+    --color-danger: #b42318;
+    --color-danger-soft: #fef3f2;
+    --color-danger-ink: #b42318;
 
-    --color-field-1: #1e3a8a;
+    --color-field-1: #163b76;
     --color-field-1-ink: #ffffff;
-    --color-field-2: #e5e7eb;
-    --color-field-2-ink: #111827;
-    --color-field-3: #dbeafe;
-    --color-field-3-ink: #1e3a8a;
-    --color-field-4: #111827;
+    --color-field-2: #eaecf0;
+    --color-field-2-ink: #101828;
+    --color-field-3: #eef4ff;
+    --color-field-3-ink: #163b76;
+    --color-field-4: #101828;
     --color-field-4-ink: #f9fafb;
 
-    --radius-card: 8px;
-    --radius-inner: 6px;
+    --radius-card: 12px;
+    --radius-inner: 8px;
     --radius-chip: 9999px;
     --radius-pill: 9999px;
 
-    --shadow-card: 0 1px 2px rgb(17 24 39 / 0.06);
-    --shadow-pop: 0 8px 24px rgb(17 24 39 / 0.12);
+    --shadow-card: 0 1px 3px rgb(16 24 40 / 0.08), 0 1px 2px rgb(16 24 40 / 0.04);
+    --shadow-pop: 0 12px 24px -8px rgb(16 24 40 / 0.14);
 }
 
 @layer base {
@@ -59,7 +59,7 @@
     body {
         @apply bg-canvas text-ink font-sans antialiased;
     }
-    h1, h2, h3 { letter-spacing: -0.01em; }
+    h1, h2, h3 { letter-spacing: -0.015em; }
     ::selection {
         background: var(--color-brand-100);
         color: var(--color-brand-900);
@@ -76,15 +76,15 @@
         @apply bg-surface rounded-[var(--radius-card)] border border-line;
     }
     .btn {
-        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[6px] text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-200 focus-visible:ring-offset-1;
+        @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[8px] text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-200 focus-visible:ring-offset-1;
     }
     .btn-primary { @apply bg-brand-700 text-white hover:bg-brand-900; }
     .btn-secondary { @apply bg-surface text-ink border border-line hover:bg-surface-soft; }
     .btn-ghost { @apply bg-transparent text-brand-700 hover:bg-brand-50; }
     .input {
-        @apply w-full rounded-[6px] border border-line bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-subtle focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-100;
+        @apply w-full rounded-[8px] border border-line bg-surface px-3.5 py-2.5 text-[15px] text-ink placeholder:text-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100;
     }
-    .label { @apply block text-sm font-semibold text-ink mb-1.5; }
+    .label { @apply block text-sm font-medium text-ink mb-1.5; }
     .badge {
         @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold;
     }
