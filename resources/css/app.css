@@ -4,57 +4,54 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'Chivo', ui-sans-serif, system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
-    --color-canvas: #f6f5fb;
-    --color-bg: #f6f5fb;
-    --color-surface: #ffffff;
-    --color-surface-soft: #fbfafe;
-    --color-ink: #17142a;
-    --color-muted: #6b6880;
-    --color-subtle: #8e8aa0;
-    --color-line: #ece9f6;
+    --color-canvas: #f4f1e8;
+    --color-bg: #f4f1e8;
+    --color-surface: #fffdf8;
+    --color-surface-soft: #ece7da;
+    --color-ink: #0e1822;
+    --color-muted: #425466;
+    --color-subtle: #6b7a88;
+    --color-line: #d8d1c2;
 
-    --color-brand-50: #f5f0ff;
-    --color-brand-100: #ebe2ff;
-    --color-brand-200: #d9c8ff;
-    --color-brand-500: #8650f5;
-    --color-brand-600: #6d2aef;
-    --color-brand-700: #5a1fcc;
-    --color-brand-900: #2e1170;
-    --color-accent: #6d2aef;
-    --color-accent-ink: #ffffff;
+    --color-brand-50: #eef6ff;
+    --color-brand-100: #dcebff;
+    --color-brand-200: #b9d8ff;
+    --color-brand-500: #2f7fd6;
+    --color-brand-600: #0e1822;
+    --color-brand-700: #0e1822;
+    --color-brand-900: #0e1822;
+    --color-accent: #ff5a1f;
+    --color-accent-ink: #0e1822;
 
-    --color-success: #12b886;
-    --color-success-soft: #dcfce7;
-    --color-success-ink: #166534;
-    --color-warning: #f5a524;
-    --color-warning-soft: #fef3c7;
-    --color-warning-ink: #92400e;
-    --color-danger: #ef4444;
-    --color-danger-soft: #fee2e2;
-    --color-danger-ink: #b91c1c;
+    --color-success: #1f7a4d;
+    --color-success-soft: #e4f3ea;
+    --color-success-ink: #165236;
+    --color-warning: #9a6700;
+    --color-warning-soft: #fff1c7;
+    --color-warning-ink: #6b4700;
+    --color-danger: #b42318;
+    --color-danger-soft: #fee4e2;
+    --color-danger-ink: #7a271a;
 
-    --color-field-1: #6d2aef;
-    --color-field-1-ink: #ffffff;
-    --color-field-2: #f5f0ff;
-    --color-field-2-ink: #2e1170;
-    --color-field-3: #d8f6ef;
-    --color-field-3-ink: #0b5f52;
-    --color-field-4: #17142a;
-    --color-field-4-ink: #f6f5fb;
+    --color-field-1: #6bb4ee;
+    --color-field-1-ink: #0e1822;
+    --color-field-2: #0e1822;
+    --color-field-2-ink: #fffdf8;
+    --color-field-3: #ff5a1f;
+    --color-field-3-ink: #0e1822;
+    --color-field-4: #0e1822;
+    --color-field-4-ink: #f4f1e8;
 
-    --color-mint-soft: #d8f6ef;
-    --color-mint-ink: #0b8f79;
-
-    --radius-card: 20px;
-    --radius-inner: 14px;
-    --radius-chip: 10px;
+    --radius-card: 4px;
+    --radius-inner: 4px;
+    --radius-chip: 9999px;
     --radius-pill: 9999px;
 
-    --shadow-card: 0 8px 30px -12px rgb(109 42 239 / 0.18);
-    --shadow-pop: 0 16px 40px -16px rgb(23 20 42 / 0.22);
+    --shadow-card: none;
+    --shadow-pop: none;
 }
 
 @layer base {
@@ -62,38 +59,34 @@
     body {
         @apply bg-canvas text-ink font-sans antialiased;
     }
+    h1, h2, h3 { letter-spacing: -0.03em; }
     ::selection {
-        background: var(--color-brand-100);
-        color: var(--color-brand-900);
+        background: var(--color-accent);
+        color: var(--color-ink);
     }
 }
 
 @layer components {
-    .page-blob {
-        position: fixed;
-        border-radius: 9999px;
-        filter: blur(80px);
-        pointer-events: none;
-        z-index: 0;
-    }
+    .page-blob { display: none; }
     .card {
-        @apply bg-surface rounded-[var(--radius-card)] border border-line;
-        box-shadow: var(--shadow-card);
+        @apply bg-surface border border-line;
     }
     .card-soft {
-        @apply bg-surface rounded-[var(--radius-card)] border border-line;
+        @apply bg-surface border border-line;
     }
     .btn {
-        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-200;
+        @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-bold uppercase tracking-wide transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent;
     }
-    .btn-primary { @apply bg-brand-600 text-white hover:bg-brand-700; }
-    .btn-secondary { @apply bg-surface text-ink border border-line hover:bg-surface-soft; }
-    .btn-ghost { @apply bg-transparent text-ink hover:bg-brand-50; }
+    .btn-primary { @apply bg-accent text-accent-ink hover:bg-[#ff6b36]; }
+    .btn-secondary { @apply bg-transparent text-ink border border-ink hover:bg-ink hover:text-surface; }
+    .btn-ghost { @apply bg-transparent text-ink underline decoration-2 underline-offset-4 hover:no-underline; }
     .input {
-        @apply w-full rounded-[14px] border border-line bg-surface px-4 py-3 text-sm text-ink placeholder:text-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200;
+        @apply w-full border border-line bg-surface px-4 py-3 text-base text-ink placeholder:text-subtle focus:border-ink focus:outline-none focus:ring-1 focus:ring-ink;
     }
-    .label { @apply block text-sm font-medium text-ink mb-1.5; }
+    .label { @apply block text-sm font-bold text-ink mb-1.5 uppercase tracking-wide; }
     .badge {
-        @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold;
+        @apply inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold uppercase tracking-wide;
+        border: 1px solid var(--color-line);
+        background: var(--color-surface);
     }
 }

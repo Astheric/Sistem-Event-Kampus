@@ -1,30 +1,26 @@
 @extends('layouts.app')
 
-@section('title', 'Jelajah Event Kampus — EventHub')
+@section('title', 'Agenda Event — EventHub')
 
 @section('content')
-<div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-            <h1 class="text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Jelajah Event Kampus</h1>
-            <p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted sm:text-base">Temukan seminar, workshop, festival, kompetisi, dan kegiatan kampus lainnya. Gunakan filter untuk mempersempit pencarian.</p>
-        </div>
-        <p class="text-sm text-muted"><span class="font-semibold text-ink">{{ $events->total() }}</span> event ditemukan</p>
+<div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div class="border-b border-line pb-8">
+        <h1 class="text-[clamp(2.4rem,6vw,5rem)] font-black uppercase leading-[0.9] tracking-tight">Agenda Event</h1>
+        <p class="mt-4 max-w-2xl text-lg text-muted">Seminar, workshop, kompetisi, dan kegiatan kampus. Filter berdasarkan kategori, waktu, lokasi, dan harga.</p>
     </div>
 
-    <div class="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
-        <aside class="h-fit lg:sticky lg:top-24">
+    <div class="mt-10 grid gap-10 lg:grid-cols-[300px_1fr]">
+        <aside class="lg:sticky lg:top-24 lg:self-start">
             <form action="{{ route('events.index') }}" method="GET" class="card space-y-5 p-5">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-sm font-bold text-ink">Filter</h2>
-                    <a href="{{ route('events.index') }}" class="text-xs font-semibold text-brand-700 hover:text-brand-600">Reset</a>
+                <div class="flex items-center justify-between border-b border-line pb-3">
+                    <h2 class="text-sm font-black uppercase tracking-wide">Filter</h2>
+                    <a href="{{ route('events.index') }}" class="text-xs font-bold uppercase tracking-wide text-accent">Reset</a>
                 </div>
 
                 <div>
-                    <label for="q" class="label">Pencarian</label>
-                    <input id="q" type="text" name="q" value="{{ request('q') }}" placeholder="Judul atau kata kunci" class="input">
+                    <label for="q" class="label">Kata kunci</label>
+                    <input id="q" type="text" name="q" value="{{ request('q') }}" placeholder="Judul event" class="input">
                 </div>
-
                 <div>
                     <label for="category" class="label">Kategori</label>
                     <select id="category" name="category" class="input">
@@ -34,7 +30,6 @@
                         @endforeach
                     </select>
                 </div>
-
                 <div class="grid grid-cols-2 gap-3 lg:grid-cols-1">
                     <div>
                         <label for="price" class="label">Harga</label>
@@ -53,7 +48,6 @@
                         </select>
                     </div>
                 </div>
-
                 @if($cities->isNotEmpty())
                 <div>
                     <label for="city" class="label">Lokasi</label>
@@ -65,7 +59,6 @@
                     </select>
                 </div>
                 @endif
-
                 <div>
                     <label for="sort" class="label">Urutkan</label>
                     <select id="sort" name="sort" class="input">
@@ -74,47 +67,44 @@
                         <option value="popular" {{ request('sort') === 'popular' ? 'selected' : '' }}>Paling diminati</option>
                     </select>
                 </div>
-
-                <button type="submit" class="btn btn-primary w-full">Terapkan filter</button>
+                <button type="submit" class="btn btn-primary w-full">Terapkan</button>
             </form>
         </aside>
 
         <section>
+            <p class="mb-4 text-sm font-bold uppercase tracking-wide text-muted"><span class="text-ink">{{ $events->total() }}</span> event ditemukan</p>
+
             @if($events->isEmpty())
-                <div class="card p-10 text-center">
-                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600"><x-icon name="calendar" class="size-6" /></div>
-                    <h2 class="mt-4 text-lg font-bold text-ink">Tidak ada event yang sesuai</h2>
-                    <p class="mt-2 text-sm text-muted">Coba ubah kata kunci atau longgarkan filter pencarian.</p>
+                <div class="card p-10">
+                    <h2 class="text-2xl font-black uppercase">Tidak ada hasil</h2>
+                    <p class="mt-2 text-muted">Coba ubah filter atau kata kunci pencarian.</p>
                     <a href="{{ route('events.index') }}" class="btn btn-secondary mt-6">Reset filter</a>
                 </div>
             @else
-                <div class="grid gap-5 sm:grid-cols-2">
+                <div class="divide-y divide-line border-y border-line">
                     @foreach($events as $event)
-                        <a href="{{ route('events.show', $event->slug) }}" class="card group flex flex-col p-5 transition hover:-translate-y-0.5">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <span class="badge bg-brand-50 text-brand-700">{{ $event->category->name }}</span>
-                                @if($event->isFree())
-                                    <span class="badge bg-green-50 text-green-700">Gratis</span>
-                                @endif
+                        <a href="{{ route('events.show', $event->slug) }}" class="group grid gap-3 py-6 transition hover:bg-surface md:grid-cols-[120px_1fr_200px_130px] md:items-start">
+                            <div class="text-sm font-bold uppercase tracking-wide text-muted">
+                                <div class="text-2xl font-black text-ink">{{ $event->start_time->format('d') }}</div>
+                                <div>{{ $event->start_time->translatedFormat('M Y') }}</div>
+                                <div class="mt-1 font-medium normal-case tracking-normal">{{ $event->start_time->format('H:i') }}</div>
                             </div>
-                            <h2 class="mt-4 text-xl font-bold leading-snug text-ink group-hover:text-brand-700">{{ $event->title }}</h2>
-                            <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">{{ $event->description }}</p>
-
-                            <dl class="mt-4 grid gap-2 text-sm text-muted">
-                                <div class="flex items-center gap-2"><x-icon name="calendar" class="size-4" /><dd>{{ $event->start_time->translatedFormat('d M Y') }} · {{ $event->start_time->format('H:i') }} WIB</dd></div>
-                                <div class="flex items-center gap-2"><x-icon name="map-pin" class="size-4" /><dd class="truncate">{{ $event->venue ? $event->venue->name : 'Online' }}</dd></div>
-                            </dl>
-
-                            <div class="mt-5 flex items-center justify-between border-t border-line pt-4">
-                                <span class="text-sm font-bold text-ink">
-                                    @if($event->isFree()) Gratis @else Mulai Rp {{ number_format($event->min_price, 0, ',', '.') }} @endif
-                                </span>
-                                <span class="text-sm font-semibold text-brand-700">Lihat detail</span>
+                            <div>
+                                <p class="text-xs font-bold uppercase tracking-[0.18em] text-muted">{{ $event->category->name }}</p>
+                                <h2 class="mt-1 text-xl font-black leading-tight tracking-tight group-hover:text-accent sm:text-2xl">{{ $event->title }}</h2>
+                                <p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted line-clamp-2">{{ $event->description }}</p>
+                            </div>
+                            <div class="text-sm text-muted">
+                                <p class="font-bold uppercase tracking-wide text-ink">Lokasi</p>
+                                <p class="mt-1">{{ $event->venue ? $event->venue->name : 'Online' }}</p>
+                            </div>
+                            <div class="md:text-right">
+                                <p class="text-lg font-black text-ink">@if($event->isFree()) Gratis @else Rp {{ number_format($event->min_price, 0, ',', '.') }} @endif</p>
+                                <p class="mt-2 text-sm font-bold uppercase tracking-wide text-accent">Buka</p>
                             </div>
                         </a>
                     @endforeach
                 </div>
-
                 <div class="mt-8">{{ $events->links() }}</div>
             @endif
         </section>

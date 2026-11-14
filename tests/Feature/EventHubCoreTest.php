@@ -107,7 +107,7 @@ class EventHubCoreTest extends TestCase
 
         $catalogResponse = $this->get(route('events.index'));
         $catalogResponse->assertStatus(200);
-        $catalogResponse->assertSee('Jelajah Event Kampus');
+        $catalogResponse->assertSee('Agenda Event');
     }
 
     public function test_participant_cannot_access_admin_or_organizer_routes(): void
