@@ -1,73 +1,99 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../views/**/*.blade.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
 
 @theme {
-    --font-sans: 'TikTok Sans', system-ui, sans-serif;
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 
-    --color-bg: #ffffff;
-    --color-surface: #f6f6f6;
-    --color-surface-soft: #f6f6f6;
-    --color-ink: #000000;
-    --color-muted: #5f5f5f;
-    --color-subtle: #5f5f5f;
-    --color-accent: #fe7141;
-    --color-accent-ink: #000000;
-    --color-field-1: #fe7141;
-    --color-field-1-ink: #000000;
-    --color-field-2: #d1ddd3;
-    --color-field-2-ink: #000000;
-    --color-field-3: #f0ff1c;
-    --color-field-3-ink: #000000;
-    --color-field-4: #000000;
-    --color-field-4-ink: #f4f4f4;
-    --color-line: #d9d9d9;
-    --color-canvas: #ffffff;
+    --color-canvas: #f6f5fb;
+    --color-bg: #f6f5fb;
+    --color-surface: #ffffff;
+    --color-surface-soft: #fbfafe;
+    --color-ink: #17142a;
+    --color-muted: #6b6880;
+    --color-subtle: #8e8aa0;
+    --color-line: #ece9f6;
 
-    /* compatibility aliases for existing views */
-    --color-brand-50: #fff1ec;
-    --color-brand-100: #ffe3d8;
-    --color-brand-200: #ffc3ad;
-    --color-brand-300: #ffa07f;
-    --color-brand-400: #ff885c;
-    --color-brand-500: #fe7141;
-    --color-brand-600: #fe7141;
-    --color-brand-700: #e85f33;
-    --color-mint-soft: #d1ddd3;
-    --color-mint-ink: #000000;
+    --color-brand-50: #f5f0ff;
+    --color-brand-100: #ebe2ff;
+    --color-brand-200: #d9c8ff;
+    --color-brand-500: #8650f5;
+    --color-brand-600: #6d2aef;
+    --color-brand-700: #5a1fcc;
+    --color-brand-900: #2e1170;
+    --color-accent: #6d2aef;
+    --color-accent-ink: #ffffff;
 
-    --radius-card: 0px;
-    --radius-inner: 0px;
-    --radius-chip: 0px;
-    --radius-pill: 0px;
+    --color-success: #12b886;
+    --color-success-soft: #dcfce7;
+    --color-success-ink: #166534;
+    --color-warning: #f5a524;
+    --color-warning-soft: #fef3c7;
+    --color-warning-ink: #92400e;
+    --color-danger: #ef4444;
+    --color-danger-soft: #fee2e2;
+    --color-danger-ink: #b91c1c;
 
-    --shadow-card: none;
-    --shadow-pop: none;
+    --color-field-1: #6d2aef;
+    --color-field-1-ink: #ffffff;
+    --color-field-2: #f5f0ff;
+    --color-field-2-ink: #2e1170;
+    --color-field-3: #d8f6ef;
+    --color-field-3-ink: #0b5f52;
+    --color-field-4: #17142a;
+    --color-field-4-ink: #f6f5fb;
+
+    --color-mint-soft: #d8f6ef;
+    --color-mint-ink: #0b8f79;
+
+    --radius-card: 20px;
+    --radius-inner: 14px;
+    --radius-chip: 10px;
+    --radius-pill: 9999px;
+
+    --shadow-card: 0 8px 30px -12px rgb(109 42 239 / 0.18);
+    --shadow-pop: 0 16px 40px -16px rgb(23 20 42 / 0.22);
 }
 
 @layer base {
+    html { scroll-behavior: smooth; }
     body {
-        font-family: var(--font-sans);
-        background: var(--color-bg);
-        color: var(--color-ink);
-        font-size: 18px;
-        line-height: 1.45;
-        font-stretch: normal;
+        @apply bg-canvas text-ink font-sans antialiased;
     }
-    h1, h2, h3 {
-        font-weight: 800;
-        letter-spacing: -0.01em;
+    ::selection {
+        background: var(--color-brand-100);
+        color: var(--color-brand-900);
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
+@layer components {
+    .page-blob {
+        position: fixed;
+        border-radius: 9999px;
+        filter: blur(80px);
+        pointer-events: none;
+        z-index: 0;
+    }
+    .card {
+        @apply bg-surface rounded-[var(--radius-card)] border border-line;
+        box-shadow: var(--shadow-card);
+    }
+    .card-soft {
+        @apply bg-surface rounded-[var(--radius-card)] border border-line;
+    }
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-200;
+    }
+    .btn-primary { @apply bg-brand-600 text-white hover:bg-brand-700; }
+    .btn-secondary { @apply bg-surface text-ink border border-line hover:bg-surface-soft; }
+    .btn-ghost { @apply bg-transparent text-ink hover:bg-brand-50; }
+    .input {
+        @apply w-full rounded-[14px] border border-line bg-surface px-4 py-3 text-sm text-ink placeholder:text-subtle focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-200;
+    }
+    .label { @apply block text-sm font-medium text-ink mb-1.5; }
+    .badge {
+        @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold;
     }
 }

@@ -1,109 +1,75 @@
 @extends('layouts.app')
 
-@section('title', 'Daftar Akun — EventHub')
+@section('title', 'Daftar — EventHub')
 
 @section('content')
-<div class="max-w-lg mx-auto px-4 py-12" x-data="{ role: '{{ old('role', 'participant') }}' }">
-    <!-- Register Card -->
-    <div class="bg-surface border border-line p-8 shadow-card rounded-2xl">
-        <div class="border-b border-line pb-4 mb-6">
-            <span class="bg-surface border border-line px-3 py-1 text-xs font-bold  tracking-wider shadow-card rounded-2xl">
-                Registrasi Akun
-            </span>
-            <h1 class="text-3xl font-bold mt-3">Bergabung ke EventHub</h1>
-            <p class="text-sm font-bold text-muted mt-1">Daftar sebagai Peserta atau Penyelenggara Event Kampus.</p>
+<div class="mx-auto max-w-lg px-4 py-12 sm:py-16" x-data="{ role: '{{ old('role', 'participant') }}' }">
+    <div class="card p-8">
+        <div class="text-center">
+            <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600"><x-icon name="user-plus" class="size-6" /></span>
+            <h1 class="mt-4 text-2xl font-extrabold tracking-tight text-ink">Buat akun EventHub</h1>
+            <p class="mt-2 text-sm text-muted">Daftar sebagai peserta atau penyelenggara event kampus.</p>
         </div>
 
-        <form action="{{ route('register.post') }}" method="POST" class="space-y-4">
+        <form action="{{ route('register.post') }}" method="POST" class="mt-8 space-y-4">
             @csrf
-
-            <!-- Role Selector -->
             <div>
-                <label class="block font-bold text-xs  mb-2">Pilih Peran Akun</label>
+                <span class="label">Peran akun</span>
                 <div class="grid grid-cols-2 gap-3">
-                    <label class="cursor-pointer border border-line p-3 text-center transition-all"
-                        :class="role === 'participant' ? 'bg-surface shadow-card font-bold' : 'bg-surface hover:bg-surface-soft font-bold' rounded-2xl">
+                    <label class="cursor-pointer rounded-[14px] border p-4 text-center text-sm font-semibold transition"
+                        :class="role === 'participant' ? 'border-brand-500 bg-brand-50 text-brand-900 ring-1 ring-brand-200' : 'border-line bg-surface text-muted hover:bg-surface-soft'">
                         <input type="radio" name="role" value="participant" x-model="role" class="sr-only">
-                        <span><x-icon name="book-open" class="size-4" /> Peserta Event</span>
+                        Peserta
                     </label>
-                    <label class="cursor-pointer border border-line p-3 text-center transition-all"
-                        :class="role === 'organizer' ? 'bg-surface shadow-card font-bold' : 'bg-surface hover:bg-surface-soft font-bold' rounded-2xl">
+                    <label class="cursor-pointer rounded-[14px] border p-4 text-center text-sm font-semibold transition"
+                        :class="role === 'organizer' ? 'border-brand-500 bg-brand-50 text-brand-900 ring-1 ring-brand-200' : 'border-line bg-surface text-muted hover:bg-surface-soft'">
                         <input type="radio" name="role" value="organizer" x-model="role" class="sr-only">
-                        <span><x-icon name="home" class="size-4" /> Organizer / BEM</span>
+                        Organizer
                     </label>
                 </div>
-                @error('role')
-                    <p class="text-ink font-bold text-xs mt-1">{{ $message }}</p>
-                @enderror
+                @error('role')<p class="mt-1 text-xs font-medium text-red-600">{{ $message }}</p>@enderror
             </div>
 
             <div>
-                <label for="name" class="block font-bold text-xs  mb-1">Nama Lengkap</label>
-                <input type="text" id="name" name="name" value="{{ old('name') }}" required
-                    placeholder="Contoh: Muhammad Budi Santoso"
-                    class="w-full bg-surface border border-line p-3 font-bold text-sm focus:outline-none focus:bg-surface focus:shadow-card transition-all rounded-2xl">
-                @error('name')
-                    <p class="text-ink font-bold text-xs mt-1">{{ $message }}</p>
-                @enderror
+                <label for="name" class="label">Nama lengkap</label>
+                <input type="text" id="name" name="name" value="{{ old('name') }}" required class="input" placeholder="Nama lengkap">
+                @error('name')<p class="mt-1 text-xs font-medium text-red-600">{{ $message }}</p>@enderror
             </div>
 
-            <!-- Organization Name (if organizer) -->
             <div x-show="role === 'organizer'" x-cloak>
-                <label for="organization_name" class="block font-bold text-xs  mb-1">Nama Organisasi / Lembaga Kampus</label>
-                <input type="text" id="organization_name" name="organization_name" value="{{ old('organization_name') }}"
-                    placeholder="Contoh: Himpunan Mahasiswa Informatika / BEM Fasilkom"
-                    class="w-full bg-surface border border-line p-3 font-bold text-sm focus:outline-none focus:bg-surface focus:shadow-card transition-all rounded-2xl">
-                @error('organization_name')
-                    <p class="text-ink font-bold text-xs mt-1">{{ $message }}</p>
-                @enderror
+                <label for="organization_name" class="label">Nama organisasi / unit</label>
+                <input type="text" id="organization_name" name="organization_name" value="{{ old('organization_name') }}" class="input" placeholder="Contoh: BEM Fasilkom">
+                @error('organization_name')<p class="mt-1 text-xs font-medium text-red-600">{{ $message }}</p>@enderror
             </div>
 
             <div>
-                <label for="email" class="block font-bold text-xs  mb-1">Alamat Email Kampus / Pribadi</label>
-                <input type="email" id="email" name="email" value="{{ old('email') }}" required
-                    placeholder="nama@student.kampus.ac.id"
-                    class="w-full bg-surface border border-line p-3 font-bold text-sm focus:outline-none focus:bg-surface focus:shadow-card transition-all rounded-2xl">
-                @error('email')
-                    <p class="text-ink font-bold text-xs mt-1">{{ $message }}</p>
-                @enderror
+                <label for="email" class="label">Email</label>
+                <input type="email" id="email" name="email" value="{{ old('email') }}" required class="input" placeholder="nama@kampus.ac.id">
+                @error('email')<p class="mt-1 text-xs font-medium text-red-600">{{ $message }}</p>@enderror
             </div>
 
             <div>
-                <label for="phone" class="block font-bold text-xs  mb-1">Nomor WhatsApp / HP</label>
-                <input type="text" id="phone" name="phone" value="{{ old('phone') }}"
-                    placeholder="081234567890"
-                    class="w-full bg-surface border border-line p-3 font-bold text-sm focus:outline-none focus:bg-surface focus:shadow-card transition-all rounded-2xl">
-                @error('phone')
-                    <p class="text-ink font-bold text-xs mt-1">{{ $message }}</p>
-                @enderror
+                <label for="phone" class="label">Nomor WhatsApp / HP</label>
+                <input type="text" id="phone" name="phone" value="{{ old('phone') }}" class="input" placeholder="08xxxxxxxxxx">
+                @error('phone')<p class="mt-1 text-xs font-medium text-red-600">{{ $message }}</p>@enderror
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="grid gap-3 sm:grid-cols-2">
                 <div>
-                    <label for="password" class="block font-bold text-xs  mb-1">Kata Sandi</label>
-                    <input type="password" id="password" name="password" required
-                        class="w-full bg-surface border border-line p-3 font-bold text-sm focus:outline-none focus:bg-surface focus:shadow-card transition-all rounded-2xl">
-                    @error('password')
-                        <p class="text-ink font-bold text-xs mt-1">{{ $message }}</p>
-                    @enderror
+                    <label for="password" class="label">Kata sandi</label>
+                    <input type="password" id="password" name="password" required class="input">
+                    @error('password')<p class="mt-1 text-xs font-medium text-red-600">{{ $message }}</p>@enderror
                 </div>
                 <div>
-                    <label for="password_confirmation" class="block font-bold text-xs  mb-1">Konfirmasi Sandi</label>
-                    <input type="password" id="password_confirmation" name="password_confirmation" required
-                        class="w-full bg-surface border border-line p-3 font-bold text-sm focus:outline-none focus:bg-surface focus:shadow-card transition-all rounded-2xl">
+                    <label for="password_confirmation" class="label">Konfirmasi kata sandi</label>
+                    <input type="password" id="password_confirmation" name="password_confirmation" required class="input">
                 </div>
             </div>
 
-            <button type="submit"
-                class="w-full bg-brand-600 text-white hover:bg-brand-700 border border-line p-3 font-bold text-base  tracking-wider shadow-card active:translate-x-1 active:translate-y-1 active:shadow-none transition-all mt-4 rounded-full">
-                <x-icon name="send" class="size-4" /> Daftar Akun Sekarang
-            </button>
+            <button type="submit" class="btn btn-primary w-full">Daftar akun</button>
         </form>
 
-        <div class="mt-6 text-center text-xs font-bold pt-4 border-t border-line">
-            Sudah memiliki akun?
-            <a href="{{ route('login') }}" class="underline decoration-2 font-bold text-ink">Masuk di Sini</a>
-        </div>
+        <p class="mt-6 text-center text-sm text-muted">Sudah punya akun? <a href="{{ route('login') }}" class="font-semibold text-brand-700 hover:text-brand-600">Masuk</a></p>
     </div>
 </div>
 @endsection

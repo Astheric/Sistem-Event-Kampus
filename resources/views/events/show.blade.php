@@ -3,56 +3,69 @@
 @section('title', $event->title . ' — EventHub')
 
 @section('content')
-<div class="bg-bg">
-    <section class="px-6 pt-10 pb-12 sm:px-8 sm:pt-14">
-        <a href="{{ route('events.index') }}" class="text-base underline">← Semua event</a>
-        <h1 class="mt-6 max-w-5xl font-extrabold uppercase leading-[0.9] tracking-[-0.04em]" style="font-size:clamp(40px,7vw,96px); font-stretch:150%;">
-            {{ $event->title }}
-        </h1>
-        <div class="mt-8 grid gap-6 text-lg sm:grid-cols-3">
-            <div class="bg-field-2 p-5 text-field-2-ink">
-                <div class="text-sm font-medium">Waktu</div>
-                <div class="mt-2 font-semibold">{{ $event->start_time->format('d M Y, H:i') }} WIB</div>
-                <div class="mt-1 text-base">sampai {{ $event->end_time->format('d M Y, H:i') }} WIB</div>
-            </div>
-            <div class="bg-surface p-5">
-                <div class="text-sm font-medium text-muted">Lokasi</div>
-                <div class="mt-2 font-semibold">{{ $event->venue ? $event->venue->name : 'Daring / Online' }}</div>
-                @if($event->venue)
-                    <div class="mt-1 text-base text-muted">{{ $event->venue->address }}, {{ $event->venue->city }}</div>
-                    @if($event->venue->maps_url)
-                        <a href="{{ $event->venue->maps_url }}" target="_blank" class="mt-2 inline-block underline">Buka peta</a>
+<div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <a href="{{ route('events.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-muted hover:text-ink"><x-icon name="chevron-left" class="size-4" /> Kembali ke daftar event</a>
+
+    <div class="mt-6 grid gap-8 lg:grid-cols-[1.4fr_.8fr]">
+        <section class="space-y-6">
+            <div class="card p-6 sm:p-8">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="badge bg-brand-50 text-brand-700">{{ $event->category->name }}</span>
+                    <span class="badge bg-surface-soft text-muted border border-line">{{ $event->status }}</span>
+                    @if($event->average_rating > 0)
+                        <span class="badge bg-amber-50 text-amber-700"><x-icon name="star" class="size-3.5" /> {{ number_format($event->average_rating, 1) }} ({{ $event->review_count }})</span>
                     @endif
-                @endif
-            </div>
-            <div class="bg-field-3 p-5 text-field-3-ink">
-                <div class="text-sm font-medium">Penyelenggara</div>
-                <div class="mt-2 font-semibold">{{ $event->organization->name }}</div>
-                <div class="mt-1 text-base">{{ $event->category->name }}</div>
-            </div>
-        </div>
-    </section>
-
-    @if($userRegistration)
-        <section class="bg-field-1 px-6 py-8 text-field-1-ink sm:px-8">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <p class="text-lg font-semibold">Kamu sudah terdaftar.</p>
-                    <p class="mt-1 text-base">Kode: <span class="font-semibold">{{ $userRegistration->registration_code }}</span> · Status: {{ $userRegistration->status }}</p>
                 </div>
-                <a href="{{ route('participant.tickets.show', $userRegistration->id) }}" class="inline-flex bg-ink px-6 py-3 font-semibold text-white">Lihat tiket</a>
+
+                <h1 class="mt-4 text-3xl font-extrabold leading-tight tracking-tight text-ink sm:text-4xl">{{ $event->title }}</h1>
+
+                <dl class="mt-6 grid gap-4 sm:grid-cols-2">
+                    <div class="rounded-[14px] border border-line bg-surface-soft p-4">
+                        <dt class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted"><x-icon name="calendar" class="size-4" /> Waktu</dt>
+                        <dd class="mt-2 text-sm font-semibold text-ink">{{ $event->start_time->translatedFormat('l, d F Y') }}</dd>
+                        <dd class="mt-1 text-sm text-muted">{{ $event->start_time->format('H:i') }} – {{ $event->end_time->format('H:i') }} WIB</dd>
+                    </div>
+                    <div class="rounded-[14px] border border-line bg-surface-soft p-4">
+                        <dt class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted"><x-icon name="map-pin" class="size-4" /> Lokasi</dt>
+                        <dd class="mt-2 text-sm font-semibold text-ink">{{ $event->venue ? $event->venue->name : 'Daring / Online' }}</dd>
+                        @if($event->venue)
+                            <dd class="mt-1 text-sm text-muted">{{ $event->venue->address }}, {{ $event->venue->city }}</dd>
+                            @if($event->venue->maps_url)
+                                <a href="{{ $event->venue->maps_url }}" target="_blank" class="mt-2 inline-flex text-sm font-semibold text-brand-700 hover:text-brand-600">Buka peta</a>
+                            @endif
+                        @endif
+                    </div>
+                    <div class="rounded-[14px] border border-line bg-surface-soft p-4 sm:col-span-2">
+                        <dt class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted"><x-icon name="users" class="size-4" /> Penyelenggara</dt>
+                        <dd class="mt-2 text-sm font-semibold text-ink">{{ $event->organization->name }}</dd>
+                    </div>
+                </dl>
             </div>
-        </section>
-    @endif
 
-    <section class="grid gap-0 lg:grid-cols-[1.3fr_.7fr]">
-        <div class="px-6 py-12 sm:px-8 sm:py-16">
-            <h2 class="text-[clamp(28px,3.5vw,44px)] font-extrabold">Tentang event</h2>
-            <div class="mt-6 max-w-2xl whitespace-pre-line text-lg leading-relaxed text-ink">{{ $event->description }}</div>
+            @if($userRegistration)
+                <div class="rounded-[16px] border border-green-200 bg-green-50 p-5 sm:p-6">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm font-semibold text-green-800">Kamu sudah terdaftar di event ini</p>
+                            <p class="mt-1 text-sm text-green-700">Kode: <span class="font-semibold">{{ $userRegistration->registration_code }}</span> · Status: {{ $userRegistration->status }}</p>
+                        </div>
+                        <a href="{{ route('participant.tickets.show', $userRegistration->id) }}" class="btn btn-primary">Lihat tiket</a>
+                    </div>
+                </div>
+            @endif
 
-            <div class="mt-16">
-                <h2 class="text-[clamp(28px,3.5vw,44px)] font-extrabold">Ulasan</h2>
-                <p class="mt-2 text-base text-muted">Rating {{ number_format($event->average_rating, 1) }} dari {{ $event->review_count }} ulasan.</p>
+            <div class="card p-6 sm:p-8">
+                <h2 class="text-xl font-bold text-ink">Tentang event</h2>
+                <div class="mt-4 whitespace-pre-line text-sm leading-relaxed text-muted sm:text-base">{{ $event->description }}</div>
+            </div>
+
+            <div class="card p-6 sm:p-8">
+                <div class="flex items-end justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-ink">Ulasan peserta</h2>
+                        <p class="mt-1 text-sm text-muted">Rating {{ number_format($event->average_rating, 1) }} dari {{ $event->review_count }} ulasan.</p>
+                    </div>
+                </div>
 
                 @auth
                     @php
@@ -63,71 +76,73 @@
                         $myReview = \App\Models\Review::where('event_id', $event->id)->where('user_id', Auth::id())->first();
                     @endphp
                     @if($hasAttended)
-                        <form action="{{ route('events.reviews.store', $event->id) }}" method="POST" class="mt-8 max-w-xl space-y-4 bg-surface p-6">
+                        <form action="{{ route('events.reviews.store', $event->id) }}" method="POST" class="mt-6 rounded-[14px] border border-line bg-surface-soft p-5 space-y-4">
                             @csrf
                             <div>
-                                <label for="rating" class="block text-sm font-medium">Rating</label>
-                                <select id="rating" name="rating" class="mt-2 w-full bg-bg px-3 py-3 text-base">
+                                <label for="rating" class="label">Rating</label>
+                                <select id="rating" name="rating" class="input max-w-xs">
                                     @for($i=5;$i>=1;$i--)
-                                        <option value="{{ $i }}" {{ ($myReview?->rating ?? 5) == $i ? 'selected' : '' }}>{{ $i }}</option>
+                                        <option value="{{ $i }}" {{ ($myReview?->rating ?? 5) == $i ? 'selected' : '' }}>{{ $i }} / 5</option>
                                     @endfor
                                 </select>
                             </div>
                             <div>
-                                <label for="comment" class="block text-sm font-medium">Komentar</label>
-                                <textarea id="comment" name="comment" rows="4" required class="mt-2 w-full bg-bg px-3 py-3 text-base">{{ $myReview?->comment }}</textarea>
+                                <label for="comment" class="label">Komentar</label>
+                                <textarea id="comment" name="comment" rows="4" required class="input">{{ $myReview?->comment }}</textarea>
                             </div>
-                            <button type="submit" class="bg-ink px-6 py-3 font-semibold text-white">Simpan ulasan</button>
+                            <button type="submit" class="btn btn-primary">Simpan ulasan</button>
                         </form>
                     @endif
                 @endauth
 
-                <div class="mt-10 space-y-8">
+                <div class="mt-6 space-y-4">
                     @forelse($event->reviews as $review)
-                        <div class="max-w-2xl">
-                            <div class="flex items-baseline justify-between gap-4">
-                                <p class="font-semibold">{{ $review->user->name }}</p>
-                                <p class="text-base text-muted">{{ $review->rating }}/5</p>
+                        <div class="rounded-[14px] border border-line p-4">
+                            <div class="flex items-center justify-between gap-4">
+                                <p class="text-sm font-semibold text-ink">{{ $review->user->name }}</p>
+                                <p class="text-sm font-medium text-amber-700">{{ $review->rating }}/5</p>
                             </div>
-                            <p class="mt-2 text-base leading-relaxed">{{ $review->comment }}</p>
+                            <p class="mt-2 text-sm leading-relaxed text-muted">{{ $review->comment }}</p>
                         </div>
                     @empty
-                        <p class="text-base text-muted">Belum ada ulasan.</p>
+                        <p class="text-sm text-muted">Belum ada ulasan.</p>
                     @endforelse
                 </div>
             </div>
-        </div>
+        </section>
 
-        <aside class="bg-field-4 px-6 py-12 text-field-4-ink sm:px-8 sm:py-16">
-            <h2 class="text-[clamp(28px,3vw,40px)] font-extrabold">Tiket</h2>
-            <div class="mt-8 space-y-6">
-                @forelse($event->tickets as $ticket)
-                    @php $isAvailable = $ticket->isAvailable(); @endphp
-                    <div class="bg-bg p-5 text-ink">
-                        <div class="flex items-start justify-between gap-4">
-                            <div>
-                                <h3 class="text-xl font-bold">{{ $ticket->name }}</h3>
-                                <p class="mt-1 text-sm text-muted">Sisa {{ $ticket->available_quota }} dari {{ $ticket->quota }} · s/d {{ $ticket->end_sale->format('d M Y') }}</p>
+        <aside class="space-y-6 lg:sticky lg:top-24 lg:self-start">
+            <div class="card p-6">
+                <h2 class="text-xl font-bold text-ink">Tiket & pendaftaran</h2>
+                <div class="mt-5 space-y-4">
+                    @forelse($event->tickets as $ticket)
+                        @php $isAvailable = $ticket->isAvailable(); @endphp
+                        <div class="rounded-[14px] border border-line p-4">
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    <h3 class="font-bold text-ink">{{ $ticket->name }}</h3>
+                                    <p class="mt-1 text-xs text-muted">Sisa {{ $ticket->available_quota }} dari {{ $ticket->quota }} · penjualan s/d {{ $ticket->end_sale->format('d M Y') }}</p>
+                                </div>
+                                <div class="text-right text-sm font-bold text-ink whitespace-nowrap">
+                                    @if($ticket->price == 0) Gratis @else Rp {{ number_format($ticket->price, 0, ',', '.') }} @endif
+                                </div>
                             </div>
-                            <div class="text-right text-lg font-bold">
-                                @if($ticket->price == 0) Gratis @else Rp {{ number_format($ticket->price, 0, ',', '.') }} @endif
+                            <div class="mt-4">
+                                @if($userRegistration)
+                                    <span class="inline-flex rounded-full bg-surface-soft px-4 py-2 text-sm font-semibold text-muted">Sudah terdaftar</span>
+                                @elseif($isAvailable)
+                                    <a href="{{ route('events.checkout', ['event' => $event->id, 'ticket' => $ticket->id]) }}" class="btn btn-primary w-full">Daftar / pesan tiket</a>
+                                @else
+                                    <span class="inline-flex w-full justify-center rounded-full bg-surface-soft px-4 py-2 text-sm font-semibold text-muted">{{ $ticket->isSoldOut() ? 'Tiket habis' : 'Penjualan ditutup' }}</span>
+                                @endif
                             </div>
                         </div>
-                        <div class="mt-5">
-                            @if($userRegistration)
-                                <span class="inline-block bg-surface px-4 py-3 font-semibold text-muted">Sudah terdaftar</span>
-                            @elseif($isAvailable)
-                                <a href="{{ route('events.checkout', ['event' => $event->id, 'ticket' => $ticket->id]) }}" class="inline-block bg-accent px-5 py-3 font-semibold text-accent-ink">Pesan tiket</a>
-                            @else
-                                <span class="inline-block bg-surface px-4 py-3 font-semibold text-muted">{{ $ticket->isSoldOut() ? 'Habis' : 'Ditutup' }}</span>
-                            @endif
-                        </div>
-                    </div>
-                @empty
-                    <p class="text-base">Belum ada tiket tersedia.</p>
-                @endforelse
+                    @empty
+                        <p class="text-sm text-muted">Belum ada tiket tersedia untuk event ini.</p>
+                    @endforelse
+                </div>
             </div>
         </aside>
-    </section>
+    </div>
 </div>
 @endsection

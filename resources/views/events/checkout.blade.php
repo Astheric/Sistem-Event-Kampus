@@ -3,149 +3,95 @@
 @section('title', 'Pendaftaran Tiket — ' . $event->title)
 
 @section('content')
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10" x-data="{ paymentMethod: 'Bank Transfer (BCA)' }">
-    <div class="border-b border-line pb-4 mb-8">
-        <span class="bg-surface border border-line px-3 py-1 text-xs font-bold  tracking-wider shadow-card rounded-2xl">
-            Konfirmasi Pendaftaran
-        </span>
-        <h1 class="text-3xl sm:text-4xl font-bold mt-2">Pemesanan Tiket Event</h1>
-        <p class="text-sm font-bold text-muted mt-1">Lengkapi data pendaftaran dan selesaikan simulasi pembayaran.</p>
+<div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8" x-data="{ paymentMethod: 'Bank Transfer (BCA)' }">
+    <div>
+        <h1 class="text-3xl font-extrabold tracking-tight text-ink">Pendaftaran & Pemesanan Tiket</h1>
+        <p class="mt-2 text-sm text-muted">Periksa detail event dan lengkapi informasi pendaftaran sebelum konfirmasi.</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Summary Box -->
-        <div class="md:col-span-1 space-y-4">
-            <div class="bg-surface border border-line p-5 shadow-card space-y-4 rounded-2xl">
-                <span class="bg-danger text-white px-2 py-0.5 text-[10px] font-bold  font-mono">RINGKASAN EVENT</span>
+    <div class="mt-8 grid gap-8 lg:grid-cols-[.9fr_1.1fr]">
+        <aside class="card h-fit p-6 lg:sticky lg:top-24">
+            <h2 class="text-sm font-semibold uppercase tracking-wide text-muted">Ringkasan</h2>
+            <h3 class="mt-3 text-xl font-bold leading-snug text-ink">{{ $event->title }}</h3>
+            <p class="mt-1 text-sm text-muted">{{ $event->organization->name }}</p>
 
-                <div>
-                    <h3 class="font-bold text-base leading-snug">{{ $event->title }}</h3>
-                    <p class="text-xs font-bold text-muted mt-1">{{ $event->organization->name }}</p>
-                </div>
+            <dl class="mt-5 space-y-3 text-sm">
+                <div class="flex justify-between gap-4"><dt class="text-muted">Tiket</dt><dd class="font-semibold text-ink text-right">{{ $ticket->name }}</dd></div>
+                <div class="flex justify-between gap-4"><dt class="text-muted">Jadwal</dt><dd class="font-semibold text-ink text-right">{{ $event->start_time->format('d M Y, H:i') }} WIB</dd></div>
+                <div class="flex justify-between gap-4"><dt class="text-muted">Lokasi</dt><dd class="font-semibold text-ink text-right">{{ $event->venue ? $event->venue->name : 'Online' }}</dd></div>
+            </dl>
 
-                <div class="border-t border-dashed border-line pt-3 space-y-2 text-xs font-bold">
-                    <div class="flex justify-between">
-                        <span class="text-muted">Tipe Tiket:</span>
-                        <span class="font-bold">{{ $ticket->name }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-muted">Jadwal:</span>
-                        <span class="font-mono">{{ $event->start_time->format('d M Y, H:i') }}</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-muted">Lokasi:</span>
-                        <span class="truncate max-w-[120px]">{{ $event->venue ? $event->venue->name : 'Online' }}</span>
-                    </div>
-                </div>
-
-                <!-- Price Box -->
-                <div class="border-t border-line pt-3 bg-surface-soft -mx-5 -mb-5 p-5">
-                    <div class="flex items-center justify-between">
-                        <span class="font-bold text-xs ">Total Bayar:</span>
-                        @if($ticket->price == 0)
-                            <span class="font-bold text-lg font-mono text-ink">GRATIS</span>
-                        @else
-                            <span class="font-bold text-xl font-mono text-ink">
-                                Rp {{ number_format($ticket->price, 0, ',', '.') }}
-                            </span>
-                        @endif
-                    </div>
-                </div>
+            <div class="mt-6 flex items-center justify-between border-t border-line pt-5">
+                <span class="text-sm font-medium text-muted">Total</span>
+                <span class="text-xl font-extrabold text-ink">
+                    @if($ticket->price == 0) Gratis @else Rp {{ number_format($ticket->price, 0, ',', '.') }} @endif
+                </span>
             </div>
-        </div>
+        </aside>
 
-        <!-- Form Registration & Payment Simulation -->
-        <div class="md:col-span-2">
-            <form action="{{ route('events.checkout.store', ['event' => $event->id, 'ticket' => $ticket->id]) }}"
-                method="POST" enctype="multipart/form-data"
-                class="bg-surface border border-line p-6 sm:p-8 shadow-card space-y-6 rounded-2xl">
+        <section>
+            <form action="{{ route('events.checkout.store', ['event' => $event->id, 'ticket' => $ticket->id]) }}" method="POST" enctype="multipart/form-data" class="card space-y-6 p-6 sm:p-8">
                 @csrf
 
-                <!-- Attendee Info -->
-                <div class="border-b border-line pb-4">
-                    <h3 class="font-bold text-base  mb-3">1. Data Peserta Terdaftar</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-bold">
-                        <div class="bg-surface-soft p-3 border border-line">
-                            <span class="text-[10px] text-muted  block font-bold">Nama Lengkap</span>
-                            <span class="font-bold text-sm">{{ $user->name }}</span>
+                <div>
+                    <h2 class="text-lg font-bold text-ink">Data peserta</h2>
+                    <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                        <div class="rounded-[14px] border border-line bg-surface-soft p-4">
+                            <p class="text-xs font-medium text-muted">Nama lengkap</p>
+                            <p class="mt-1 text-sm font-semibold text-ink">{{ $user->name }}</p>
                         </div>
-                        <div class="bg-surface-soft p-3 border border-line">
-                            <span class="text-[10px] text-muted  block font-bold">Alamat Email</span>
-                            <span class="font-bold text-sm truncate block">{{ $user->email }}</span>
+                        <div class="rounded-[14px] border border-line bg-surface-soft p-4">
+                            <p class="text-xs font-medium text-muted">Email</p>
+                            <p class="mt-1 truncate text-sm font-semibold text-ink">{{ $user->email }}</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Payment Method (FR-08) -->
                 @if($ticket->price > 0)
-                    <div class="border-b border-line pb-4 space-y-4">
-                        <h3 class="font-bold text-base ">2. Simulasi Metode Pembayaran</h3>
-                        <p class="text-xs font-bold text-muted">Pilih salah satu metode simulasi transfer internal di bawah ini:</p>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                            <label class="cursor-pointer border border-line p-3 text-center transition-all"
-                                :class="paymentMethod === 'Bank Transfer (BCA)' ? 'bg-surface shadow-card font-bold' : 'bg-surface-soft font-bold' rounded-2xl">
-                                <input type="radio" name="payment_method" value="Bank Transfer (BCA)" x-model="paymentMethod" class="sr-only">
-                                <span class="block text-xs "><x-icon name="home" class="size-4" /> Transfer BCA</span>
-                            </label>
-
-                            <label class="cursor-pointer border border-line p-3 text-center transition-all"
-                                :class="paymentMethod === 'Bank Transfer (Mandiri)' ? 'bg-surface shadow-card font-bold' : 'bg-surface-soft font-bold' rounded-2xl">
-                                <input type="radio" name="payment_method" value="Bank Transfer (Mandiri)" x-model="paymentMethod" class="sr-only">
-                                <span class="block text-xs "><x-icon name="home" class="size-4" /> Transfer Mandiri</span>
-                            </label>
-
-                            <label class="cursor-pointer border border-line p-3 text-center transition-all"
-                                :class="paymentMethod === 'E-Wallet (GoPay/Dana)' ? 'bg-surface shadow-card font-bold' : 'bg-surface-soft font-bold' rounded-2xl">
-                                <input type="radio" name="payment_method" value="E-Wallet (GoPay/Dana)" x-model="paymentMethod" class="sr-only">
-                                <span class="block text-xs "><x-icon name="smartphone" class="size-4" /> E-Wallet</span>
-                            </label>
-                        </div>
-
-                        <!-- Account Details Box -->
-                        <div class="bg-surface border border-line p-4 space-y-2 text-xs font-bold">
-                            <p class="font-bold text-xs ">Petunjuk Pembayaran Simulasi:</p>
-                            <div x-show="paymentMethod === 'Bank Transfer (BCA)'">
-                                <p>Silakan transfer ke rekening BCA: <span class="font-mono font-bold bg-surface px-1 border border-line">8830-1928-3921</span> a/n EventHub Kampus</p>
-                            </div>
-                            <div x-show="paymentMethod === 'Bank Transfer (Mandiri)'">
-                                <p>Silakan transfer ke Mandiri: <span class="font-mono font-bold bg-surface px-1 border border-line">132-00-9831-291</span> a/n EventHub Kampus</p>
-                            </div>
-                            <div x-show="paymentMethod === 'E-Wallet (GoPay/Dana)'">
-                                <p>Scan / Transfer ke nomor E-Wallet: <span class="font-mono font-bold bg-surface px-1 border border-line">0821-9876-5432</span> (Admin Kampus)</p>
-                            </div>
-                            <p class="text-[11px] text-muted italic">*Proyek ini menggunakan simulasi internal. Unggah bukti transfer uji coba / screenshot untuk diverifikasi panitia.</p>
-                        </div>
-
-                        <!-- Proof of Payment Upload -->
+                    <div class="space-y-4 border-t border-line pt-6">
                         <div>
-                            <label class="block font-bold text-xs  mb-1">Unggah Bukti Pembayaran Simulasi (Foto / Screenshot)</label>
-                            <input type="file" name="proof_file" accept="image/*"
-                                class="w-full bg-surface border border-line p-2 font-bold text-xs focus:outline-none">
-                            <p class="text-[10px] text-muted font-bold mt-1">Format: JPG, PNG, WEBP (Maksimal 3MB)</p>
+                            <h2 class="text-lg font-bold text-ink">Pembayaran (simulasi)</h2>
+                            <p class="mt-1 text-sm text-muted">Pilih metode pembayaran dan unggah bukti transfer simulasi untuk diverifikasi panitia.</p>
+                        </div>
+
+                        <div class="grid gap-3 sm:grid-cols-3">
+                            @foreach(['Bank Transfer (BCA)', 'Bank Transfer (Mandiri)', 'E-Wallet (GoPay/Dana)'] as $method)
+                                <label class="cursor-pointer rounded-[14px] border p-4 text-sm font-semibold transition"
+                                    :class="paymentMethod === '{{ $method }}' ? 'border-brand-500 bg-brand-50 text-brand-900 ring-1 ring-brand-200' : 'border-line bg-surface text-muted hover:bg-surface-soft'">
+                                    <input type="radio" name="payment_method" value="{{ $method }}" x-model="paymentMethod" class="sr-only">
+                                    {{ $method }}
+                                </label>
+                            @endforeach
+                        </div>
+
+                        <div class="rounded-[14px] border border-line bg-surface-soft p-4 text-sm text-muted">
+                            <p class="font-semibold text-ink">Instruksi transfer</p>
+                            <p class="mt-2" x-show="paymentMethod === 'Bank Transfer (BCA)'">BCA <span class="font-mono font-semibold text-ink">8830-1928-3921</span> a.n. EventHub Kampus</p>
+                            <p class="mt-2" x-show="paymentMethod === 'Bank Transfer (Mandiri)'">Mandiri <span class="font-mono font-semibold text-ink">132-00-9831-291</span> a.n. EventHub Kampus</p>
+                            <p class="mt-2" x-show="paymentMethod === 'E-Wallet (GoPay/Dana)'">E-Wallet <span class="font-mono font-semibold text-ink">0821-9876-5432</span> (Admin Kampus)</p>
+                            <p class="mt-3 text-xs">Ini simulasi internal. Unggah screenshot/bukti uji coba (JPG/PNG/WEBP, maks. 3MB).</p>
+                        </div>
+
+                        <div>
+                            <label for="proof_file" class="label">Bukti pembayaran</label>
+                            <input id="proof_file" type="file" name="proof_file" accept="image/*" class="input file:mr-3 file:rounded-full file:border-0 file:bg-brand-50 file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-brand-700">
                         </div>
                     </div>
                 @else
                     <input type="hidden" name="payment_method" value="Gratis">
-                    <div class="bg-surface border border-line p-4 text-xs font-bold">
-                        <x-icon name="gift" class="size-4" /> Tiket ini GRATIS! Tidak memerlukan pembayaran. E-Tiket akan langsung diterbitkan secara instan setelah konfirmasi.
+                    <div class="rounded-[14px] border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+                        Tiket ini gratis. E-tiket akan diterbitkan setelah konfirmasi pendaftaran.
                     </div>
                 @endif
 
-                <!-- Notes -->
                 <div>
-                    <label class="block font-bold text-xs  mb-1">Catatan Tambahan untuk Panitia (Opsional)</label>
-                    <textarea name="notes" rows="2" placeholder="Contoh: Alergi makanan khusus, perwakilan tim, dll..."
-                        class="w-full bg-surface border border-line p-2.5 font-bold text-xs focus:outline-none focus:bg-surface">{{ old('notes') }}</textarea>
+                    <label for="notes" class="label">Catatan untuk panitia (opsional)</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Contoh: kebutuhan khusus, perwakilan tim, dll." class="input">{{ old('notes') }}</textarea>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit"
-                    class="w-full bg-brand-600 text-white hover:bg-brand-700 border border-line p-4 font-bold text-base  tracking-wider shadow-card active:translate-x-1 active:translate-y-1 active:shadow-none transition-all rounded-full">
-                    Konfirmasi & Terbitkan Tiket <x-icon name="tag" class="size-4" />
-                </button>
+                <button type="submit" class="btn btn-primary w-full py-3 text-base">Konfirmasi pendaftaran</button>
             </form>
-        </div>
+        </section>
     </div>
 </div>
 @endsection

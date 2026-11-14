@@ -1,83 +1,128 @@
 @extends('layouts.app')
 
-@section('title', 'EventHub — Event kampus jadi mudah')
+@section('title', 'EventHub — Manajemen Event Kampus')
 
 @section('content')
-<div class="bg-bg">
-    <section class="relative min-h-[88svh] px-6 sm:px-8">
-        <div class="pt-[15vh] sm:pt-[12vh]">
-            <h1 class="text-ink" style="font-stretch:150%;">
-                <span class="block text-left font-extrabold uppercase leading-[0.86] tracking-[-0.05em]" style="font-size:clamp(64px,12.5vw,200px);">EVENT KAMPUS</span>
-                <span class="mt-2 block text-right font-extrabold uppercase leading-[0.86] tracking-[-0.05em]" style="font-size:clamp(64px,12.5vw,200px);">JADI MUDAH</span>
+<section class="mx-auto max-w-7xl px-4 pt-12 pb-10 sm:px-6 lg:px-8 lg:pt-16">
+    <div class="grid items-center gap-10 lg:grid-cols-[1.1fr_.9fr]">
+        <div>
+            <span class="inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">
+                <x-icon name="compass" class="size-4" /> Portal Event Kampus
+            </span>
+            <h1 class="mt-5 max-w-2xl text-4xl font-extrabold leading-tight tracking-tight text-ink sm:text-5xl">
+                Temukan, kelola, dan ikuti event kampus dalam satu platform
             </h1>
-        </div>
-
-        <div class="absolute bottom-8 left-6 right-6 flex flex-col gap-6 sm:left-8 sm:right-8 sm:flex-row sm:items-end sm:justify-between">
-            <p class="max-w-[44ch] text-[22px] leading-[1.3] text-ink">
-                Temukan, daftar, dan kelola event kampus. Tiket QR dan sertifikat dalam satu platform.
+            <p class="mt-5 max-w-xl text-base leading-relaxed text-muted sm:text-lg">
+                Dari publikasi event, pendaftaran, tiket, presensi, hingga sertifikat — EventHub membantu mahasiswa, dosen, dan panitia menjalankan kegiatan kampus dengan rapi.
             </p>
-            <a href="{{ route('events.index') }}" class="inline-flex items-center justify-center bg-ink px-8 py-4 text-lg font-semibold text-white">
-                Lihat event
+            <div class="mt-8 flex flex-wrap gap-3">
+                <a href="{{ route('events.index') }}" class="btn btn-primary">Jelajahi event</a>
+                @guest
+                    <a href="{{ route('register') }}" class="btn btn-secondary">Buat akun</a>
+                @else
+                    @if(Auth::user()->isAdmin())
+                        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary">Buka dashboard</a>
+                    @elseif(Auth::user()->isOrganizer())
+                        <a href="{{ route('organizer.dashboard') }}" class="btn btn-secondary">Buka dashboard</a>
+                    @else
+                        <a href="{{ route('participant.dashboard') }}" class="btn btn-secondary">Tiket saya</a>
+                    @endif
+                @endguest
+            </div>
+
+            <dl class="mt-10 grid grid-cols-2 gap-4 max-w-xl sm:grid-cols-4">
+                <div class="rounded-[16px] border border-line bg-surface p-4">
+                    <dt class="text-xs font-medium text-muted">Total event</dt>
+                    <dd class="mt-1 text-2xl font-bold text-ink">{{ $stats['total_events'] ?? 0 }}</dd>
+                </div>
+                <div class="rounded-[16px] border border-line bg-surface p-4">
+                    <dt class="text-xs font-medium text-muted">Peserta</dt>
+                    <dd class="mt-1 text-2xl font-bold text-ink">{{ $stats['total_participants'] ?? 0 }}</dd>
+                </div>
+                <div class="rounded-[16px] border border-line bg-surface p-4">
+                    <dt class="text-xs font-medium text-muted">Sertifikat</dt>
+                    <dd class="mt-1 text-2xl font-bold text-ink">{{ $stats['certificates_issued'] ?? 0 }}</dd>
+                </div>
+                <div class="rounded-[16px] border border-line bg-surface p-4">
+                    <dt class="text-xs font-medium text-muted">Organizer</dt>
+                    <dd class="mt-1 text-2xl font-bold text-ink">{{ $stats['active_organizers'] ?? 0 }}</dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="card p-6 sm:p-8">
+            <h2 class="text-lg font-bold text-ink">Mulai cepat</h2>
+            <p class="mt-1 text-sm text-muted">Cari event berdasarkan minat dan jadwalmu.</p>
+            <form action="{{ route('events.index') }}" method="GET" class="mt-6 space-y-4">
+                <div>
+                    <label for="q" class="label">Kata kunci</label>
+                    <input id="q" type="text" name="q" placeholder="Contoh: seminar AI, workshop desain" class="input">
+                </div>
+                <div>
+                    <label for="category" class="label">Kategori</label>
+                    <select id="category" name="category" class="input">
+                        <option value="">Semua kategori</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat->slug }}">{{ $cat->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-full">Cari event</button>
+            </form>
+            <ul class="mt-6 space-y-3 text-sm text-muted">
+                <li class="flex items-start gap-2"><x-icon name="check-circle" class="mt-0.5 size-4 text-brand-600" /> Informasi jadwal, lokasi, dan kapasitas jelas.</li>
+                <li class="flex items-start gap-2"><x-icon name="check-circle" class="mt-0.5 size-4 text-brand-600" /> Pendaftaran dan tiket digital terintegrasi.</li>
+                <li class="flex items-start gap-2"><x-icon name="check-circle" class="mt-0.5 size-4 text-brand-600" /> Presensi dan sertifikat untuk peserta hadir.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+@if($featuredEvents->isNotEmpty())
+<section class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+    <div class="flex items-end justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Event mendatang</h2>
+            <p class="mt-2 text-sm text-muted">Pilihan event yang akan segera berlangsung.</p>
+        </div>
+        <a href="{{ route('events.index') }}" class="text-sm font-semibold text-brand-700 hover:text-brand-600">Lihat semua</a>
+    </div>
+
+    <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        @foreach($featuredEvents as $event)
+            <a href="{{ route('events.show', $event->slug) }}" class="card group block p-5 transition hover:-translate-y-0.5">
+                <div class="flex items-center justify-between gap-3">
+                    <span class="badge bg-brand-50 text-brand-700">{{ $event->category->name }}</span>
+                    <span class="text-xs font-medium text-muted">{{ $event->start_time->format('d M Y') }}</span>
+                </div>
+                <h3 class="mt-4 text-lg font-bold leading-snug text-ink group-hover:text-brand-700">{{ $event->title }}</h3>
+                <p class="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">{{ $event->description }}</p>
+                <dl class="mt-4 space-y-2 text-sm text-muted">
+                    <div class="flex items-center gap-2"><x-icon name="clock" class="size-4" /><dd>{{ $event->start_time->format('H:i') }} WIB</dd></div>
+                    <div class="flex items-center gap-2"><x-icon name="map-pin" class="size-4" /><dd class="truncate">{{ $event->venue ? $event->venue->name : 'Online' }}</dd></div>
+                </dl>
+                <div class="mt-5 flex items-center justify-between border-t border-line pt-4">
+                    <span class="text-sm font-semibold text-ink">
+                        @if($event->isFree()) Gratis @else Rp {{ number_format($event->min_price, 0, ',', '.') }} @endif
+                    </span>
+                    <span class="text-sm font-semibold text-brand-700">Lihat detail</span>
+                </div>
             </a>
-        </div>
-    </section>
+        @endforeach
+    </div>
+</section>
+@endif
 
-    <section class="bg-bg px-6 py-20 sm:px-8 sm:py-28">
-        <div class="grid grid-cols-12 gap-2">
-            <div class="col-span-12 bg-field-1 p-7 text-field-1-ink sm:col-span-6 sm:min-h-[70vh] sm:p-8">
-                <div class="text-[clamp(56px,8vw,92px)] font-extrabold leading-none">{{ $stats['total_events'] }}</div>
-                <div class="mt-auto pt-24 text-lg sm:pt-40">Event terlaksana di kampus</div>
-            </div>
-            <div class="col-span-6 bg-field-4 p-6 text-field-4-ink sm:col-span-3 sm:mt-[14vh] sm:min-h-[44vh]">
-                <div class="text-[clamp(40px,5vw,64px)] font-extrabold leading-none">{{ $stats['total_participants'] }}</div>
-                <div class="pt-16 text-base sm:pt-24">Peserta bergabung</div>
-            </div>
-            <div class="col-span-6 bg-field-2 p-6 text-field-2-ink sm:col-span-3 sm:mt-[26vh] sm:min-h-[34vh]">
-                <div class="text-[clamp(40px,5vw,64px)] font-extrabold leading-none">{{ $stats['certificates_issued'] }}</div>
-                <div class="pt-12 text-base sm:pt-16">Sertifikat terbit</div>
-            </div>
+@if($categories->isNotEmpty())
+<section class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+    <div class="card-soft p-6 sm:p-8">
+        <h2 class="text-xl font-bold text-ink">Kategori event</h2>
+        <div class="mt-5 flex flex-wrap gap-2">
+            @foreach($categories as $cat)
+                <a href="{{ route('events.index', ['category' => $cat->slug]) }}" class="rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium text-muted hover:border-brand-200 hover:bg-brand-50 hover:text-brand-700">{{ $cat->name }}</a>
+            @endforeach
         </div>
-        <p class="mt-8 max-w-xl text-base text-muted">Kategori aktif: {{ $categories->count() }}. Organizer: {{ $stats['active_organizers'] }}.</p>
-    </section>
-
-    <section class="bg-field-3 px-6 py-20 text-field-3-ink sm:px-8 sm:py-24">
-        <h2 class="mb-10 text-[clamp(28px,3vw,40px)] font-extrabold">Event mendatang</h2>
-        <div class="space-y-0">
-            @forelse($featuredEvents as $event)
-                <a href="{{ route('events.show', $event->slug) }}" class="grid grid-cols-12 items-baseline gap-y-1 py-4 text-[clamp(18px,2.1vw,28px)] hover:underline sm:py-3">
-                    <span class="col-span-12 font-medium sm:col-span-5">{{ $event->title }}</span>
-                    <span class="col-span-6 text-base sm:col-span-3 sm:text-[0.75em]">{{ $event->category->name }}</span>
-                    <span class="col-span-6 text-base sm:col-span-2 sm:text-[0.75em]">{{ $event->venue ? $event->venue->name : 'Online' }}</span>
-                    <span class="col-span-12 text-right text-base tabular-nums sm:col-span-2 sm:text-[0.75em]">{{ $event->start_time->format('d M Y') }}</span>
-                </a>
-            @empty
-                <p class="py-8 text-xl">Belum ada event mendatang.</p>
-            @endforelse
-        </div>
-        <a href="{{ route('events.index') }}" class="mt-10 inline-block bg-ink px-6 py-3 text-lg font-semibold text-white">Semua event</a>
-    </section>
-
-    <section class="bg-bg px-6 py-24 sm:px-8 sm:py-32">
-        @php
-            $names = collect();
-            foreach ($pastEvents as $past) { $names->push($past->organization->name ?? null); }
-            foreach ($categories->take(6) as $cat) { $names->push($cat->name); }
-            $names = $names->filter()->unique()->take(12)->values();
-        @endphp
-        <p class="max-w-[20ch] text-[clamp(34px,5vw,72px)] font-extrabold leading-[1.05] text-ink">
-            Dipercaya oleh {{ $names->implode(', ') }}.
-        </p>
-        <p class="mt-8 max-w-xl text-lg text-muted">Event selesai, ulasan peserta, dan sertifikat terverifikasi tersimpan di sistem.</p>
-    </section>
-
-    <a href="{{ route('register') }}" class="block bg-accent px-6 py-16 text-accent-ink sm:px-8 sm:py-20" style="min-height:46svh;">
-        <div class="flex h-full flex-col justify-between">
-            <div class="flex items-start justify-between gap-4">
-                <p class="max-w-sm text-lg">Buat akun dan mulai daftar atau kelola event kampus.</p>
-                <span class="text-4xl font-bold" aria-hidden="true">↗</span>
-            </div>
-            <div class="mt-10 font-extrabold uppercase leading-none tracking-[-0.03em]" style="font-size:clamp(72px,22vw,260px); font-stretch:150%;">DAFTAR</div>
-        </div>
-    </a>
-</div>
+    </div>
+</section>
+@endif
 @endsection
