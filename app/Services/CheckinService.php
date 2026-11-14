@@ -27,6 +27,36 @@ class CheckinService
     {
         $code = trim(strtoupper($registrationCode));
 
+        if ($event->status !== 'PUBLISHED') {
+            return [
+                'success' => false,
+                'status' => 'INVALID',
+                'message' => 'Check-in hanya tersedia untuk event yang sedang berlangsung.',
+            ];
+        }
+
+        $openBefore = (int) config('eventhub.checkin.open_before_minutes', 120);
+        $closeAfter = (int) config('eventhub.checkin.close_after_minutes', 120);
+        $now = Carbon::now();
+        $opensAt = $event->start_time->copy()->subMinutes($openBefore);
+        $closesAt = $event->end_time->copy()->addMinutes($closeAfter);
+
+        if ($now->lt($opensAt)) {
+            return [
+                'success' => false,
+                'status' => 'OUTSIDE_WINDOW',
+                'message' => 'Check-in belum dibuka.',
+            ];
+        }
+
+        if ($now->gt($closesAt)) {
+            return [
+                'success' => false,
+                'status' => 'OUTSIDE_WINDOW',
+                'message' => 'Check-in sudah ditutup.',
+            ];
+        }
+
         $registration = Registration::with(['user', 'ticket', 'checkin.scanner'])
             ->where('registration_code', $code)
             ->first();

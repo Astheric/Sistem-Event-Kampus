@@ -4,16 +4,16 @@
 
 @section('dashboard_content')
 <div class="space-y-6">
-    <div class="bg-white border-3 border-black p-6 shadow-[5px_5px_0px_0px_#000] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="bg-surface border border-line p-6 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl">
         <div>
-            <span class="bg-[#FFE600] border-2 border-black px-2.5 py-0.5 text-xs font-black uppercase shadow-[2px_2px_0px_0px_#000]">
+            <span class="bg-surface border border-line px-2.5 py-0.5 text-xs font-bold  shadow-card rounded-2xl">
                 Koleksi Event
             </span>
-            <h1 class="text-3xl font-black mt-2">Daftar Event Saya</h1>
-            <p class="text-xs font-bold text-zinc-600 mt-1">Kelola publikasi, tipe tiket, data kehadiran, dan panitia event.</p>
+            <h1 class="text-3xl font-bold mt-2">Daftar Event Saya</h1>
+            <p class="text-xs font-bold text-muted mt-1">Kelola publikasi, tipe tiket, data kehadiran, dan panitia event.</p>
         </div>
         <a href="{{ route('organizer.events.create') }}"
-            class="bg-[#FFE600] hover:bg-[#ffd700] border-3 border-black px-5 py-2.5 font-black text-xs uppercase shadow-[3px_3px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none whitespace-nowrap">
+            class="bg-brand-600 text-white hover:bg-brand-600 text-white border border-line px-5 py-2.5 font-bold text-xs  shadow-card active:translate-x-1 active:translate-y-1 active:shadow-none whitespace-nowrap rounded-full">
             + Tambah Event Baru
         </a>
     </div>
@@ -23,90 +23,90 @@
         @forelse($events as $event)
             @php
                 $statusColors = [
-                    'DRAFT' => 'bg-zinc-200',
-                    'SUBMITTED' => 'bg-[#FFE600]',
-                    'UNDER REVIEW' => 'bg-[#FF6B4A] text-white',
-                    'APPROVED' => 'bg-[#4DEEEA]',
-                    'PUBLISHED' => 'bg-[#57EB74]',
-                    'REJECTED' => 'bg-[#FF70A6]',
-                    'COMPLETED' => 'bg-black text-white',
+                    'DRAFT' => 'bg-surface-soft',
+                    'SUBMITTED' => 'bg-surface',
+                    'UNDER REVIEW' => 'bg-surface text-white',
+                    'APPROVED' => 'bg-surface',
+                    'PUBLISHED' => 'bg-surface',
+                    'REJECTED' => 'bg-surface',
+                    'COMPLETED' => 'bg-danger text-white',
                 ];
             @endphp
 
-            <div class="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_#000] space-y-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b-2 border-black pb-3">
+            <div class="bg-surface border border-line p-6 shadow-card space-y-4 rounded-2xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-line pb-3">
                     <div class="flex items-center gap-2">
-                        <span class="border-2 border-black px-2.5 py-0.5 text-xs font-black uppercase {{ $statusColors[$event->status] ?? 'bg-zinc-100' }}">
+                        <span class="border border-line px-2.5 py-0.5 text-xs font-bold  {{ $statusColors[$event->status] ?? 'bg-surface-soft' }}">
                             {{ $event->status }}
                         </span>
-                        <span class="bg-[#00F0FF] border border-black px-2 py-0.5 text-[11px] font-black uppercase">
+                        <span class="bg-surface border border-line px-2 py-0.5 text-[11px] font-bold ">
                             {{ $event->category->name }}
                         </span>
                     </div>
-                    <span class="text-xs font-bold text-zinc-500 font-mono">
+                    <span class="text-xs font-bold text-muted font-mono">
                         Dibuat: {{ $event->created_at->format('d M Y') }}
                     </span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="md:col-span-2 space-y-2">
-                        <h2 class="text-xl font-black leading-snug">
+                        <h2 class="text-xl font-bold leading-snug">
                             <a href="{{ route('events.show', $event->slug) }}" class="hover:underline">
                                 {{ $event->title }}
                             </a>
                         </h2>
-                        <div class="flex flex-wrap gap-4 text-xs font-bold text-zinc-600">
-                            <span>📅 {{ $event->start_time->format('d M Y, H:i') }} WIB</span>
-                            <span>📍 {{ $event->venue ? $event->venue->name : 'Online' }}</span>
-                            <span>👥 Kapasitas: {{ $event->capacity }}</span>
+                        <div class="flex flex-wrap gap-4 text-xs font-bold text-muted">
+                            <span><x-icon name="calendar" class="size-4" /> {{ $event->start_time->format('d M Y, H:i') }} WIB</span>
+                            <span><x-icon name="map-pin" class="size-4" /> {{ $event->venue ? $event->venue->name : 'Online' }}</span>
+                            <span><x-icon name="users" class="size-4" /> Kapasitas: {{ $event->capacity }}</span>
                         </div>
 
                         @if($event->status === 'REJECTED' && $event->rejection_reason)
-                            <div class="bg-[#FF70A6] border-2 border-black p-3 text-xs font-bold mt-2">
-                                <span class="font-black uppercase block">Catatan Revisi dari Admin:</span>
+                            <div class="bg-surface border border-line p-3 text-xs font-bold mt-2">
+                                <span class="font-bold  block">Catatan Revisi dari Admin:</span>
                                 {{ $event->rejection_reason }}
                             </div>
                         @endif
                     </div>
 
-                    <div class="bg-zinc-50 border-2 border-black p-3 text-xs font-bold space-y-2 flex flex-col justify-between">
+                    <div class="bg-surface-soft border border-line p-3 text-xs font-bold space-y-2 flex flex-col justify-between">
                         <div>
-                            <span class="text-[10px] text-zinc-500 uppercase font-black block">Status Peserta</span>
-                            <div class="text-2xl font-black font-mono mt-1">{{ $event->registrations_count }}</div>
-                            <span class="text-zinc-500">Tiket terdaftar</span>
+                            <span class="text-[10px] text-muted  font-bold block">Status Peserta</span>
+                            <div class="text-2xl font-bold font-mono mt-1">{{ $event->registrations_count }}</div>
+                            <span class="text-muted">Tiket terdaftar</span>
                         </div>
-                        <div class="pt-2 border-t border-black text-[11px]">
+                        <div class="pt-2 border-t border-line text-[11px]">
                             {{ $event->tickets->count() }} Tipe Tiket Dikonfigurasi
                         </div>
                     </div>
                 </div>
 
                 <!-- Action Toolbar Buttons -->
-                <div class="pt-3 border-t-2 border-dashed border-black flex flex-wrap items-center justify-between gap-2">
+                <div class="pt-3 border-t border-dashed border-line flex flex-wrap items-center justify-between gap-2">
                     <div class="flex flex-wrap items-center gap-2">
                         <a href="{{ route('organizer.events.tickets', $event->id) }}"
-                            class="bg-[#FFE600] border-2 border-black px-3 py-1.5 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1">
-                            🎟️ Atur Tiket ({{ $event->tickets->count() }})
+                            class="bg-brand-600 text-white border border-line px-3 py-1.5 font-bold text-xs  shadow-card active:translate-x-1 active:translate-y-1 rounded-full">
+                            <x-icon name="tag" class="size-4" /> Atur Tiket ({{ $event->tickets->count() }})
                         </a>
 
                         <a href="{{ route('organizer.participants.index', $event->id) }}"
-                            class="bg-[#4DEEEA] border-2 border-black px-3 py-1.5 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1">
-                            👥 Peserta ({{ $event->registrations_count }})
+                            class="bg-brand-600 text-white border border-line px-3 py-1.5 font-bold text-xs  shadow-card active:translate-x-1 active:translate-y-1 rounded-full">
+                            <x-icon name="users" class="size-4" /> Peserta ({{ $event->registrations_count }})
                         </a>
 
                         <a href="{{ route('organizer.checkin.scanner', $event->id) }}"
-                            class="bg-[#57EB74] border-2 border-black px-3 py-1.5 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1">
-                            📷 Scanner QR
+                            class="bg-brand-600 text-white border border-line px-3 py-1.5 font-bold text-xs  shadow-card active:translate-x-1 active:translate-y-1 rounded-full">
+                            <x-icon name="camera" class="size-4" /> Scanner QR
                         </a>
 
                         <a href="{{ route('organizer.certificates.index', $event->id) }}"
-                            class="bg-[#FF70A6] border-2 border-black px-3 py-1.5 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1">
-                            🎓 Sertifikat
+                            class="bg-brand-600 text-white border border-line px-3 py-1.5 font-bold text-xs  shadow-card active:translate-x-1 active:translate-y-1 rounded-full">
+                            <x-icon name="book-open" class="size-4" /> Sertifikat
                         </a>
 
                         <a href="{{ route('organizer.committee.index', $event->id) }}"
-                            class="bg-white border-2 border-black px-3 py-1.5 font-bold text-xs uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1">
-                            🛡️ Panitia
+                            class="bg-brand-600 text-white border border-line px-3 py-1.5 font-bold text-xs  shadow-card active:translate-x-1 active:translate-y-1 rounded-full">
+                            <x-icon name="shield" class="size-4" /> Panitia
                         </a>
                     </div>
 
@@ -115,8 +115,8 @@
                             <form action="{{ route('organizer.events.submit', $event->id) }}" method="POST">
                                 @csrf
                                 <button type="submit"
-                                    class="bg-black text-white hover:bg-zinc-800 border-2 border-black px-3 py-1.5 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1">
-                                    🚀 Ajukan
+                                    class="bg-brand-600 text-white bg-danger text-white hover:opacity-90 border border-line px-3 py-1.5 font-bold text-xs  shadow-card active:translate-x-1 active:translate-y-1 rounded-full">
+                                    <x-icon name="send" class="size-4" /> Ajukan
                                 </button>
                             </form>
                         @elseif($event->status === 'APPROVED')
@@ -124,8 +124,8 @@
                                 @csrf
                                 <input type="hidden" name="status" value="PUBLISHED">
                                 <button type="submit"
-                                    class="bg-[#57EB74] text-black hover:bg-green-400 border-2 border-black px-3 py-1.5 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1">
-                                    📢 Publikasikan
+                                    class="bg-brand-600 text-white text-black hover:bg-green-400 border border-line px-3 py-1.5 font-bold text-xs  shadow-card active:translate-x-1 active:translate-y-1 rounded-full">
+                                    <x-icon name="bell" class="size-4" /> Publikasikan
                                 </button>
                             </form>
                         @elseif($event->status === 'PUBLISHED')
@@ -133,8 +133,8 @@
                                 @csrf
                                 <input type="hidden" name="status" value="COMPLETED">
                                 <button type="submit"
-                                    class="bg-zinc-800 text-white hover:bg-black border-2 border-black px-3 py-1.5 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1">
-                                    🏁 Selesaikan Event
+                                    class="bg-brand-600 text-white hover:bg-brand-700 border border-line px-3 py-1.5 font-bold text-xs shadow-card active:translate-x-1 active:translate-y-1 rounded-full">
+                                    <x-icon name="flag" class="size-4" /> Selesaikan Event
                                 </button>
                             </form>
                         @endif
@@ -144,34 +144,34 @@
                                 @csrf
                                 <input type="hidden" name="status" value="CANCELLED">
                                 <button type="submit"
-                                    class="bg-white text-red-600 hover:bg-red-50 border-2 border-black px-2.5 py-1.5 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000]">
+                                    class="bg-brand-600 text-white text-red-600 hover:bg-red-50 border border-line px-2.5 py-1.5 font-bold text-xs  shadow-card rounded-full">
                                     Batalkan
                                 </button>
                             </form>
                         @endif
 
                         <a href="{{ route('organizer.events.edit', $event->id) }}"
-                            class="bg-zinc-100 hover:bg-zinc-200 border-2 border-black px-3 py-1.5 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000]">
-                            ✏️ Edit
+                            class="bg-surface-soft hover:bg-surface-soft border border-line px-3 py-1.5 font-bold text-xs  shadow-card rounded-2xl">
+                            <x-icon name="edit-2" class="size-4" /> Edit
                         </a>
 
                         <form action="{{ route('organizer.events.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Hapus event ini?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                class="bg-[#FF6B4A] text-white hover:bg-red-600 border-2 border-black px-2.5 py-1.5 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000]">
-                                🗑️
+                                class="bg-brand-600 text-white hover:bg-red-600 border border-line px-2.5 py-1.5 font-bold text-xs  shadow-card rounded-full">
+                                <x-icon name="trash-2" class="size-4" />
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
         @empty
-            <div class="bg-white border-3 border-black p-12 text-center shadow-[4px_4px_0px_0px_#000]">
-                <span class="text-4xl block mb-2">📅</span>
-                <h3 class="font-black text-lg">Belum Ada Event Dibuat</h3>
-                <p class="text-xs font-bold text-zinc-500 mt-1">Mulai buat event kampus pertama Anda sekarang.</p>
-                <a href="{{ route('organizer.events.create') }}" class="inline-block mt-4 bg-[#FFE600] border-2 border-black px-4 py-2 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000]">
+            <div class="bg-surface border border-line p-12 text-center shadow-card rounded-2xl">
+                <span class="text-4xl block mb-2"><x-icon name="calendar" class="size-4" /></span>
+                <h3 class="font-bold text-lg">Belum Ada Event Dibuat</h3>
+                <p class="text-xs font-bold text-muted mt-1">Mulai buat event kampus pertama Anda sekarang.</p>
+                <a href="{{ route('organizer.events.create') }}" class="inline-block mt-4 bg-surface border border-line px-4 py-2 font-bold text-xs  shadow-card rounded-2xl">
                     + Buat Event Sekarang
                 </a>
             </div>

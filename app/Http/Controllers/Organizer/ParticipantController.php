@@ -2,23 +2,30 @@
 
 namespace App\Http\Controllers\Organizer;
 
+use App\Exceptions\EventHubException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\VerifyPaymentRequest;
 use App\Models\Event;
 use App\Models\Notification;
 use App\Models\Payment;
 use App\Models\Registration;
-use App\Models\Ticket;
 use App\Services\AuditLogger;
-use Carbon\Carbon;
+use App\Services\Export\ParticipantCsvExporter;
+use App\Services\Payment\PaymentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ParticipantController extends Controller
 {
+    public function __construct(
+        protected ParticipantCsvExporter $exporter,
+        protected PaymentService $paymentService
+    ) {}
+
     /**
      * Authorize organizer event ownership.
      */
@@ -42,7 +49,7 @@ class ParticipantController extends Controller
      */
     public function index(Event $event, Request $request): View
     {
-        $this->authorizeEvent($event);
+        $this->authorize('viewParticipants', $event);
 
         $query = Registration::with(['user', 'ticket', 'payment', 'checkin'])
             ->where('event_id', $event->id);
@@ -81,70 +88,49 @@ class ParticipantController extends Controller
     /**
      * Verify or reject participant payment proof (FR-08).
      */
-    public function verifyPayment(Payment $payment, Request $request): RedirectResponse
+    public function verifyPayment(VerifyPaymentRequest $request, Payment $payment): RedirectResponse
     {
         $registration = $payment->registration;
-        $this->authorizeEvent($registration->event);
+        $event = $registration->event;
+        $this->authorize('verifyPayment', $event);
 
-        $action = $request->input('action'); // 'approve' or 'reject'
-        $notes = $request->input('notes');
+        $validated = $request->validated();
+        $action = $validated['action'] === 'approve' ? 'approve' : 'reject';
+        $notes = $validated['notes'] ?? null;
 
-        DB::transaction(function () use ($payment, $registration, $action, $notes) {
-            if ($action === 'approve') {
-                $payment->update([
-                    'status' => 'VERIFIED',
-                    'verified_at' => Carbon::now(),
-                    'verified_by' => Auth::id(),
-                    'notes' => $notes,
-                ]);
+        try {
+            $this->paymentService->verify($payment, $action, $notes, Auth::id());
+        } catch (EventHubException $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
-                $registration->update(['status' => 'CONFIRMED']);
-
-                Notification::create([
-                    'user_id' => $registration->user_id,
-                    'title' => 'Pembayaran Dikonfirmasi!',
-                    'message' => 'Pembayaran tiket event '.$registration->event->title.' telah diverifikasi. E-Tiket Anda telah aktif!',
-                    'link' => route('participant.tickets.index'),
-                    'is_read' => false,
-                ]);
-
-                AuditLogger::log('payment.verified', 'Payment', $payment->id, [
-                    'registration_code' => $registration->registration_code,
-                    'amount' => (float) $payment->amount,
-                ]);
-            } else {
-                $payment->update([
-                    'status' => 'REJECTED',
-                    'notes' => $notes ?? 'Bukti pembayaran tidak sesuai atau tidak valid.',
-                ]);
-
-                $registration->update([
-                    'status' => 'CANCELLED',
-                    'notes' => $notes ?? 'Pembayaran ditolak.',
-                ]);
-
-                // Restore ticket quota
-                $ticket = Ticket::where('id', $registration->ticket_id)->lockForUpdate()->first();
-                if ($ticket) {
-                    $ticket->increment('available_quota');
-                }
-
-                Notification::create([
-                    'user_id' => $registration->user_id,
-                    'title' => 'Pembayaran Ditolak',
-                    'message' => 'Pembayaran tiket event '.$registration->event->title.' ditolak. Catatan: '.($notes ?? 'Bukti pembayaran tidak valid.'),
-                    'link' => route('participant.tickets.index'),
-                    'is_read' => false,
-                ]);
-
-                AuditLogger::log('payment.rejected', 'Payment', $payment->id, [
-                    'registration_code' => $registration->registration_code,
-                    'reason' => $notes,
-                ]);
-            }
-        });
-
-        $msg = $action === 'approve' ? 'Pembayaran berhasil diverifikasi!' : 'Pembayaran telah ditolak.';
+        if ($action === 'approve') {
+            Notification::create([
+                'user_id' => $registration->user_id,
+                'title' => 'Pembayaran Dikonfirmasi!',
+                'message' => 'Pembayaran tiket event '.$event->title.' telah diverifikasi. E-Tiket Anda telah aktif!',
+                'link' => route('participant.tickets.index'),
+                'is_read' => false,
+            ]);
+            AuditLogger::log('payment.verified', 'Payment', $payment->id, [
+                'registration_code' => $registration->registration_code,
+                'amount' => (float) $payment->amount,
+            ]);
+            $msg = 'Pembayaran berhasil diverifikasi!';
+        } else {
+            Notification::create([
+                'user_id' => $registration->user_id,
+                'title' => 'Pembayaran Ditolak',
+                'message' => 'Pembayaran tiket event '.$event->title.' ditolak. Catatan: '.($notes ?? 'Bukti pembayaran tidak valid.'),
+                'link' => route('participant.tickets.index'),
+                'is_read' => false,
+            ]);
+            AuditLogger::log('payment.rejected', 'Payment', $payment->id, [
+                'registration_code' => $registration->registration_code,
+                'reason' => $notes,
+            ]);
+            $msg = 'Pembayaran telah ditolak.';
+        }
 
         return back()->with('success', $msg);
     }
@@ -152,64 +138,23 @@ class ParticipantController extends Controller
     /**
      * Export participant table to CSV format (FR-11).
      */
+    public function showProof(Payment $payment)
+    {
+        $this->authorize('viewProof', $payment);
+
+        if (! $payment->proof_file || ! Storage::disk('private')->exists($payment->proof_file)) {
+            abort(404);
+        }
+
+        return Storage::disk('private')->response($payment->proof_file);
+    }
+
     public function export(Event $event): StreamedResponse
     {
-        $this->authorizeEvent($event);
-
-        $fileName = 'peserta-'.Str::slug($event->title).'-'.date('Ymd_His').'.csv';
-
-        $registrations = Registration::with(['user', 'ticket', 'payment', 'checkin'])
-            ->where('event_id', $event->id)
-            ->get();
-
-        $headers = [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => "attachment; filename=\"$fileName\"",
-            'Pragma' => 'no-cache',
-            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
-            'Expires' => '0',
-        ];
-
-        $callback = function () use ($registrations) {
-            $handle = fopen('php://output', 'w');
-            // Add UTF-8 BOM for Excel compatibility
-            fwrite($handle, "\xEF\xBB\xBF");
-
-            fputcsv($handle, [
-                'Kode Tiket',
-                'Nama Peserta',
-                'Email',
-                'No. Telepon',
-                'Tipe Tiket',
-                'Harga Tiket',
-                'Status Pendaftaran',
-                'Metode Pembayaran',
-                'Status Pembayaran',
-                'Waktu Check-in',
-                'Tanggal Daftar',
-            ]);
-
-            foreach ($registrations as $reg) {
-                fputcsv($handle, [
-                    $reg->registration_code,
-                    $reg->user->name,
-                    $reg->user->email,
-                    $reg->user->phone ?? '-',
-                    $reg->ticket->name,
-                    $reg->ticket->price,
-                    $reg->status,
-                    $reg->payment->payment_method ?? 'Gratis',
-                    $reg->payment->status ?? 'N/A',
-                    $reg->checkin ? Carbon::parse($reg->checkin->checked_in_at)->format('Y-m-d H:i:s') : 'Belum Hadir',
-                    $reg->created_at->format('Y-m-d H:i:s'),
-                ]);
-            }
-
-            fclose($handle);
-        };
+        $this->authorize('exportParticipants', $event);
 
         AuditLogger::log('participants.exported', 'Event', $event->id, ['title' => $event->title]);
 
-        return response()->stream($callback, 200, $headers);
+        return $this->exporter->export($event);
     }
 }

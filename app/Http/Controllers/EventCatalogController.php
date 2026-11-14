@@ -6,7 +6,7 @@ use App\Models\Category;
 use App\Models\Event;
 use App\Models\Registration;
 use App\Models\Venue;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
@@ -57,7 +57,7 @@ class EventCatalogController extends Controller
         }
 
         // Date filter
-        $now = Carbon::now();
+        $now = CarbonImmutable::now();
         if ($dateFilter = $request->input('date')) {
             if ($dateFilter === 'today') {
                 $query->whereDate('start_time', $now->toDateString());

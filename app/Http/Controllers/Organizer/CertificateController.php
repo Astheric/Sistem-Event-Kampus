@@ -10,6 +10,7 @@ use App\Services\CertificateService;
 use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\View\View;
 
 class CertificateController extends Controller
@@ -84,19 +85,25 @@ class CertificateController extends Controller
             ->get();
 
         $count = 0;
+        $failed = 0;
         foreach ($unissued as $reg) {
             try {
                 $this->certificateService->issueCertificate($reg);
                 $count++;
             } catch (Exception $e) {
-                // Continue to next
+                $failed++;
+                Log::warning('Certificate issuance failed', [
+                    'registration_id' => $reg->id,
+                    'reason' => $e->getMessage(),
+                ]);
             }
         }
 
         AuditLogger::log('certificates.bulk_issued', 'Event', $event->id, [
             'issued_count' => $count,
+            'failed_count' => $failed,
         ]);
 
-        return back()->with('success', "Berhasil menerbitkan {$count} e-sertifikat untuk peserta yang hadir!");
+        return back()->with('success', "Berhasil menerbitkan {$count} e-sertifikat ({$failed} gagal).");
     }
 }

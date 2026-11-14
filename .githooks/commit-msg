@@ -1,0 +1,8 @@
+#!/bin/sh
+first=$(head -n1 "$1")
+echo "$first" | grep -Eq '^(Merge|Revert) ' && exit 0
+pattern='^(feat|fix|refactor|test|docs|style|chore|build|ci|perf|revert)(\([a-z0-9-]+\))?!?: .{1,72}$'
+echo "$first" | grep -Eq "$pattern" || {
+  echo "Format commit: type(scope): subject (maksimal 72 karakter)"
+  exit 1
+}
