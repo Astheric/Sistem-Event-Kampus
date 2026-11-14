@@ -8,14 +8,8 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div class="lg:col-span-7 space-y-6">
-                <div class="inline-flex items-center gap-2 bg-surface border border-line px-3 py-1 text-xs font-bold  tracking-wider shadow-card rounded-2xl">
-                    <span><x-icon name="zap" class="size-4" /> THE ULTIMATE CAMPUS EVENT PLATFORM</span>
-                </div>
-
                 <h1 class="text-4xl sm:text-6xl font-bold tracking-tight leading-[1.05]">
-                    CREATE.<br>
-                    <span class="bg-surface px-2 py-0.5 border border-line shadow-card inline-block mt-1 rounded-2xl">MANAGE.</span><br>
-                    JOIN EVENT.
+                    CREATE & MANAGE EVENTS.
                 </h1>
 
                 <p class="text-base sm:text-lg font-bold text-muted max-w-xl leading-relaxed">
@@ -50,18 +44,12 @@
             <!-- Hero Graphic Card (Neo-Brutalism Ticket Mockup) -->
             <div class="lg:col-span-5">
                 <div class="bg-surface border border-line p-6 shadow-card relative rounded-2xl">
-                    <!-- Sticker -->
-                    <div class="absolute -top-4 -right-4 bg-surface text-white border border-line px-3 py-1 text-xs font-bold  tracking-widest rotate-6 shadow-card rounded-2xl">
-                        TIKET RESMI
-                    </div>
-
                     <div class="border-b border-line pb-4">
-                        <span class="text-[10px] font-bold  tracking-widest text-muted">EVENT RESMI KAMPUS</span>
                         <h3 class="text-xl font-bold mt-1 leading-snug">National Tech Summit 2026: AI & Cyber Security Horizons</h3>
                         <p class="text-xs font-bold text-muted mt-1">Oleh: BEM Fakultas Ilmu Komputer</p>
                     </div>
 
-                    <div class="py-4 space-y-3 text-xs font-bold border-b border-dashed border-line">
+                    <div class="py-4 space-y-3 text-sm border-b border-line">
                         <div class="flex justify-between">
                             <span class="text-muted">WAKTU:</span>
                             <span class="font-mono font-bold">14 Hari Lagi • 09:00 WIB</span>
@@ -86,8 +74,8 @@
                         </div>
 
                         <!-- Simulated QR Code Icon Box -->
-                        <div class="w-16 h-16 bg-surface border border-line p-1 flex items-center justify-center font-mono text-[10px] font-bold shadow-card text-center rounded-2xl">
-                            QR SCAN VALID
+                        <div class="w-16 h-16 bg-surface border border-line p-1 flex items-center justify-center text-xs font-bold shadow-card text-center rounded-2xl">
+                            QR
                         </div>
                     </div>
                 </div>
@@ -123,10 +111,7 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-                <span class="bg-surface border border-line px-3 py-1 text-xs font-bold  shadow-card rounded-2xl">
-                    Kategori Pilihan
-                </span>
-                <h2 class="text-3xl font-bold mt-2">Temukan Minat & Bakatmu</h2>
+                <h2 class="text-3xl font-bold">Temukan Minat & Bakatmu</h2>
             </div>
             <a href="{{ route('events.index') }}" class="font-bold text-sm hover:underline flex items-center gap-1">
                 Lihat Semua Kategori →
@@ -137,7 +122,7 @@
             @foreach($categories as $category)
                 <a href="{{ route('events.index', ['category' => $category->slug]) }}"
                     class="bg-brand-600 text-white border border-line p-4 shadow-card hover:bg-brand-600 text-white hover:-translate-y-1 active:translate-x-1 active:translate-y-1 active:shadow-none transition-all text-center group rounded-full">
-                    <span class="text-3xl block mb-2">{{ $category->icon ?? '<x-icon name="map-pin" class="size-4" />' }}</span>
+                    <x-icon name="{{ $category->icon ?? 'map-pin' }}" class="size-8 mx-auto mb-2" />
                     <h3 class="font-bold text-sm group-hover:underline">{{ $category->name }}</h3>
                     <span class="inline-block mt-2 text-[10px] font-mono font-bold bg-danger text-white px-2 py-0.5">
                         {{ $category->events_count }} Event
@@ -151,10 +136,7 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-                <span class="bg-surface border border-line px-3 py-1 text-xs font-bold  shadow-card rounded-2xl">
-                    Mendatang
-                </span>
-                <h2 class="text-3xl font-bold mt-2">Event Pilihan Terhangat</h2>
+                <h2 class="text-3xl font-bold">Event Pilihan Terhangat</h2>
             </div>
             <a href="{{ route('events.index') }}" class="font-bold text-sm hover:underline flex items-center gap-1">
                 Buka Katalog Lengkap →
@@ -193,7 +175,7 @@
                                 {{ $event->description }}
                             </p>
 
-                            <div class="pt-2 border-t border-dashed border-line space-y-2 text-xs font-bold">
+                            <div class="pt-2 border-t border-line space-y-2 text-sm">
                                 <div class="flex items-center gap-2">
                                     <span><x-icon name="calendar" class="size-4" /></span>
                                     <span class="font-mono">{{ $event->start_time->format('d M Y, H:i') }} WIB</span>
@@ -230,10 +212,7 @@
     @if($pastEvents->isNotEmpty())
         <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-6">
-                <span class="bg-surface border border-line px-3 py-1 text-xs font-bold  shadow-card rounded-2xl">
-                    Evaluasi & Ulasan
-                </span>
-                <h2 class="text-3xl font-bold mt-2">Event Sukses Sebelumnya</h2>
+                <h2 class="text-3xl font-bold">Event Sukses Sebelumnya</h2>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -241,7 +220,7 @@
                     <div class="bg-surface border border-line p-5 shadow-card rounded-2xl">
                         <div class="flex items-center justify-between mb-2">
                             <span class="bg-danger text-white px-2 py-0.5 text-[10px] font-bold  font-mono">SELESAI</span>
-                            <div class="flex text-amber-500 font-bold text-sm">
+                            <div class="flex text-amber-600 font-bold text-sm">
                                 <x-icon name="star" class="size-4" /> {{ number_format($past->average_rating, 1) }} ({{ $past->review_count }})
                             </div>
                         </div>

@@ -113,12 +113,12 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 3. Master Categories
-        $catSeminar = Category::create(['name' => 'Seminar Nasional', 'slug' => 'seminar-nasional', 'icon' => '🎤']);
-        $catWorkshop = Category::create(['name' => 'Workshop & Bootcamp', 'slug' => 'workshop-bootcamp', 'icon' => '💻']);
-        $catFestival = Category::create(['name' => 'Festival & Seni', 'slug' => 'festival-seni', 'icon' => '🎨']);
-        $catKompetisi = Category::create(['name' => 'Kompetisi Mahasiswa', 'slug' => 'kompetisi-mahasiswa', 'icon' => '🏆']);
-        $catExpo = Category::create(['name' => 'Expo Karir & Industri', 'slug' => 'expo-karir', 'icon' => '💼']);
-        $catWebinar = Category::create(['name' => 'Webinar Terbuka', 'slug' => 'webinar-terbuka', 'icon' => '🌐']);
+        $catSeminar = Category::create(['name' => 'Seminar Nasional', 'slug' => 'seminar-nasional', 'icon' => 'mic']);
+        $catWorkshop = Category::create(['name' => 'Workshop & Bootcamp', 'slug' => 'workshop-bootcamp', 'icon' => 'code']);
+        $catFestival = Category::create(['name' => 'Festival & Seni', 'slug' => 'festival-seni', 'icon' => 'aperture']);
+        $catKompetisi = Category::create(['name' => 'Kompetisi Mahasiswa', 'slug' => 'kompetisi-mahasiswa', 'icon' => 'award']);
+        $catExpo = Category::create(['name' => 'Expo Karir & Industri', 'slug' => 'expo-karir', 'icon' => 'briefcase']);
+        $catWebinar = Category::create(['name' => 'Webinar Terbuka', 'slug' => 'webinar-terbuka', 'icon' => 'globe']);
 
         // 4. Venues
         $venue1 = Venue::create([
