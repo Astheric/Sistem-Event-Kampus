@@ -95,7 +95,7 @@
                         $recentNotifs = \App\Models\Notification::where('user_id', Auth::id())->latest()->limit(5)->get();
                     @endphp
                     <div class="relative" @click.outside="notifOpen = false">
-                        <button @click="notifOpen = !notifOpen"
+                        <button @click="notifOpen = !notifOpen" type="button" aria-label="Notifikasi" title="Notifikasi"
                                 class="relative p-1.5 rounded-lg text-muted hover:text-ink hover:bg-surface-soft transition">
                             <x-icon name="bell" class="size-5" />
                             @if($unreadCount > 0)
