@@ -14,6 +14,20 @@
         </a>
     </div>
 
+    <form method="GET" action="{{ route('organizer.events.index') }}" class="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <label for="status" class="text-sm font-medium text-muted">Filter status</label>
+        <select id="status" name="status" class="input w-full sm:w-56">
+            <option value="">Semua status</option>
+            @foreach (['DRAFT' => 'Draft', 'SUBMITTED' => 'Diajukan', 'PUBLISHED' => 'Dipublikasikan', 'REJECTED' => 'Ditolak', 'COMPLETED' => 'Selesai', 'CANCELLED' => 'Dibatalkan'] as $value => $label)
+                <option value="{{ $value }}" {{ ($status ?? '') === $value ? 'selected' : '' }}>{{ $label }}</option>
+            @endforeach
+        </select>
+        <button type="submit" class="btn btn-secondary text-xs py-2 px-3.5 self-start">Terapkan</button>
+        @if(!empty($status))
+            <a href="{{ route('organizer.events.index') }}" class="text-sm text-muted hover:text-ink">Reset</a>
+        @endif
+    </form>
+
     <!-- Events List Cards -->
     <div class="space-y-4">
         @forelse($events as $event)

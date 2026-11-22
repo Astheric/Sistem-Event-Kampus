@@ -38,23 +38,27 @@ class EventController extends Controller
     /**
      * Display a listing of organizer events.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         $user = Auth::user();
+        $status = $request->string('status')->upper()->value();
 
-        if ($user->isAdmin()) {
-            $events = Event::with(['category', 'venue', 'tickets'])->withCount('registrations')->orderBy('created_at', 'desc')->paginate(10);
+        $baseQuery = $user->isAdmin()
+            ? Event::query()
+            : ($user->organization ? $user->organization->events() : Event::where('id', 0));
 
-            return view('organizer.events.index', compact('events'));
+        if (in_array($status, ['DRAFT', 'SUBMITTED', 'PUBLISHED', 'REJECTED', 'COMPLETED', 'CANCELLED'], true)) {
+            $baseQuery->where('status', $status);
         }
 
-        $org = $user->organization;
+        $events = $baseQuery
+            ->with(['category', 'venue', 'tickets'])
+            ->withCount('registrations')
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
 
-        $events = $org
-            ? $org->events()->with(['category', 'venue', 'tickets'])->withCount('registrations')->orderBy('created_at', 'desc')->paginate(10)
-            : Event::where('id', 0)->paginate(10);
-
-        return view('organizer.events.index', compact('events'));
+        return view('organizer.events.index', compact('events', 'status'));
     }
 
     /**
