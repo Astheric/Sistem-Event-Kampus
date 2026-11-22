@@ -4,149 +4,140 @@
     <meta charset="UTF-8">
     <title>Sertifikat {{ $certificate->certificate_number }}</title>
     <style>
-        @page {
-            margin: 10mm;
-            size: a4 landscape;
-        }
-        body {
+        @page { margin: 8mm; size: a4 landscape; }
+        html, body {
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            color: #000;
-            background: #FFFDF8;
+            color: #1e293b;
+            background: #ffffff;
             margin: 0;
             padding: 0;
         }
-        .cert-border {
-            border: 6px solid #000;
-            padding: 15px;
-            height: 94%;
-            box-sizing: border-box;
-            position: relative;
+        .frame {
+            border: 1px solid #cbd5e1;
+            padding: 5px;
+            height: 188mm;
         }
-        .cert-inner {
-            border: 2px solid #000;
-            height: 96%;
-            padding: 25px 35px;
-            box-sizing: border-box;
+        .inner {
+            border: 2px solid #4823cd;
+            padding: 28px 40px 20px;
             text-align: center;
+            height: 172mm;
         }
-        .header-brand {
-            font-size: 14px;
-            font-weight: 900;
+        .brand {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4823cd;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
+            margin-bottom: 22px;
         }
-        .main-title {
+        .title {
             font-size: 34px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            background: #FFE600;
-            border: 3px solid #000;
-            padding: 6px 20px;
-            display: inline-block;
-            margin-bottom: 20px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0 6px 0;
         }
         .subtitle {
-            font-size: 13px;
-            font-weight: bold;
-            color: #555;
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 15px;
+            margin-bottom: 26px;
         }
-        .recipient-name {
-            font-size: 28px;
-            font-weight: 900;
-            color: #000;
-            border-bottom: 3px solid #000;
-            padding-bottom: 8px;
-            margin: 0 auto 15px auto;
+        .recipient {
+            font-size: 30px;
+            font-weight: 700;
+            color: #0f172a;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin: 0 auto 22px auto;
             display: inline-block;
-            min-width: 400px;
+            min-width: 360px;
         }
         .event-text {
-            font-size: 14px;
-            font-weight: bold;
-            line-height: 1.5;
-            max-width: 650px;
-            margin: 0 auto 15px auto;
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.7;
+            max-width: 620px;
+            margin: 0 auto;
         }
         .event-name {
-            font-size: 18px;
-            font-weight: 900;
             display: block;
-            margin-top: 5px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 8px 0;
         }
-        .cert-footer {
+        .footer-table {
             width: 100%;
-            margin-top: 25px;
+            margin-top: 30px;
+            border-collapse: collapse;
         }
-        .cert-footer td {
-            vertical-align: bottom;
-        }
+        .footer-table td { vertical-align: bottom; }
         .sign-title {
-            font-size: 11px;
-            font-weight: bold;
+            font-size: 10px;
+            font-weight: 600;
+            color: #64748b;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .sign-line {
-            width: 180px;
-            border-bottom: 2px solid #000;
-            margin: 50px auto 5px auto;
+            width: 170px;
+            border-bottom: 1px solid #94a3b8;
+            margin: 44px auto 8px auto;
         }
-        .sign-name {
-            font-size: 12px;
-            font-weight: 900;
-        }
-        .qr-section {
-            text-align: center;
-        }
+        .sign-name { font-size: 12px; font-weight: 700; color: #0f172a; }
+        .sign-role { font-size: 10px; color: #64748b; margin-top: 2px; }
+        .qr-section { text-align: center; }
         .cert-code {
-            font-family: monospace;
-            font-weight: 900;
-            font-size: 13px;
-            background: #FFE600;
-            border: 2px solid #000;
-            padding: 4px 8px;
+            font-family: 'DejaVu Sans Mono', monospace;
+            font-size: 10px;
+            font-weight: 700;
+            color: #4823cd;
+            background: #f5f3ff;
+            border: 1px solid #ddd6fe;
+            padding: 4px 10px;
             display: inline-block;
-            margin-top: 5px;
+            margin-top: 6px;
+            border-radius: 4px;
         }
+        .verify-note { font-size: 9px; color: #64748b; margin-top: 4px; }
     </style>
 </head>
 <body>
-    <div class="cert-border">
-        <div class="cert-inner">
-            <div class="header-brand">EVENTHUB • SERTIFIKAT KEGIATAN KAMPUS</div>
-            <div class="main-title">SERTIFIKAT PENGHARGAAN</div>
+    <div class="frame">
+        <div class="inner">
+            <div class="brand">EventHub &middot; Sertifikat Kegiatan Kampus</div>
+            <div class="title">Sertifikat Penghargaan</div>
+            <div class="subtitle">Diberikan kepada</div>
 
-            <div class="subtitle">DIBERIKAN DENGAN BANGGA KEPADA:</div>
-            <div class="recipient-name">{{ $user->name }}</div>
+            <div class="recipient">{{ $user->name }}</div>
 
             <div class="event-text">
-                Sebagai PESERTA TERVERIFIKASI pada kegiatan:
-                <span class="event-name">"{{ $event->title }}"</span>
-                diselenggarakan oleh {{ $organization->name }} pada tanggal {{ $event->start_time->format('d F Y') }}.
+                Atas partisipasi sebagai peserta terverifikasi pada kegiatan
+                <span class="event-name">{{ $event->title }}</span>
+                Diselenggarakan oleh {{ $organization->name }} pada {{ $event->start_time->translatedFormat('d F Y') }}.
             </div>
 
-            <table class="cert-footer">
+            <table class="footer-table">
                 <tr>
                     <td width="33%" align="center">
-                        <div class="sign-title">Penyelenggara Kegiatan,</div>
+                        <div class="sign-title">Penyelenggara kegiatan</div>
                         <div class="sign-line"></div>
                         <div class="sign-name">{{ $organization->name }}</div>
-                        <div style="font-size: 10px; color: #555;">Ketua Pelaksana</div>
+                        <div class="sign-role">Ketua pelaksana</div>
                     </td>
-                    <td width="33%" align="center" class="qr-section">
-                        <img src="{{ $qrCode }}" width="100" height="100" alt="Verification QR Code">
-                        <div class="cert-code">{{ $certificate->certificate_number }}</div>
-                        <div style="font-size: 9px; font-weight: bold; margin-top: 3px;">PINDAI UNTUK VERIFIKASI</div>
+                    <td width="34%" align="center" class="qr-section">
+                        <img src="{{ $qrCode }}" width="92" height="92" alt="QR verifikasi sertifikat">
+                        <div><span class="cert-code">{{ $certificate->certificate_number }}</span></div>
+                        <div class="verify-note">Pindai untuk verifikasi</div>
                     </td>
                     <td width="33%" align="center">
-                        <div class="sign-title">Verifikasi Kampus,</div>
+                        <div class="sign-title">Verifikasi sistem</div>
                         <div class="sign-line"></div>
                         <div class="sign-name">Administrator EventHub</div>
-                        <div style="font-size: 10px; color: #555;">Sistem Terverifikasi</div>
+                        <div class="sign-role">Sistem terverifikasi</div>
                     </td>
                 </tr>
             </table>
