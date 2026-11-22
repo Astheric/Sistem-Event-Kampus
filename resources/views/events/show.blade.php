@@ -124,7 +124,7 @@
                                 @elseif($isAvailable)
                                     <a href="{{ route('events.checkout', ['event' => $event->id, 'ticket' => $ticket->id]) }}" class="btn btn-primary w-full text-sm">Daftar sekarang</a>
                                 @else
-                                    <span class="inline-flex w-full justify-center rounded-xl bg-surface-soft px-4 py-2.5 text-sm font-semibold text-muted">{{ $ticket->isSoldOut() ? 'Tiket habis' : 'Penjualan ditutup' }}</span>
+                                    <button type="button" disabled class="inline-flex w-full justify-center rounded-xl bg-surface-soft px-4 py-2.5 text-sm font-semibold text-muted cursor-not-allowed">Daftar sekarang ({{ $ticket->isSoldOut() ? 'tiket habis' : 'penjualan ditutup' }})</button>
                                 @endif
                             </div>
                         </div>
