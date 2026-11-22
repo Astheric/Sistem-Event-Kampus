@@ -31,6 +31,10 @@ class CheckRole
             return $next($request);
         }
 
-        abort(403, 'Akses ditolak: Anda tidak memiliki izin untuk mengakses halaman ini.');
+        if ($request->expectsJson()) {
+            abort(403, 'Akses ditolak: Anda tidak memiliki izin untuk mengakses halaman ini.');
+        }
+
+        return redirect()->route('home')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
     }
 }

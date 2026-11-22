@@ -22,11 +22,11 @@ class AccessControlSecurityTest extends TestCase
 
         $this->actingAs($participant);
 
-        $this->get(route('admin.dashboard'))->assertForbidden();
-        $this->get(route('admin.moderation.index'))->assertForbidden();
-        $this->get(route('admin.categories.index'))->assertForbidden();
-        $this->get(route('admin.users.index'))->assertForbidden();
-        $this->get(route('admin.audit_logs.index'))->assertForbidden();
+        $this->get(route('admin.dashboard'))->assertRedirect(route('home'));
+        $this->get(route('admin.moderation.index'))->assertRedirect(route('home'));
+        $this->get(route('admin.categories.index'))->assertRedirect(route('home'));
+        $this->get(route('admin.users.index'))->assertRedirect(route('home'));
+        $this->get(route('admin.audit_logs.index'))->assertRedirect(route('home'));
     }
 
     public function test_guest_is_redirected_from_admin_routes(): void
