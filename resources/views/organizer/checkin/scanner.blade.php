@@ -1,6 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Scanner QR Check-in: ' . $event->title)
+@section('page_title', 'Scanner check-in')
 
 @section('dashboard_content')
 <div class="space-y-6" x-data="scannerApp()">

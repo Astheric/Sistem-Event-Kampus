@@ -1,6 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Manajemen Panitia: ' . $event->title)
+@section('page_title', 'Manajemen panitia')
 
 @section('dashboard_content')
 <div class="space-y-6">

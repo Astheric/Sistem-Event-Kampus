@@ -1,6 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Edit Event: ' . $event->title)
+@section('page_title', 'Edit event')
 
 @section('dashboard_content')
 <div class="max-w-3xl space-y-6">

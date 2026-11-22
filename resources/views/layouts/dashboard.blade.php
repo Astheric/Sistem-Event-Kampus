@@ -64,18 +64,12 @@
                 @endforeach
             </nav>
 
-            {{-- Portal & Logout --}}
-            <div class="border-t border-line p-3 space-y-1">
-                <a href="{{ route('home') }}"
-                    class="flex w-full items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold text-slate-600 hover:bg-surface-soft hover:text-ink transition-colors">
-                    <x-icon name="compass" class="size-4 text-slate-400" />
-                    Portal Publik &amp; Katalog
-                </a>
+            <div class="border-t border-line p-3">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit"
-                        class="flex w-full items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold text-slate-500 hover:bg-surface-soft hover:text-ink transition-colors">
-                        <x-icon name="log-out" class="size-4 text-slate-400" />
+                        class="flex w-full items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors">
+                        <x-icon name="log-out" class="size-4 text-red-500" />
                         Keluar
                     </button>
                 </form>
@@ -92,14 +86,9 @@
                             @click="sidebarOpen = true">
                         <x-icon name="menu" class="size-5" />
                     </button>
-                    <h1 class="text-base font-bold text-ink lg:text-lg">@yield('title', 'Dashboard')</h1>
                 </div>
 
                 <div class="flex items-center gap-2 lg:gap-3">
-                    <a href="{{ route('home') }}" class="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-muted hover:text-brand-700 transition">
-                        Lihat katalog
-                    </a>
-
                     {{-- Notification bell --}}
                     @php
                         $unreadCount = \App\Models\Notification::where('user_id', Auth::id())->where('is_read', false)->count();
@@ -156,24 +145,20 @@
                         </div>
                     </div>
 
-                    @php
-                        $user = Auth::user();
-                        $badgeStyle = match($user->role) {
-                            'admin'     => 'bg-red-50 text-red-700 border border-red-200/60',
-                            'organizer' => 'bg-brand-50 text-brand-700 border border-brand-200/60',
-                            'dosen'     => 'bg-emerald-50 text-emerald-700 border border-emerald-200/60',
-                            default     => 'bg-slate-100 text-slate-700 border border-slate-200',
-                        };
-                    @endphp
-                    <span class="hidden sm:inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $badgeStyle }}">
-                        {{ $user->roleLabel() }}
-                    </span>
-                    @if($user->eventMembers()->exists())
-                        <span class="hidden sm:inline-flex items-center rounded-full bg-amber-50 border border-amber-200/60 px-2 py-0.5 text-[11px] font-semibold text-amber-800">
-                            Panitia
-                        </span>
-                    @endif
-                    <span class="text-sm font-medium text-muted hidden md:block">{{ $user->name }}</span>
+                    @php $user = Auth::user(); @endphp
+                    <div class="flex items-center gap-3 pl-2">
+                        <div class="hidden sm:block text-right leading-tight">
+                            <p class="text-sm font-semibold text-ink">{{ $user->name }}</p>
+                            <p class="text-xs text-muted">{{ $user->roleLabel() }}</p>
+                        </div>
+                        <img
+                            src="https://api.dicebear.com/9.x/big-smile/svg?seed={{ urlencode($user->name) }}&backgroundColor=c7d2fe"
+                            alt="{{ $user->name }}"
+                            class="size-9 rounded-full bg-brand-100 object-cover"
+                            width="36"
+                            height="36"
+                        >
+                    </div>
                 </div>
             </header>
 

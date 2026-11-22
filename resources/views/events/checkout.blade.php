@@ -1,6 +1,7 @@
 @extends(Auth::check() ? 'layouts.dashboard' : 'layouts.app')
 
 @section('title', 'Pendaftaran tiket : ' . $event->title)
+@section('page_title', 'Pendaftaran tiket')
 
 @section('content')
 <div class="{{ Auth::check() ? 'space-y-6 max-w-5xl' : 'mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8' }}" x-data="{ paymentMethod: 'Bank Transfer (BCA)' }">

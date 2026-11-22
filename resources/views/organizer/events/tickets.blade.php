@@ -1,6 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Atur Tiket: ' . $event->title)
+@section('page_title', 'Atur tiket')
 
 @section('dashboard_content')
 <div class="space-y-6">

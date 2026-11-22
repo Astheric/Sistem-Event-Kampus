@@ -1,6 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Peserta: ' . $event->title)
+@section('page_title', 'Peserta')
 
 @section('dashboard_content')
 <div class="space-y-6" x-data="{ modalOpen: false, activePayment: null, activeRegistration: null }">

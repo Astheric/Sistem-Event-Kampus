@@ -1,6 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Penerbitan Sertifikat: ' . $event->title)
+@section('page_title', 'Penerbitan sertifikat')
 
 @section('dashboard_content')
 <div class="space-y-6">

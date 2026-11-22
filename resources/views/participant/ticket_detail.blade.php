@@ -1,6 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('title', 'E-Tiket: ' . $registration->registration_code)
+@section('page_title', 'E-tiket')
 
 @section('dashboard_content')
 <div class="max-w-3xl space-y-6">

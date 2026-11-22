@@ -3,114 +3,99 @@
 @section('title', 'EventHub : Agenda Kegiatan Kampus')
 
 @section('content')
-<div class="space-y-16 py-8 lg:py-12">
+<div class="space-y-16 pb-8 lg:pb-12">
     {{-- Hero Section --}}
-    <section class="mx-auto max-w-7xl px-6 sm:px-8">
-        <div class="grid items-center gap-10 lg:grid-cols-12">
-            <div class="lg:col-span-7 space-y-6">
-                <h1 class="text-3xl font-extrabold tracking-tight text-ink sm:text-5xl lg:text-6xl leading-tight">
-                    Jadwal dan pendaftaran kegiatan kampus
+    @php
+        $heroSlides = $featuredEvents->take(5)->map(fn ($event) => [
+            'image' => $event->bannerUrl(),
+            'title' => $event->title,
+        ])->values();
+        if ($heroSlides->isEmpty()) {
+            $heroSlides = collect([
+                ['image' => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1600&q=80', 'title' => 'Kegiatan kampus'],
+                ['image' => 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1600&q=80', 'title' => 'Seminar mahasiswa'],
+                ['image' => 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=1600&q=80', 'title' => 'Kolaborasi kampus'],
+            ]);
+        }
+    @endphp
+    <section
+        x-data="{
+            current: 0,
+            slides: @js($heroSlides),
+            timer: null,
+            start() {
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || this.slides.length < 2) return;
+                this.timer = setInterval(() => { this.current = (this.current + 1) % this.slides.length }, 5000);
+            },
+            stop() { if (this.timer) { clearInterval(this.timer); this.timer = null; } },
+            go(index) { this.current = index; this.stop(); this.start(); }
+        }"
+        x-init="start()"
+        @mouseenter="stop()"
+        @mouseleave="start()"
+        class="relative isolate min-h-[78vh] overflow-hidden bg-slate-900"
+    >
+        <div class="absolute inset-0">
+            <template x-for="(slide, index) in slides" :key="index">
+                <div
+                    x-show="current === index"
+                    x-transition:enter="transition-opacity duration-700 ease-out"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition-opacity duration-700 ease-in"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    class="absolute inset-0"
+                >
+                    <img :src="slide.image" :alt="slide.title" class="h-full w-full object-cover">
+                </div>
+            </template>
+            <div class="absolute inset-0 bg-slate-950/55"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-slate-950/70 via-slate-950/45 to-slate-950/20"></div>
+        </div>
+
+        <div class="relative mx-auto flex min-h-[78vh] max-w-7xl items-center px-6 py-20 sm:px-8 lg:py-24">
+            <div class="max-w-3xl">
+                <h1 class="max-w-2xl text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.05]">
+                    Semua event kampus, satu tempat untuk mendaftar.
                 </h1>
 
-                <p class="max-w-xl text-base sm:text-lg text-muted leading-relaxed">
-                    Lihat jadwal seminar, lokakarya, dan kegiatan mahasiswa. Daftar online, dapatkan tiket, dan unduh sertifikat kehadiran.
+                <p class="mt-6 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">
+                    Lihat jadwal, daftar online, dan simpan tiket serta sertifikat kehadiranmu.
                 </p>
 
-                <div class="flex flex-wrap items-center gap-3 pt-1">
-                    <a href="{{ route('events.index') }}" class="btn btn-primary px-6 py-3 text-sm">
-                        Lihat daftar event
-                    </a>
-                    <a href="{{ route('register') }}" class="btn btn-secondary px-6 py-3 text-sm">
-                        Daftar sebagai penyelenggara
+                <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <a href="{{ route('events.index') }}" class="btn btn-primary px-6 py-3.5 text-sm sm:text-base">
+                        Lihat katalog event
                     </a>
                 </div>
 
-                {{-- Key Statistics --}}
-                <div class="pt-6 grid grid-cols-3 gap-4 border-t border-line">
-                    <div>
-                        <div class="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight">
-                            {{ $stats['total_events'] ?? 0 }}
-                        </div>
-                        <p class="text-xs sm:text-sm text-muted mt-0.5">Event terdaftar</p>
-                    </div>
-                    <div>
-                        <div class="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight">
-                            {{ $stats['total_participants'] ?? 0 }}
-                        </div>
-                        <p class="text-xs sm:text-sm text-muted mt-0.5">Pendaftar aktif</p>
-                    </div>
-                    <div>
-                        <div class="text-2xl sm:text-3xl font-extrabold text-ink tracking-tight">
-                            {{ $stats['certificates_issued'] ?? 0 }}
-                        </div>
-                        <p class="text-xs sm:text-sm text-muted mt-0.5">Sertifikat terbit</p>
-                    </div>
-                </div>
+
             </div>
+        </div>
 
-            {{-- Spotlight Event --}}
-            <div class="lg:col-span-5">
-                @php $spotlight = $featuredEvents->first(); @endphp
-                @if($spotlight)
-                    <div class="rounded-2xl border border-line bg-surface p-6 sm:p-7 space-y-4">
-                        <img src="{{ $spotlight->bannerUrl() }}" alt="{{ $spotlight->title }}" class="aspect-[16/9] w-full rounded-xl object-cover bg-slate-100" loading="lazy">
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="inline-flex items-center rounded-md bg-brand-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700">
-                                {{ $spotlight->category->name }}
-                            </span>
-                            @if($spotlight->isFree())
-                                <span class="inline-flex items-center rounded-md bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
-                                    Gratis
-                                </span>
-                            @else
-                                <span class="text-xs font-bold text-ink">
-                                    Rp {{ number_format($spotlight->min_price, 0, ',', '.') }}
-                                </span>
-                            @endif
-                        </div>
+        <div class="absolute inset-x-0 bottom-6">
+            <div class="mx-auto flex max-w-7xl items-center justify-between px-6 sm:px-8">
+                <div class="flex items-center gap-2">
+                    <template x-for="(slide, index) in slides" :key="'dot-'+index">
+                        <button
+                            type="button"
+                            class="h-2.5 w-2.5 rounded-full transition"
+                            :class="current === index ? 'bg-white' : 'bg-white/40 hover:bg-white/70'"
+                            :aria-label="'Slide ' + (index + 1)"
+                            @click="go(index)"
+                        ></button>
+                    </template>
+                </div>
 
-                        <div>
-                            <h2 class="text-xl font-bold leading-snug text-ink">
-                                <a href="{{ route('events.show', $spotlight->slug) }}" class="hover:text-brand-700">
-                                    {{ $spotlight->title }}
-                                </a>
-                            </h2>
-                            <p class="mt-1 text-sm text-muted">
-                                {{ $spotlight->organization->name }}
-                            </p>
-                        </div>
-
-                        <p class="line-clamp-3 text-sm text-muted leading-relaxed">
-                            {{ $spotlight->description }}
-                        </p>
-
-                        <div class="pt-2 border-t border-line space-y-1.5 text-xs text-muted">
-                            <div class="flex items-center gap-2">
-                                <x-icon name="calendar" class="size-3.5 text-slate-400" />
-                                <span>{{ $spotlight->start_time->translatedFormat('l, d F Y') }} · {{ $spotlight->start_time->format('H:i') }} WIB</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <x-icon name="map-pin" class="size-3.5 text-slate-400" />
-                                <span>{{ $spotlight->venue ? $spotlight->venue->name : 'Daring / Online' }}</span>
-                            </div>
-                        </div>
-
-                        <div class="pt-2">
-                            <a href="{{ route('events.show', $spotlight->slug) }}" class="btn btn-primary w-full text-xs py-2.5">
-                                Detail dan pendaftaran
-                            </a>
-                        </div>
-                    </div>
-                @else
-                    <div class="rounded-2xl border border-line bg-surface p-8 text-center space-y-3">
-                        <x-icon name="calendar" class="size-10 mx-auto text-slate-300" />
-                        <h2 class="text-base font-bold text-ink">Belum ada event dipublikasikan</h2>
-                        <p class="text-xs text-muted">Cek katalog untuk melihat jadwal kegiatan.</p>
-                        <a href="{{ route('events.index') }}" class="btn btn-secondary text-xs">
-                            Buka katalog event
-                        </a>
-                    </div>
-                @endif
+                <div class="hidden items-center gap-2 sm:flex">
+                    <button type="button" class="inline-flex size-10 items-center justify-center rounded-full border border-white/30 text-white hover:bg-white/10 transition" aria-label="Slide sebelumnya" @click="go((current - 1 + slides.length) % slides.length)">
+                        <x-icon name="chevron-left" class="size-5" />
+                    </button>
+                    <button type="button" class="inline-flex size-10 items-center justify-center rounded-full border border-white/30 text-white hover:bg-white/10 transition" aria-label="Slide berikutnya" @click="go((current + 1) % slides.length)">
+                        <x-icon name="chevron-right" class="size-5" />
+                    </button>
+                </div>
             </div>
         </div>
     </section>

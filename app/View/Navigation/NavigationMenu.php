@@ -31,7 +31,6 @@ class NavigationMenu
                 ['label' => 'Dashboard', 'icon' => 'home', 'route' => 'organizer.dashboard', 'active' => 'organizer.dashboard'],
                 ['label' => 'Event saya', 'icon' => 'calendar', 'route' => 'organizer.events.index', 'active' => 'organizer.events.*'],
                 ['label' => 'Profil organisasi', 'icon' => 'user', 'route' => 'participant.profile', 'active' => 'participant.profile'],
-                ['label' => 'Katalog event', 'icon' => 'compass', 'route' => 'events.index', 'active' => 'events.*'],
             ];
         } else {
             $items = [

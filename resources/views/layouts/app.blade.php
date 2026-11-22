@@ -31,7 +31,7 @@
                     @elseif(Auth::user()->isOrganizer())
                         <a href="{{ route('organizer.dashboard') }}" class="rounded-lg px-3.5 py-2 text-sm font-medium text-muted hover:bg-surface-soft hover:text-ink">Dashboard</a>
                     @else
-                        <a href="{{ route('participant.tickets.index') }}" class="rounded-lg px-3.5 py-2 text-sm font-medium text-muted hover:bg-surface-soft hover:text-ink">Tiket Saya</a>
+                        <a href="{{ route('participant.tickets.index') }}" class="rounded-lg px-3.5 py-2 text-sm font-medium text-muted hover:bg-surface-soft hover:text-ink">Dashboard</a>
                     @endif
                     @if(Auth::user()->eventMembers()->exists())
                         <a href="{{ route('organizer.committee.tasks') }}" class="rounded-lg px-3.5 py-2 text-sm font-semibold text-amber-800 hover:bg-amber-50">Tugas Panitia</a>
@@ -63,19 +63,56 @@
 
     <main>@yield('content')</main>
 
-    <footer class="mt-20 border-t border-line bg-surface py-12">
-        <div class="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 px-6 sm:flex-row sm:items-center sm:px-8">
-            <div class="space-y-2">
-                <img src="{{ asset('images/logo.webp') }}" alt="EventHub" class="h-8 w-auto object-contain">
-                <p class="text-sm text-muted">
-                    Sistem pendaftaran, tiket, dan verifikasi sertifikat kegiatan kampus.
-                </p>
+    <footer class="mt-20 border-t border-line bg-surface">
+        <div class="mx-auto max-w-7xl px-6 py-12 sm:px-8 sm:py-14">
+            <div class="grid gap-10 lg:grid-cols-12 lg:gap-8">
+                <div class="lg:col-span-5">
+                    <img src="{{ asset('images/logo.webp') }}" alt="EventHub" class="h-8 w-auto object-contain">
+                    <p class="mt-4 max-w-sm text-sm leading-relaxed text-muted">
+                        Platform pendaftaran event kampus untuk mahasiswa, penyelenggara, dan panitia. Kelola tiket, kehadiran, dan sertifikat dalam satu sistem.
+                    </p>
+                </div>
+
+                <div class="grid gap-8 sm:grid-cols-3 lg:col-span-7">
+                    <div>
+                        <p class="text-sm font-semibold text-ink">Jelajahi</p>
+                        <nav class="mt-4 flex flex-col gap-3 text-sm text-muted">
+                            <a href="{{ route('home') }}" class="hover:text-ink transition">Beranda</a>
+                            <a href="{{ route('events.index') }}" class="hover:text-ink transition">Katalog event</a>
+                            <a href="{{ route('certificates.verify') }}" class="hover:text-ink transition">Verifikasi sertifikat</a>
+                        </nav>
+                    </div>
+
+                    <div>
+                        <p class="text-sm font-semibold text-ink">Peserta</p>
+                        <nav class="mt-4 flex flex-col gap-3 text-sm text-muted">
+                            <a href="{{ route('register') }}" class="hover:text-ink transition">Daftar akun</a>
+                            <a href="{{ route('login') }}" class="hover:text-ink transition">Masuk</a>
+                            @auth
+                                <a href="{{ route('participant.tickets.index') }}" class="hover:text-ink transition">Tiket saya</a>
+                            @endauth
+                        </nav>
+                    </div>
+
+                    <div>
+                        <p class="text-sm font-semibold text-ink">Penyelenggara</p>
+                        <nav class="mt-4 flex flex-col gap-3 text-sm text-muted">
+                            <a href="{{ route('register') }}" class="hover:text-ink transition">Daftar organisasi</a>
+                            @auth
+                                @if(Auth::user()->isOrganizer() || Auth::user()->isAdmin())
+                                    <a href="{{ route('organizer.dashboard') }}" class="hover:text-ink transition">Dashboard organizer</a>
+                                @endif
+                            @endauth
+                            <a href="{{ route('events.index') }}" class="hover:text-ink transition">Lihat event publik</a>
+                        </nav>
+                    </div>
+                </div>
             </div>
-            <nav class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
-                <a href="{{ route('home') }}" class="hover:text-ink">Beranda</a>
-                <a href="{{ route('events.index') }}" class="hover:text-ink">Katalog event</a>
-                <a href="{{ route('certificates.verify') }}" class="hover:text-ink">Verifikasi sertifikat</a>
-            </nav>
+
+            <div class="mt-10 flex flex-col gap-3 border-t border-line pt-6 text-sm text-muted sm:flex-row sm:items-center sm:justify-between">
+                <p>&copy; {{ date('Y') }} EventHub. Sistem event kampus.</p>
+                <p>Daftar, hadir, dan dapatkan sertifikat.</p>
+            </div>
         </div>
     </footer>
     @endif

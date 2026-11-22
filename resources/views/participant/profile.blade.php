@@ -9,6 +9,20 @@
     </div>
 
     <div class="bg-surface rounded-xl border border-line p-6 sm:p-8">
+        <div class="flex items-center gap-4 pb-6 mb-6 border-b border-line">
+            <img
+                src="https://api.dicebear.com/9.x/big-smile/svg?seed={{ urlencode($user->name) }}&backgroundColor=c7d2fe"
+                alt="{{ $user->name }}"
+                class="size-16 rounded-full bg-brand-100 object-cover"
+                width="64"
+                height="64"
+            >
+            <div>
+                <p class="text-base font-semibold text-ink">{{ $user->name }}</p>
+                <p class="text-sm text-muted">{{ $user->roleLabel() }}</p>
+            </div>
+        </div>
+
         <form action="{{ route('participant.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
             @method('PUT')
