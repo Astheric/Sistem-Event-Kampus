@@ -13,7 +13,7 @@ use Illuminate\View\View;
 class HomeController extends Controller
 {
     /**
-     * Display the EventHub landing page.
+     * Display the EventHub campus landing page.
      */
     public function index(): View
     {

@@ -1,87 +1,68 @@
 @extends('layouts.app')
 
-@section('title', 'Masuk — EventHub')
+@section('title', 'Masuk : EventHub')
+@section('plain', true)
 
 @section('content')
-<div class="max-w-md mx-auto px-4 py-12">
-    <!-- Login Card -->
-    <div class="bg-white border-4 border-black p-8 shadow-[8px_8px_0px_0px_#000]">
-        <div class="border-b-4 border-black pb-4 mb-6">
-            <span class="bg-[#FFE600] border-2 border-black px-3 py-1 text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#000]">
-                Autentikasi
-            </span>
-            <h1 class="text-3xl font-black mt-3">Masuk ke EventHub</h1>
-            <p class="text-sm font-bold text-zinc-600 mt-1">Kelola atau ikuti berbagai event kampus terpadu.</p>
+<div class="min-h-screen bg-canvas px-4 py-10 sm:px-6 sm:py-16">
+    <div class="mx-auto w-full max-w-md">
+        <div class="mb-8 text-center">
+            <a href="{{ route('home') }}" class="inline-block">
+                <img src="{{ asset('images/logo.webp') }}" alt="EventHub" class="mx-auto h-8 w-auto object-contain">
+            </a>
         </div>
 
-        <form action="{{ route('login.post') }}" method="POST" class="space-y-4">
-            @csrf
+        <div class="card p-6 sm:p-8">
+            <h1 class="text-xl font-bold text-ink">Masuk ke akun</h1>
 
-            <div>
-                <label for="email" class="block font-black text-xs uppercase mb-1">Alamat Email</label>
-                <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus
-                    class="w-full bg-[#FFFDF8] border-3 border-black p-3 font-bold text-sm focus:outline-none focus:bg-[#FFE600] focus:shadow-[4px_4px_0px_0px_#000] transition-all">
-                @error('email')
-                    <p class="text-[#FF6B4A] font-black text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+            @if ($errors->any())
+                <div class="mt-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                    <ul class="list-inside list-disc space-y-1">@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
+                </div>
+            @endif
+            @if (session('info'))
+                <div class="mt-5 rounded-lg border border-line bg-surface-soft px-4 py-3 text-sm text-muted">{{ session('info') }}</div>
+            @endif
 
-            <div>
-                <label for="password" class="block font-black text-xs uppercase mb-1">Kata Sandi (Password)</label>
-                <input type="password" id="password" name="password" required
-                    class="w-full bg-[#FFFDF8] border-3 border-black p-3 font-bold text-sm focus:outline-none focus:bg-[#FFE600] focus:shadow-[4px_4px_0px_0px_#000] transition-all">
-                @error('password')
-                    <p class="text-[#FF6B4A] font-black text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            <div class="flex items-center justify-between text-xs font-bold pt-1">
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" name="remember" class="w-4 h-4 border-2 border-black accent-black">
-                    <span>Ingat Saya</span>
+            <form action="{{ route('login.post') }}" method="POST" class="mt-6 space-y-5">
+                @csrf
+                <div>
+                    <label for="email" class="label">Alamat email</label>
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="email" class="input @error('email') border-red-400 focus:border-red-500 focus:ring-red-200 @enderror" placeholder="nama@kampus.ac.id">
+                    @error('email')
+                        <p class="mt-1.5 text-sm font-medium text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label for="password" class="label">Kata sandi</label>
+                    <input type="password" id="password" name="password" required autocomplete="current-password" class="input" placeholder="Masukkan kata sandi">
+                </div>
+                <label class="flex items-center gap-2 text-sm text-muted">
+                    <input type="checkbox" name="remember" class="rounded border-line text-brand-700 focus:ring-brand-200">
+                    Ingat saya
                 </label>
-            </div>
+                <button type="submit" class="btn btn-primary w-full">Masuk</button>
+            </form>
 
-            <button type="submit"
-                class="w-full bg-[#FFE600] hover:bg-[#FFD700] border-3 border-black p-3 font-black text-base uppercase tracking-wider shadow-[4px_4px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
-                ⚡ Masuk Sekarang
-            </button>
-        </form>
-
-        <!-- Quick Fill Demo Accounts -->
-        <div class="mt-8 pt-6 border-t-3 border-dashed border-black">
-            <p class="font-black text-xs uppercase text-zinc-500 mb-2">⚡ Quick-Fill Akun Demo / Pengujian:</p>
-            <div class="grid grid-cols-2 gap-2">
-                <button type="button" onclick="fillLogin('admin@eventhub.test', 'password')"
-                    class="bg-[#FF70A6] border-2 border-black p-2 font-black text-xs hover:bg-[#ff5795] shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] text-left">
-                    🛡️ Admin
-                </button>
-                <button type="button" onclick="fillLogin('organizer@eventhub.test', 'password')"
-                    class="bg-[#4DEEEA] border-2 border-black p-2 font-black text-xs hover:bg-[#34deda] shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] text-left">
-                    🏢 Organizer
-                </button>
-                <button type="button" onclick="fillLogin('panitia@eventhub.test', 'password')"
-                    class="bg-[#FFE600] border-2 border-black p-2 font-black text-xs hover:bg-[#ffd500] shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] text-left">
-                    📷 Panitia (Scan)
-                </button>
-                <button type="button" onclick="fillLogin('participant@eventhub.test', 'password')"
-                    class="bg-[#57EB74] border-2 border-black p-2 font-black text-xs hover:bg-[#3de05e] shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] text-left">
-                    🎓 Peserta
-                </button>
+            <div class="mt-6 border-t border-line pt-6 text-sm text-muted">
+                Belum memiliki akun? <a href="{{ route('register') }}" class="font-semibold text-brand-700 hover:text-brand-900">Buat akun baru</a>
             </div>
         </div>
 
-        <div class="mt-6 text-center text-xs font-bold">
-            Belum punya akun?
-            <a href="{{ route('register') }}" class="underline decoration-2 font-black text-[#FF6B4A]">Daftar Akun Baru</a>
-        </div>
+        <details class="mt-4 text-center text-sm">
+            <summary class="cursor-pointer text-muted hover:text-ink">Gunakan akun demo</summary>
+            <div class="mt-3 grid grid-cols-2 gap-2 text-left">
+                <button type="button" onclick="fillLogin('admin@eventhub.test','password')" class="card-soft px-3 py-2 font-medium hover:bg-surface-soft">Admin</button>
+                <button type="button" onclick="fillLogin('organizer@eventhub.test','password')" class="card-soft px-3 py-2 font-medium hover:bg-surface-soft">Organizer</button>
+                <button type="button" onclick="fillLogin('panitia@eventhub.test','password')" class="card-soft px-3 py-2 font-medium hover:bg-surface-soft">Panitia</button>
+                <button type="button" onclick="fillLogin('participant@eventhub.test','password')" class="card-soft px-3 py-2 font-medium hover:bg-surface-soft">Peserta</button>
+            </div>
+        </details>
+
+        <p class="mt-6 text-center text-sm text-muted"><a href="{{ route('events.index') }}" class="hover:text-ink hover:underline">Buka katalog event publik</a></p>
     </div>
 </div>
-
 <script>
-    function fillLogin(email, password) {
-        document.getElementById('email').value = email;
-        document.getElementById('password').value = password;
-    }
+function fillLogin(email, password){document.getElementById('email').value=email;document.getElementById('password').value=password;}
 </script>
 @endsection

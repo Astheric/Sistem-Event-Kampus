@@ -1,63 +1,51 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Dashboard Organizer — EventHub')
+@section('title', 'Dashboard Organizer')
 
 @section('dashboard_content')
 <div class="space-y-8">
-    <!-- Header -->
-    <div class="bg-white border-3 border-black p-6 shadow-[5px_5px_0px_0px_#000] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <span class="bg-[#4DEEEA] border-2 border-black px-2.5 py-0.5 text-xs font-black uppercase shadow-[2px_2px_0px_0px_#000]">
-                Manajemen Penyelenggara
-            </span>
-            <h1 class="text-3xl font-black mt-2">Dashboard Organizer</h1>
-            <p class="text-xs font-bold text-zinc-600 mt-1">
-                Pantau performa event, status penjualan tiket, dan kehadiran real-time.
-            </p>
+            <h1 class="text-xl sm:text-2xl font-bold text-ink">Ringkasan penyelenggara</h1>
         </div>
         <a href="{{ route('organizer.events.create') }}"
-            class="bg-[#FFE600] hover:bg-[#ffd700] border-3 border-black px-5 py-2.5 font-black text-xs uppercase shadow-[3px_3px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none whitespace-nowrap">
-            + Buat Event Baru
+            class="btn btn-primary text-xs py-2 px-3.5 whitespace-nowrap self-start sm:self-auto">
+            + Buat event baru
         </a>
     </div>
 
     <!-- Statistics Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white border-3 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
-            <span class="text-xs font-black text-zinc-500 uppercase block">Total Event</span>
-            <div class="text-3xl font-black font-mono mt-1">{{ $totalEvents }}</div>
-            <span class="text-[10px] font-bold text-zinc-500">Event terdaftar</span>
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-medium text-muted block">Total Event</span>
+            <div class="text-3xl font-extrabold tracking-tight text-ink mt-2">{{ number_format($totalEvents) }}</div>
+            <span class="text-xs text-muted mt-1 block">Agenda terdaftar</span>
         </div>
 
-        <div class="bg-[#FFE600] border-3 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
-            <span class="text-xs font-black uppercase block">Total Registrasi</span>
-            <div class="text-3xl font-black font-mono mt-1">{{ $totalRegistrations }}</div>
-            <span class="text-[10px] font-bold text-zinc-700">Pendaftar tiket</span>
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-medium text-muted block">Total Registrasi</span>
+            <div class="text-3xl font-extrabold tracking-tight text-ink mt-2">{{ number_format($totalRegistrations) }}</div>
+            <span class="text-xs text-muted mt-1 block">Peserta mendaftar</span>
         </div>
 
-        <div class="bg-[#57EB74] border-3 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
-            <span class="text-xs font-black uppercase block">Peserta Hadir</span>
-            <div class="text-3xl font-black font-mono mt-1">{{ $totalAttended }}</div>
-            <span class="text-[10px] font-bold text-zinc-700">Check-in terverifikasi</span>
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-medium text-muted block">Peserta Hadir</span>
+            <div class="text-3xl font-extrabold tracking-tight text-emerald-600 mt-2">{{ number_format($totalAttended) }}</div>
+            <span class="text-xs text-muted mt-1 block">Check-in terverifikasi</span>
         </div>
 
-        <div class="bg-[#00F0FF] border-3 border-black p-4 shadow-[4px_4px_0px_0px_#000]">
-            <span class="text-xs font-black uppercase block">Simulasi Pendapatan</span>
-            <div class="text-2xl font-black font-mono mt-1 truncate">
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-medium text-muted block">Simulasi Pendapatan</span>
+            <div class="text-2xl font-extrabold tracking-tight text-ink mt-2 truncate">
                 Rp {{ number_format($totalRevenue, 0, ',', '.') }}
             </div>
-            <span class="text-[10px] font-bold text-zinc-700">Pembayaran terverifikasi</span>
+            <span class="text-xs text-muted mt-1 block">Tiket berbayar</span>
         </div>
     </div>
 
-    <!-- Chart.js Graph (FR-17) -->
-    <div class="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_#000] space-y-4">
-        <div class="flex items-center justify-between border-b-2 border-black pb-2">
-            <div>
-                <h3 class="font-black text-lg">Statistik Pendaftaran vs Kehadiran per Event</h3>
-                <p class="text-xs font-bold text-zinc-500">Grafik perbandingan kuota pemesanan tiket dengan scan kehadiran hari-H.</p>
-            </div>
-            <span class="bg-black text-white px-2 py-0.5 text-[10px] font-mono font-black">CHART ANALYTICS</span>
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6 space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-line">
+            <h3 class="font-bold text-base text-ink">Pendaftaran dan kehadiran per event</h3>
         </div>
 
         <div class="h-64 sm:h-72">
@@ -65,42 +53,49 @@
         </div>
     </div>
 
-    <!-- Recent Registrations Table -->
-    <div class="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_#000] space-y-4">
-        <div class="flex items-center justify-between border-b-2 border-black pb-2">
-            <h3 class="font-black text-lg">Pendaftaran Peserta Terbaru</h3>
-            <span class="text-xs font-bold text-zinc-500">5 Transaksi Terakhir</span>
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6 space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-line">
+            <h3 class="font-bold text-base text-ink">Pendaftaran terbaru</h3>
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs font-bold">
+            <table class="w-full text-left border-collapse text-sm">
                 <thead>
-                    <tr class="bg-black text-white uppercase text-[10px] font-mono">
-                        <th class="p-3 border border-black">Kode</th>
-                        <th class="p-3 border border-black">Peserta</th>
-                        <th class="p-3 border border-black">Event</th>
-                        <th class="p-3 border border-black">Tiket</th>
-                        <th class="p-3 border border-black">Status</th>
-                        <th class="p-3 border border-black">Waktu</th>
+                    <tr class="bg-surface-soft text-xs font-semibold text-muted uppercase tracking-wider">
+                        <th class="py-3 px-4 rounded-l-lg">Kode</th>
+                        <th class="py-3 px-4">Peserta</th>
+                        <th class="py-3 px-4">Event</th>
+                        <th class="py-3 px-4">Tiket</th>
+                        <th class="py-3 px-4">Status</th>
+                        <th class="py-3 px-4 rounded-r-lg">Waktu</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-line/60">
                     @forelse($recentRegistrations as $reg)
-                        <tr class="hover:bg-zinc-50 border-b border-black">
-                            <td class="p-3 border border-black font-mono font-black">{{ $reg->registration_code }}</td>
-                            <td class="p-3 border border-black">{{ $reg->user->name }}</td>
-                            <td class="p-3 border border-black truncate max-w-xs">{{ $reg->event->title }}</td>
-                            <td class="p-3 border border-black">{{ $reg->ticket->name }}</td>
-                            <td class="p-3 border border-black">
-                                <span class="px-2 py-0.5 border border-black text-[10px] font-black uppercase {{ $reg->status === 'CONFIRMED' ? 'bg-[#57EB74]' : ($reg->status === 'ATTENDED' ? 'bg-[#00F0FF]' : 'bg-[#FFE600]') }}">
+                        @php
+                            $statusBadge = match($reg->status) {
+                                'CONFIRMED' => 'bg-emerald-50 text-emerald-700 border-emerald-200/60',
+                                'ATTENDED' => 'bg-brand-50 text-brand-700 border-brand-200/60',
+                                'PENDING' => 'bg-amber-50 text-amber-800 border-amber-200/60',
+                                'CANCELLED' => 'bg-red-50 text-red-700 border-red-200/60',
+                                default => 'bg-slate-100 text-slate-700 border-slate-200',
+                            };
+                        @endphp
+                        <tr class="hover:bg-surface-soft/60 transition-colors">
+                            <td class="py-3.5 px-4 font-mono font-semibold text-xs text-ink">{{ $reg->registration_code }}</td>
+                            <td class="py-3.5 px-4 font-semibold text-ink">{{ $reg->user->name }}</td>
+                            <td class="py-3.5 px-4 text-slate-600 truncate max-w-xs">{{ $reg->event->title }}</td>
+                            <td class="py-3.5 px-4 text-slate-600">{{ $reg->ticket->name }}</td>
+                            <td class="py-3.5 px-4">
+                                <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold {{ $statusBadge }}">
                                     {{ $reg->status }}
                                 </span>
                             </td>
-                            <td class="p-3 border border-black font-mono text-[10px] text-zinc-500">{{ $reg->created_at->diffForHumans() }}</td>
+                            <td class="py-3.5 px-4 text-xs text-muted">{{ $reg->created_at->diffForHumans() }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="p-6 text-center text-zinc-500">Belum ada pendaftaran masuk.</td>
+                            <td colspan="6" class="py-10 text-center text-muted">Belum ada pendaftaran masuk.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -122,18 +117,14 @@
                         {
                             label: 'Total Pendaftar (Tiket)',
                             data: {!! json_encode($chartRegistrations) !!},
-                            backgroundColor: '#FFE600',
-                            borderColor: '#000000',
-                            borderWidth: 2,
-                            borderRadius: 0,
+                            backgroundColor: '#4823cd',
+                            borderRadius: 6,
                         },
                         {
                             label: 'Peserta Hadir (Check-in)',
                             data: {!! json_encode($chartAttended) !!},
-                            backgroundColor: '#57EB74',
-                            borderColor: '#000000',
-                            borderWidth: 2,
-                            borderRadius: 0,
+                            backgroundColor: '#10b981',
+                            borderRadius: 6,
                         }
                     ]
                 },
@@ -143,21 +134,21 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: { color: '#e5e7eb' },
-                            ticks: { font: { weight: 'bold', family: 'Space Grotesk' } }
+                            grid: { color: '#f1f5f9' },
+                            ticks: { font: { weight: '500', family: 'Plus Jakarta Sans' } }
                         },
                         x: {
                             grid: { display: false },
-                            ticks: { font: { weight: 'bold', family: 'Space Grotesk' } }
+                            ticks: { font: { weight: '500', family: 'Plus Jakarta Sans' } }
                         }
                     },
                     plugins: {
                         legend: {
                             labels: {
-                                font: { weight: 'bold', family: 'Space Grotesk' },
-                                boxWidth: 16,
-                                borderColor: '#000000',
-                                borderWidth: 1
+                                font: { weight: '600', family: 'Plus Jakarta Sans' },
+                                boxWidth: 14,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
                             }
                         }
                     }

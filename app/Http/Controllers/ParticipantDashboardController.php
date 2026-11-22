@@ -86,10 +86,13 @@ class ParticipantDashboardController extends Controller
     {
         $user = Auth::user();
 
-        // Registrations that qualify for certificates (ATTENDED or COMPLETED)
+        // Registrations that qualify for certificates (attended/completed or already issued)
         $attendedRegistrations = Registration::with(['event.organization', 'certificate', 'ticket'])
             ->where('user_id', $user->id)
-            ->whereIn('status', ['ATTENDED', 'COMPLETED'])
+            ->where(function ($query) {
+                $query->whereIn('status', ['ATTENDED', 'COMPLETED'])
+                    ->orWhereHas('certificate');
+            })
             ->orderBy('updated_at', 'desc')
             ->get();
 

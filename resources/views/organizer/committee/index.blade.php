@@ -1,45 +1,43 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Manajemen Panitia — ' . $event->title)
+@section('title', 'Manajemen Panitia: ' . $event->title)
+@section('page_title', 'Manajemen panitia')
 
 @section('dashboard_content')
 <div class="space-y-6">
-    <div class="bg-white border-3 border-black p-6 shadow-[5px_5px_0px_0px_#000] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <span class="bg-[#00F0FF] border-2 border-black px-2.5 py-0.5 text-xs font-black uppercase shadow-[2px_2px_0px_0px_#000]">
-                Delegasi Tim Event
-            </span>
-            <h1 class="text-3xl font-black mt-2">Manajemen Panitia Acara</h1>
-            <p class="text-xs font-bold text-zinc-600 mt-1">{{ $event->title }}</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-ink">Manajemen panitia</h1>
+            <p class="text-xs sm:text-sm text-muted mt-0.5">{{ $event->title }}</p>
         </div>
-        <a href="{{ route('organizer.events.index') }}" class="bg-white border-2 border-black px-3 py-2 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000]">
-            ← Kembali
+        <a href="{{ route('organizer.events.index') }}" class="btn btn-secondary text-xs py-2 px-3.5">
+            Kembali ke daftar event
         </a>
     </div>
 
-    <!-- Form Add Committee Member (FR-12) -->
-    <div class="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_#000]">
-        <h3 class="font-black text-base uppercase mb-3 border-b-2 border-black pb-2">+ Tambahkan Panitia Baru</h3>
-        <p class="text-xs font-bold text-zinc-500 mb-4">
-            Masukkan alamat email mahasiswa yang telah terdaftar di EventHub untuk didelegasikan hak aksesnya.
+    <!-- Form Add Committee Member -->
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6 space-y-4">
+        <h3 class="font-bold text-base text-ink pb-2 border-b border-line">Tambah panitia</h3>
+        <p class="text-xs text-muted">
+            Masukkan email pengguna yang sudah terdaftar untuk memberi akses panitia pada event ini.
         </p>
 
         <form action="{{ route('organizer.committee.store', $event->id) }}" method="POST" class="space-y-4">
             @csrf
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="sm:col-span-2">
-                    <label for="email" class="block font-black text-xs uppercase mb-1">Email Pengguna Terdaftar *</label>
+                    <label for="email" class="block font-semibold text-xs text-ink mb-1.5">Email Pengguna Terdaftar *</label>
                     <input type="email" id="email" name="email" required placeholder="panitia@eventhub.test"
-                        class="w-full bg-[#FFFDF8] border-2 border-black p-2.5 font-bold text-xs focus:outline-none focus:bg-[#FFE600]">
+                        class="w-full rounded-lg border border-line/80 bg-surface-soft/40 px-3.5 py-2 text-sm focus:border-brand-700 focus:bg-surface focus:outline-none focus:ring-1 focus:ring-brand-700">
                     @error('email')
-                        <p class="text-[#FF6B4A] font-black text-xs mt-1">{{ $message }}</p>
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                     @enderror
                 </div>
 
                 <div>
-                    <label for="committee_role" class="block font-black text-xs uppercase mb-1">Divisi / Peran *</label>
+                    <label for="committee_role" class="block font-semibold text-xs text-ink mb-1.5">Divisi / Peran *</label>
                     <select id="committee_role" name="committee_role" required
-                        class="w-full bg-[#FFFDF8] border-2 border-black p-2.5 font-bold text-xs focus:outline-none focus:bg-[#FFE600]">
+                        class="w-full rounded-lg border border-line/80 bg-surface-soft/40 px-3.5 py-2 text-sm text-slate-700 focus:border-brand-700 focus:bg-surface focus:outline-none">
                         <option value="Registration">Registration (Check-in Scanner)</option>
                         <option value="Finance">Finance (Validasi Pembayaran)</option>
                         <option value="Documentation">Documentation (Dokumentasi)</option>
@@ -48,43 +46,43 @@
             </div>
 
             <button type="submit"
-                class="bg-[#FFE600] hover:bg-[#ffd700] border-2 border-black px-5 py-2.5 font-black text-xs uppercase shadow-[3px_3px_0px_0px_#000] active:translate-x-1 active:translate-y-1">
+                class="inline-flex items-center gap-1.5 rounded-lg bg-brand-700 px-5 py-2.5 text-xs font-semibold text-white hover:bg-brand-800 transition">
                 + Tugaskan Panitia
             </button>
         </form>
     </div>
 
     <!-- Committee Members Table -->
-    <div class="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_#000] space-y-4">
-        <h3 class="font-black text-base uppercase border-b-2 border-black pb-2">Daftar Fungsionaris Panitia</h3>
+    <div class="bg-surface rounded-2xl border border-line/60 p-6 space-y-4">
+        <h3 class="font-bold text-base text-ink pb-2 border-b border-line/60">Daftar panitia</h3>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs font-bold">
+            <table class="w-full text-left border-collapse text-sm">
                 <thead>
-                    <tr class="bg-black text-white font-mono uppercase text-[10px]">
-                        <th class="p-3 border border-black">Nama Panitia</th>
-                        <th class="p-3 border border-black">Email</th>
-                        <th class="p-3 border border-black">Divisi / Otoritas</th>
-                        <th class="p-3 border border-black">Waktu Ditugaskan</th>
-                        <th class="p-3 border border-black text-center">Aksi</th>
+                    <tr class="bg-surface-soft text-xs font-semibold text-muted uppercase tracking-wider">
+                        <th class="py-3 px-4 rounded-l-lg">Nama Panitia</th>
+                        <th class="py-3 px-4">Email</th>
+                        <th class="py-3 px-4">Divisi / Otoritas</th>
+                        <th class="py-3 px-4">Waktu Ditugaskan</th>
+                        <th class="py-3 px-4 text-center rounded-r-lg">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-line/60">
                     @forelse($event->eventMembers as $member)
-                        <tr class="hover:bg-zinc-50 border-b border-black">
-                            <td class="p-3 border border-black font-black text-sm">{{ $member->user->name }}</td>
-                            <td class="p-3 border border-black font-mono">{{ $member->user->email }}</td>
-                            <td class="p-3 border border-black">
-                                <span class="px-2 py-0.5 border border-black text-[10px] font-black uppercase {{ $member->committee_role === 'Registration' ? 'bg-[#57EB74]' : ($member->committee_role === 'Finance' ? 'bg-[#FFE600]' : 'bg-[#4DEEEA]') }}">
+                        <tr class="hover:bg-surface-soft/60 transition-colors">
+                            <td class="py-3.5 px-4 font-semibold text-ink">{{ $member->user->name }}</td>
+                            <td class="py-3.5 px-4 text-xs text-muted font-mono">{{ $member->user->email }}</td>
+                            <td class="py-3.5 px-4">
+                                <span class="inline-flex items-center rounded-md bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
                                     {{ $member->committee_role }}
                                 </span>
                             </td>
-                            <td class="p-3 border border-black font-mono text-[10px] text-zinc-500">{{ $member->created_at->format('d M Y') }}</td>
-                            <td class="p-3 border border-black text-center">
+                            <td class="py-3.5 px-4 text-xs text-muted">{{ $member->created_at->format('d M Y') }}</td>
+                            <td class="py-3.5 px-4 text-center">
                                 <form action="{{ route('organizer.committee.destroy', ['event' => $event->id, 'member' => $member->id]) }}" method="POST" onsubmit="return confirm('Hapus panitia ini?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="bg-[#FF6B4A] text-white border border-black px-2 py-1 font-black text-[10px]">
+                                    <button type="submit" class="rounded-lg bg-red-50 hover:bg-red-100 px-3 py-1 text-xs font-semibold text-red-700 transition">
                                         Hapus
                                     </button>
                                 </form>
@@ -92,7 +90,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="p-6 text-center text-zinc-500">Belum ada panitia tambahan yang didelegasikan.</td>
+                            <td colspan="5" class="py-10 text-center text-muted">Belum ada panitia tambahan yang didelegasikan.</td>
                         </tr>
                     @endforelse
                 </tbody>

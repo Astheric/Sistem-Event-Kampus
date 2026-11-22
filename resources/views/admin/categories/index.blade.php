@@ -1,41 +1,47 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Master Kategori — Admin EventHub')
+@section('title', 'Master Kategori')
 
 @section('dashboard_content')
+@php
+    $iconOptions = [
+        'calendar', 'mic', 'code', 'aperture', 'award', 'briefcase', 'globe', 'star',
+        'users', 'tag', 'book-open', 'compass', 'camera', 'grid', 'map-pin', 'file-text',
+    ];
+@endphp
 <div class="space-y-6">
-    <div class="bg-white border-3 border-black p-6 shadow-[5px_5px_0px_0px_#000]">
-        <span class="bg-[#4DEEEA] border-2 border-black px-2.5 py-0.5 text-xs font-black uppercase shadow-[2px_2px_0px_0px_#000]">
-            Master Data (FR-04)
-        </span>
-        <h1 class="text-3xl font-black mt-2">Kategori Event Kampus</h1>
-        <p class="text-xs font-bold text-zinc-600 mt-1">Kelola daftar klasifikasi event yang dapat dipilih oleh penyelenggara.</p>
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6">
+        <h1 class="text-xl sm:text-2xl font-bold text-ink">Kategori event</h1>
     </div>
 
     <!-- Form Add Category -->
-    <div class="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_#000]">
-        <h3 class="font-black text-base uppercase mb-3 border-b-2 border-black pb-2">+ Tambah Kategori Baru</h3>
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6 space-y-4">
+        <h3 class="font-bold text-base text-ink pb-2 border-b border-line">Tambah kategori baru</h3>
 
         <form action="{{ route('admin.categories.store') }}" method="POST" class="flex flex-col sm:flex-row gap-3">
             @csrf
-            <div class="sm:w-24">
-                <label for="icon" class="block font-black text-xs uppercase mb-1">Ikon Emoji</label>
-                <input type="text" id="icon" name="icon" value="📌" required maxlength="10"
-                    class="w-full bg-[#FFFDF8] border-2 border-black p-2.5 font-bold text-center text-lg focus:outline-none focus:bg-[#FFE600]">
+            <div class="sm:w-40">
+                <label for="icon" class="block font-semibold text-xs text-ink mb-1">Ikon</label>
+                <select id="icon" name="icon" required
+                    class="w-full rounded-lg border border-line/80 bg-surface-soft/40 p-2.5 text-sm focus:border-brand-700 focus:bg-surface focus:outline-none">
+                    @foreach($iconOptions as $option)
+                        <option value="{{ $option }}" @selected(old('icon', 'calendar') === $option)>{{ $option }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="flex-grow">
-                <label for="name" class="block font-black text-xs uppercase mb-1">Nama Kategori *</label>
-                <input type="text" id="name" name="name" required placeholder="Contoh: Konser Musik / Webinar Internasional"
-                    class="w-full bg-[#FFFDF8] border-2 border-black p-2.5 font-bold text-xs focus:outline-none focus:bg-[#FFE600]">
+                <label for="name" class="block font-semibold text-xs text-ink mb-1">Nama Kategori *</label>
+                <input type="text" id="name" name="name" required placeholder="Contoh: Konser Musik / Webinar Nasional"
+                    class="w-full rounded-lg border border-line/80 bg-surface-soft/40 p-2.5 text-sm focus:border-brand-700 focus:bg-surface focus:outline-none focus:ring-1 focus:ring-brand-700">
                 @error('name')
-                    <p class="text-[#FF6B4A] font-black text-xs mt-1">{{ $message }}</p>
+                    <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
 
             <div class="sm:self-end">
                 <button type="submit"
-                    class="w-full sm:w-auto bg-[#FFE600] hover:bg-[#ffd700] border-2 border-black px-5 py-3 font-black text-xs uppercase shadow-[3px_3px_0px_0px_#000] active:translate-x-1 active:translate-y-1">
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-lg bg-brand-700 px-5 py-2.5 text-xs font-semibold text-white hover:bg-brand-800 transition">
                     + Simpan Kategori
                 </button>
             </div>
@@ -44,36 +50,36 @@
 
     <!-- Categories Table -->
     <div x-data="{ editModalOpen: false, editId: null, editName: '', editIcon: '', editAction: '' }"
-        class="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_#000] space-y-4">
-        <h3 class="font-black text-base uppercase border-b-2 border-black pb-2">Daftar Kategori Tersedia</h3>
+        class="bg-surface rounded-2xl border border-line/60 p-6 space-y-4">
+        <h3 class="font-bold text-base text-ink pb-2 border-b border-line/60">Daftar Kategori Tersedia</h3>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs font-bold">
+            <table class="w-full text-left border-collapse text-sm">
                 <thead>
-                    <tr class="bg-black text-white font-mono uppercase text-[10px]">
-                        <th class="p-3 border border-black text-center w-16">Ikon</th>
-                        <th class="p-3 border border-black">Nama Kategori</th>
-                        <th class="p-3 border border-black">Slug URL</th>
-                        <th class="p-3 border border-black text-center">Jumlah Event</th>
-                        <th class="p-3 border border-black text-center">Aksi</th>
+                    <tr class="bg-surface-soft text-xs font-semibold text-muted uppercase tracking-wider">
+                        <th class="py-3 px-4 text-center w-16 rounded-l-lg">Ikon</th>
+                        <th class="py-3 px-4">Nama Kategori</th>
+                        <th class="py-3 px-4">Slug URL</th>
+                        <th class="py-3 px-4 text-center">Jumlah Event</th>
+                        <th class="py-3 px-4 text-center rounded-r-lg">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-line/60">
                     @foreach($categories as $cat)
-                        <tr class="hover:bg-zinc-50 border-b border-black">
-                            <td class="p-3 border border-black text-center text-xl">{{ $cat->icon }}</td>
-                            <td class="p-3 border border-black font-black text-sm">{{ $cat->name }}</td>
-                            <td class="p-3 border border-black font-mono text-zinc-500">{{ $cat->slug }}</td>
-                            <td class="p-3 border border-black text-center font-mono">
-                                <span class="bg-[#FFE600] border border-black px-2 py-0.5 text-xs font-black">
+                        <tr class="hover:bg-surface-soft/60 transition-colors">
+                            <td class="py-3.5 px-4 text-center"><x-icon name="{{ $cat->icon }}" class="mx-auto size-4 text-brand-700" /></td>
+                            <td class="py-3.5 px-4 font-semibold text-ink">{{ $cat->name }}</td>
+                            <td class="py-3.5 px-4 text-xs text-muted font-mono">{{ $cat->slug }}</td>
+                            <td class="py-3.5 px-4 text-center">
+                                <span class="inline-flex items-center rounded-md bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
                                     {{ $cat->events_count }} Event
                                 </span>
                             </td>
-                            <td class="p-3 border border-black text-center">
+                            <td class="py-3.5 px-4 text-center">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <button type="button"
-                                        @click="editModalOpen = true; editId = {{ $cat->id }}; editName = '{{ addslashes($cat->name) }}'; editIcon = '{{ addslashes($cat->icon) }}'; editAction = '{{ route('admin.categories.update', $cat->id) }}'"
-                                        class="bg-[#4DEEEA] hover:bg-[#38d4d0] text-black border border-black px-2.5 py-1 font-black text-[10px] uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-0.5 active:translate-y-0.5">
+                                        @click="editModalOpen = true; editId = {{ $cat->id }}; editName = '{{ addslashes($cat->name) }}'; editIcon = '{{ addslashes($cat->icon ?? '') }}'; editAction = '{{ route('admin.categories.update', $cat->id) }}'"
+                                        class="rounded-lg bg-slate-100 hover:bg-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 transition">
                                         Edit
                                     </button>
 
@@ -81,7 +87,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
-                                            class="bg-[#FF6B4A] hover:bg-red-600 text-white border border-black px-2.5 py-1 font-black text-[10px] uppercase shadow-[2px_2px_0px_0px_#000]">
+                                            class="rounded-lg bg-red-50 hover:bg-red-100 px-3 py-1.5 text-xs font-semibold text-red-700 transition">
                                             Hapus
                                         </button>
                                     </form>
@@ -95,36 +101,40 @@
 
         <!-- Edit Category Modal -->
         <div x-show="editModalOpen" x-cloak
-            class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+            class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
             <div @click.away="editModalOpen = false"
-                class="bg-white border-4 border-black p-6 w-full max-w-md shadow-[8px_8px_0px_0px_#000] space-y-4">
-                <div class="flex items-center justify-between border-b-2 border-black pb-2">
-                    <h4 class="font-black text-base uppercase">Edit Kategori</h4>
-                    <button type="button" @click="editModalOpen = false" class="font-black text-lg px-2 border border-black hover:bg-zinc-200">&times;</button>
+                class="bg-surface rounded-2xl border border-line/60 p-6 sm:p-8 w-full max-w-md shadow-xl space-y-4">
+                <div class="flex items-center justify-between pb-3 border-b border-line/60">
+                    <h4 class="font-bold text-lg text-ink">Edit Kategori</h4>
+                    <button type="button" @click="editModalOpen = false" class="text-slate-400 hover:text-ink text-xl font-bold">&times;</button>
                 </div>
 
                 <form :action="editAction" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
                     <div>
-                        <label class="block font-black text-xs uppercase mb-1">Ikon Emoji</label>
-                        <input type="text" name="icon" x-model="editIcon" maxlength="10" required
-                            class="w-full bg-[#FFFDF8] border-2 border-black p-2 font-bold text-center text-xl focus:outline-none focus:bg-[#FFE600]">
+                        <label class="block font-semibold text-xs text-ink mb-1">Ikon</label>
+                        <select name="icon" x-model="editIcon" required
+                            class="w-full rounded-lg border border-line/80 bg-surface-soft/40 p-2.5 text-sm focus:border-brand-700 focus:bg-surface focus:outline-none">
+                            @foreach($iconOptions as $option)
+                                <option value="{{ $option }}">{{ $option }}</option>
+                            @endforeach
+                        </select>
                     </div>
 
                     <div>
-                        <label class="block font-black text-xs uppercase mb-1">Nama Kategori</label>
+                        <label class="block font-semibold text-xs text-ink mb-1">Nama Kategori</label>
                         <input type="text" name="name" x-model="editName" required
-                            class="w-full bg-[#FFFDF8] border-2 border-black p-2 font-bold text-sm focus:outline-none focus:bg-[#FFE600]">
+                            class="w-full rounded-lg border border-line/80 bg-surface-soft/40 p-2.5 text-sm focus:border-brand-700 focus:bg-surface focus:outline-none">
                     </div>
 
-                    <div class="flex items-center justify-end gap-2 pt-2 border-t-2 border-black">
+                    <div class="flex items-center justify-end gap-2 pt-3 border-t border-line/60">
                         <button type="button" @click="editModalOpen = false"
-                            class="bg-zinc-200 border-2 border-black px-4 py-2 font-black text-xs uppercase">
+                            class="rounded-lg bg-surface-soft px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
                             Batal
                         </button>
                         <button type="submit"
-                            class="bg-[#FFE600] border-2 border-black px-5 py-2 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1">
+                            class="rounded-lg bg-brand-700 px-5 py-2 text-xs font-semibold text-white hover:bg-brand-800 transition">
                             Simpan Perubahan
                         </button>
                     </div>

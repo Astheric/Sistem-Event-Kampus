@@ -107,4 +107,20 @@ class CommitteeController extends Controller
 
         return back()->with('success', 'Panitia '.$memberName.' berhasil dihapus dari tim.');
     }
+
+    /**
+     * Display all events where current user is assigned as committee member.
+     */
+    public function myTasks(Request $request): View
+    {
+        /** @var User $user */
+        $user = Auth::user();
+
+        $memberships = $user->eventMembers()
+            ->with(['event.organization', 'event.venue', 'event.category'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('organizer.committee.tasks', compact('memberships'));
+    }
 }

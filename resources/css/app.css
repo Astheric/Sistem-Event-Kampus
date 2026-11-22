@@ -1,55 +1,114 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../views/**/*.blade.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
 
 @theme {
-    --font-heading: 'Space Grotesk', system-ui, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --font-sans: 'Plus Jakarta Sans', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-    --color-neo-bg: #FFFDF8;
-    --color-neo-yellow: #FFE600;
-    --color-neo-orange: #FF6B4A;
-    --color-neo-cyan: #00F0FF;
-    --color-neo-pink: #FF70A6;
-    --color-neo-green: #57EB74;
-    --color-neo-purple: #A78BFA;
-    --color-neo-black: #000000;
+    --color-canvas: #f8f9fa;
+    --color-bg: #f8f9fa;
+    --color-surface: #ffffff;
+    --color-surface-soft: #f1f5f9;
+    --color-ink: #0f172a;
+    --color-muted: #475569;
+    --color-subtle: #64748b;
+    --color-line: #e2e8f0;
+
+    --color-brand-50: #f5f3ff;
+    --color-brand-100: #ede9fe;
+    --color-brand-200: #ddd6fe;
+    --color-brand-500: #7c5cf0;
+    --color-brand-600: #5b35d9;
+    --color-brand-700: #4823cd;
+    --color-brand-900: #2e1680;
+    --color-accent: #4823cd;
+    --color-accent-ink: #ffffff;
+
+    --color-success: #047857;
+    --color-success-soft: #d1fae5;
+    --color-success-ink: #065f46;
+    --color-warning: #b45309;
+    --color-warning-soft: #fef3c7;
+    --color-warning-ink: #92400e;
+    --color-danger: #b91c1c;
+    --color-danger-soft: #fee2e2;
+    --color-danger-ink: #991b1b;
+
+    --color-field-1: #4823cd;
+    --color-field-1-ink: #ffffff;
+    --color-field-2: #f1f5f9;
+    --color-field-2-ink: #0f172a;
+    --color-field-3: #f5f3ff;
+    --color-field-3-ink: #4823cd;
+    --color-field-4: #0f172a;
+    --color-field-4-ink: #f8f9fa;
+
+    --radius-card: 16px;
+    --radius-inner: 10px;
+    --radius-chip: 9999px;
+    --radius-pill: 9999px;
 }
 
-@layer utilities {
-    .neo-shadow {
-        box-shadow: 4px 4px 0px 0px #000000;
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        overflow-x: clip;
     }
-    .neo-shadow-lg {
-        box-shadow: 6px 6px 0px 0px #000000;
+    body {
+        @apply bg-canvas text-ink font-sans antialiased text-[16px];
+        line-height: 1.6;
+        overflow-x: clip;
     }
-    .neo-shadow-sm {
-        box-shadow: 2px 2px 0px 0px #000000;
+    h1, h2, h3, h4 {
+        letter-spacing: -0.025em;
+        color: var(--color-ink);
     }
-    .neo-shadow-hover:hover {
-        transform: translate(-2px, -2px);
-        box-shadow: 6px 6px 0px 0px #000000;
-    }
-    .neo-shadow-active:active {
-        transform: translate(2px, 2px);
-        box-shadow: 0px 0px 0px 0px #000000;
+    ::selection {
+        background: var(--color-brand-100);
+        color: var(--color-brand-900);
     }
 }
 
-body {
-    background-color: var(--color-neo-bg);
-    color: #000000;
-    font-family: var(--font-heading), system-ui, sans-serif;
+@keyframes entrance {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading), system-ui, sans-serif;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-}
-
-code, .font-tech {
-    font-family: var(--font-mono), monospace;
+@layer components {
+    .page-blob { display: none; }
+    .card {
+        @apply bg-surface rounded-[var(--radius-card)];
+    }
+    .card-soft {
+        @apply bg-surface-soft rounded-[var(--radius-card)];
+    }
+    .btn {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-base font-semibold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-200 focus-visible:ring-offset-1;
+    }
+    .btn-primary { @apply bg-brand-700 text-white hover:bg-brand-900 active:translate-y-0.5; }
+    .btn-secondary { @apply bg-surface-soft text-ink hover:bg-slate-200 active:translate-y-0.5; }
+    .btn-ghost { @apply bg-transparent text-brand-700 hover:bg-brand-50; }
+    .input {
+        @apply w-full rounded-xl border border-line bg-surface px-4 py-2.5 text-base text-ink placeholder:text-subtle focus:border-brand-600 focus:outline-none focus:ring-2 focus:ring-brand-100;
+    }
+    .label { @apply block text-sm font-semibold text-ink mb-1.5; }
+    .badge {
+        @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
 }

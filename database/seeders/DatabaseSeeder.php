@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
             'phone' => '081234567890',
             'bio' => 'Super Administrator Sistem Event Kampus EventHub.',
+            'verified_at' => $now,
         ]);
 
         $organizerUser = User::create([
@@ -46,6 +47,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'organizer',
             'phone' => '082198765432',
             'bio' => 'Badan Eksekutif Mahasiswa Fakultas Ilmu Komputer.',
+            'verified_at' => $now,
         ]);
 
         $panitiaUser = User::create([
@@ -55,6 +57,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'participant', // Participant delegated as event committee
             'phone' => '083811223344',
             'bio' => 'Koordinator Divisi Registrasi & Check-in Lapangan.',
+            'verified_at' => $now,
         ]);
 
         $participantUser = User::create([
@@ -64,6 +67,7 @@ class DatabaseSeeder extends Seeder
             'role' => 'participant',
             'phone' => '085712345678',
             'bio' => 'Mahasiswa Teknik Informatika Angkatan 2023.',
+            'verified_at' => $now,
         ]);
 
         $participant2 = User::create([
@@ -73,6 +77,30 @@ class DatabaseSeeder extends Seeder
             'role' => 'participant',
             'phone' => '087812349988',
             'bio' => 'Mahasiswi Sistem Informasi Angkatan 2024.',
+            'verified_at' => $now,
+        ]);
+
+        // Dosen demo accounts
+        $dosenVerified = User::create([
+            'name' => 'Dr. Budi Santoso',
+            'email' => 'dosen@eventhub.test',
+            'password' => Hash::make('password'),
+            'role' => 'dosen',
+            'phone' => '081200001111',
+            'bio' => 'Dosen Fakultas Ilmu Komputer.',
+            'nidn' => '0123456789',
+            'verified_at' => $now,
+        ]);
+
+        $dosenUnverified = User::create([
+            'name' => 'Dosen Baru',
+            'email' => 'dosen.baru@eventhub.test',
+            'password' => Hash::make('password'),
+            'role' => 'dosen',
+            'phone' => '081200002222',
+            'bio' => 'Dosen baru belum diverifikasi.',
+            'nidn' => '0987654321',
+            'verified_at' => null,
         ]);
 
         // 2. Organizations
@@ -85,12 +113,12 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 3. Master Categories
-        $catSeminar = Category::create(['name' => 'Seminar Nasional', 'slug' => 'seminar-nasional', 'icon' => '🎤']);
-        $catWorkshop = Category::create(['name' => 'Workshop & Bootcamp', 'slug' => 'workshop-bootcamp', 'icon' => '💻']);
-        $catFestival = Category::create(['name' => 'Festival & Seni', 'slug' => 'festival-seni', 'icon' => '🎨']);
-        $catKompetisi = Category::create(['name' => 'Kompetisi Mahasiswa', 'slug' => 'kompetisi-mahasiswa', 'icon' => '🏆']);
-        $catExpo = Category::create(['name' => 'Expo Karir & Industri', 'slug' => 'expo-karir', 'icon' => '💼']);
-        $catWebinar = Category::create(['name' => 'Webinar Terbuka', 'slug' => 'webinar-terbuka', 'icon' => '🌐']);
+        $catSeminar = Category::create(['name' => 'Seminar Nasional', 'slug' => 'seminar-nasional', 'icon' => 'mic']);
+        $catWorkshop = Category::create(['name' => 'Workshop & Bootcamp', 'slug' => 'workshop-bootcamp', 'icon' => 'code']);
+        $catFestival = Category::create(['name' => 'Festival & Seni', 'slug' => 'festival-seni', 'icon' => 'aperture']);
+        $catKompetisi = Category::create(['name' => 'Kompetisi Mahasiswa', 'slug' => 'kompetisi-mahasiswa', 'icon' => 'award']);
+        $catExpo = Category::create(['name' => 'Expo Karir & Industri', 'slug' => 'expo-karir', 'icon' => 'briefcase']);
+        $catWebinar = Category::create(['name' => 'Webinar Terbuka', 'slug' => 'webinar-terbuka', 'icon' => 'globe']);
 
         // 4. Venues
         $venue1 = Venue::create([
@@ -123,12 +151,13 @@ class DatabaseSeeder extends Seeder
             'venue_id' => $venue1->id,
             'title' => 'National Tech Summit 2026: AI & Cyber Security Horizons',
             'slug' => 'national-tech-summit-2026',
-            'banner' => null,
+            'banner' => 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
             'description' => 'Konferensi teknologi tahunan terbesar di kampus yang mempertemukan pakar industri terkemuka, peneliti AI, dan praktisi keamanan siber. Pelajari tren masa depan, arsitektur AI agentic, dan pertahanan siber modern!',
             'start_time' => $now->copy()->addDays(14)->setTime(9, 0),
             'end_time' => $now->copy()->addDays(14)->setTime(16, 30),
             'capacity' => 300,
             'status' => 'PUBLISHED',
+            'audience' => 'ALL',
         ]);
 
         $t1Early = Ticket::create([
@@ -175,12 +204,13 @@ class DatabaseSeeder extends Seeder
             'venue_id' => $venue2->id,
             'title' => 'Hands-on Workshop: Neo-Brutalism Web Design & Modern Tailwind',
             'slug' => 'hands-on-workshop-neo-brutalism',
-            'banner' => null,
+            'banner' => 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80',
             'description' => 'Bedah tuntas implementasi estetika Neo-Brutalism pada antarmuka web modern. Pelajari kombinasi border tebal, warna kontras tinggi, solid shadows, dan micro-interaction yang tactile!',
             'start_time' => $now->copy()->addDays(7)->setTime(13, 0),
             'end_time' => $now->copy()->addDays(7)->setTime(17, 0),
             'capacity' => 60,
             'status' => 'PUBLISHED',
+            'audience' => 'STUDENT',
         ]);
 
         $t2Free = Ticket::create([
@@ -200,12 +230,13 @@ class DatabaseSeeder extends Seeder
             'venue_id' => $venue1->id,
             'title' => 'Hackathon Mahasiswa Nasional: Inovasi Kampus Digital 2026',
             'slug' => 'hackathon-mahasiswa-nasional-2026',
-            'banner' => null,
+            'banner' => 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80',
             'description' => 'Ajang kompetisi coding dan pembuatan prototipe solusi berbasis AI dan Web selama 36 jam nonstop. Total hadiah Rp 35.000.000 untuk 3 tim terbaik!',
             'start_time' => $now->copy()->addDays(28)->setTime(8, 0),
             'end_time' => $now->copy()->addDays(30)->setTime(18, 0),
             'capacity' => 100,
             'status' => 'SUBMITTED', // Needs admin moderation approval!
+            'audience' => 'LECTURER',
         ]);
 
         Ticket::create([
@@ -225,7 +256,7 @@ class DatabaseSeeder extends Seeder
             'venue_id' => $venue1->id,
             'title' => 'Seminar Kepemimpinan & Etika Digital Organisasi Mahasiswa',
             'slug' => 'seminar-kepemimpinan-etika-digital',
-            'banner' => null,
+            'banner' => 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=1200&q=80',
             'description' => 'Seminar penguatan kapasitas fungsionaris BEM, DPM, dan UKM se-lingkungan kampus tentang tata kelola organisasi yang transparan, etis, dan berbasis kolaborasi digital.',
             'start_time' => $now->copy()->subDays(10)->setTime(8, 30),
             'end_time' => $now->copy()->subDays(10)->setTime(12, 30),
@@ -351,6 +382,146 @@ class DatabaseSeeder extends Seeder
             'user_id' => $participant2->id,
             'rating' => 5,
             'comment' => 'Keren banget acaranya! Semoga sering diadakan seminar kepemimpinan seperti ini.',
+        ]);
+
+        // Event 5: PUBLISHED - Festival Seni
+        $event5 = Event::create([
+            'organization_id' => $org->id,
+            'category_id' => $catFestival->id,
+            'venue_id' => $venue3->id,
+            'title' => 'Festival Seni & Budaya Kampus 2026',
+            'slug' => 'festival-seni-budaya-kampus-2026',
+            'banner' => 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80',
+            'description' => 'Pentas seni, musik, tari, dan pameran karya mahasiswa dalam satu hari penuh. Terbuka untuk seluruh civitas akademika dan masyarakat umum.',
+            'start_time' => $now->copy()->addDays(21)->setTime(15, 0),
+            'end_time' => $now->copy()->addDays(21)->setTime(22, 0),
+            'capacity' => 500,
+            'status' => 'PUBLISHED',
+            'audience' => 'ALL',
+        ]);
+
+        Ticket::create([
+            'event_id' => $event5->id,
+            'name' => 'Tiket Masuk Umum',
+            'price' => 0,
+            'quota' => 500,
+            'available_quota' => 500,
+            'start_sale' => $now->copy()->subDay(),
+            'end_sale' => $now->copy()->addDays(20),
+        ]);
+
+        // Event 6: PUBLISHED - Webinar Terbuka
+        $event6 = Event::create([
+            'organization_id' => $org->id,
+            'category_id' => $catWebinar->id,
+            'venue_id' => null,
+            'title' => 'Webinar Karir: Menyiapkan Portofolio Digital untuk Fresh Graduate',
+            'slug' => 'webinar-karir-portofolio-digital-fresh-graduate',
+            'banner' => 'https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?auto=format&fit=crop&w=1200&q=80',
+            'description' => 'Sesi daring bersama praktisi HR dan alumni untuk membahas strategi membangun portofolio, CV, dan profil LinkedIn yang kuat bagi lulusan baru.',
+            'start_time' => $now->copy()->addDays(5)->setTime(19, 0),
+            'end_time' => $now->copy()->addDays(5)->setTime(21, 0),
+            'capacity' => 200,
+            'status' => 'PUBLISHED',
+            'audience' => 'STUDENT',
+        ]);
+
+        Ticket::create([
+            'event_id' => $event6->id,
+            'name' => 'Peserta Webinar',
+            'price' => 0,
+            'quota' => 200,
+            'available_quota' => 200,
+            'start_sale' => $now->copy()->subDays(2),
+            'end_sale' => $now->copy()->addDays(5)->setHour(18),
+        ]);
+
+        // Event 7: PUBLISHED - Expo Karir
+        $event7 = Event::create([
+            'organization_id' => $org->id,
+            'category_id' => $catExpo->id,
+            'venue_id' => $venue1->id,
+            'title' => 'Expo Karir & Magang Kampus 2026',
+            'slug' => 'expo-karir-magang-kampus-2026',
+            'banner' => 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80',
+            'description' => 'Temui puluhan perusahaan mitra kampus, ikuti sesi company talk, dan kirimkan lamaran magang langsung di lokasi acara.',
+            'start_time' => $now->copy()->addDays(30)->setTime(9, 0),
+            'end_time' => $now->copy()->addDays(30)->setTime(16, 0),
+            'capacity' => 400,
+            'status' => 'PUBLISHED',
+            'audience' => 'ALL',
+        ]);
+
+        Ticket::create([
+            'event_id' => $event7->id,
+            'name' => 'Pengunjung Expo',
+            'price' => 0,
+            'quota' => 350,
+            'available_quota' => 350,
+            'start_sale' => $now->copy()->subDay(),
+            'end_sale' => $now->copy()->addDays(29),
+        ]);
+
+        Ticket::create([
+            'event_id' => $event7->id,
+            'name' => 'Fast Track Interview',
+            'price' => 15000,
+            'quota' => 50,
+            'available_quota' => 50,
+            'start_sale' => $now->copy()->subDay(),
+            'end_sale' => $now->copy()->addDays(29),
+        ]);
+
+        // Event 8: PUBLISHED - Workshop Desain
+        $event8 = Event::create([
+            'organization_id' => $org->id,
+            'category_id' => $catWorkshop->id,
+            'venue_id' => $venue2->id,
+            'title' => 'Workshop UI/UX: Riset Pengguna untuk Produk Digital',
+            'slug' => 'workshop-uiux-riset-pengguna-produk-digital',
+            'banner' => 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80',
+            'description' => 'Belajar praktik riset pengguna, menyusun persona, dan memetakan user journey sebelum mendesain antarmuka produk digital.',
+            'start_time' => $now->copy()->addDays(10)->setTime(9, 0),
+            'end_time' => $now->copy()->addDays(10)->setTime(15, 0),
+            'capacity' => 40,
+            'status' => 'PUBLISHED',
+            'audience' => 'STUDENT',
+        ]);
+
+        Ticket::create([
+            'event_id' => $event8->id,
+            'name' => 'Peserta Workshop',
+            'price' => 35000,
+            'quota' => 40,
+            'available_quota' => 40,
+            'start_sale' => $now->copy()->subDay(),
+            'end_sale' => $now->copy()->addDays(9),
+        ]);
+
+        // Event 9: COMPLETED - Kompetisi lalu
+        $event9 = Event::create([
+            'organization_id' => $org->id,
+            'category_id' => $catKompetisi->id,
+            'venue_id' => $venue1->id,
+            'title' => 'Lomba Debat Mahasiswa Tingkat Fakultas 2026',
+            'slug' => 'lomba-debat-mahasiswa-fakultas-2026',
+            'banner' => 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80',
+            'description' => 'Kompetisi debat antar himpunan mahasiswa dengan tema kebijakan publik, teknologi, dan keberlanjutan.',
+            'start_time' => $now->copy()->subDays(20)->setTime(8, 0),
+            'end_time' => $now->copy()->subDays(20)->setTime(17, 0),
+            'capacity' => 120,
+            'status' => 'COMPLETED',
+            'audience' => 'STUDENT',
+        ]);
+
+        Ticket::create([
+            'event_id' => $event9->id,
+            'name' => 'Peserta Lomba',
+            'price' => 0,
+            'quota' => 120,
+            'available_quota' => 118,
+            'start_sale' => $now->copy()->subDays(35),
+            'end_sale' => $now->copy()->subDays(21),
         ]);
 
         // Notifications

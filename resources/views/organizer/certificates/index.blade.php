@@ -1,100 +1,94 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Penerbitan Sertifikat — ' . $event->title)
+@section('title', 'Penerbitan Sertifikat: ' . $event->title)
+@section('page_title', 'Penerbitan sertifikat')
 
 @section('dashboard_content')
 <div class="space-y-6">
-    <!-- Header -->
-    <div class="bg-white border-3 border-black p-6 shadow-[5px_5px_0px_0px_#000] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <div class="flex items-center gap-2 mb-1">
-                <span class="bg-[#FF70A6] border-2 border-black px-2.5 py-0.5 text-xs font-black uppercase shadow-[2px_2px_0px_0px_#000]">
-                    Penerbitan Digital (FR-13)
-                </span>
-                <span class="bg-black text-white px-2 py-0.5 text-[10px] font-mono font-black">BR-04 ENFORCED</span>
-            </div>
-            <h1 class="text-3xl font-black">Penerbitan E-Sertifikat</h1>
-            <p class="text-xs font-bold text-zinc-600 mt-1">{{ $event->title }}</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-ink">Penerbitan e-sertifikat</h1>
+            <p class="text-xs sm:text-sm text-muted mt-0.5">{{ $event->title }}</p>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2.5">
             @if($stats['pending_issuance'] > 0)
                 <form action="{{ route('organizer.certificates.generate_all', $event->id) }}" method="POST">
                     @csrf
                     <button type="submit"
-                        class="bg-[#57EB74] hover:bg-[#43d960] border-2 border-black px-4 py-2 font-black text-xs uppercase shadow-[3px_3px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none whitespace-nowrap">
-                        ⚡ Terbitkan Semua Sertifikat ({{ $stats['pending_issuance'] }})
+                        class="inline-flex items-center gap-1.5 rounded-lg bg-brand-700 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-800 transition whitespace-nowrap">
+                        <x-icon name="zap" class="size-3.5" /> Terbitkan Semua ({{ $stats['pending_issuance'] }})
                     </button>
                 </form>
             @endif
-            <a href="{{ route('organizer.events.index') }}" class="bg-white border-2 border-black px-3 py-2 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000]">
+            <a href="{{ route('organizer.events.index') }}" class="inline-flex items-center rounded-lg bg-surface-soft px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
                 ← Kembali
             </a>
         </div>
     </div>
 
     <!-- Stats -->
-    <div class="grid grid-cols-3 gap-4 text-center">
-        <div class="bg-white border-3 border-black p-4 shadow-[3px_3px_0px_0px_#000]">
-            <span class="text-xs font-black uppercase text-zinc-500">Peserta Hadir (ATTENDED)</span>
-            <div class="text-3xl font-black font-mono mt-1">{{ $stats['total_attended'] }}</div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-medium text-muted block">Peserta Hadir (ATTENDED)</span>
+            <div class="text-2xl font-extrabold text-ink mt-1.5">{{ number_format($stats['total_attended']) }}</div>
         </div>
-        <div class="bg-[#57EB74] border-3 border-black p-4 shadow-[3px_3px_0px_0px_#000]">
-            <span class="text-xs font-black uppercase">Sertifikat Terbit</span>
-            <div class="text-3xl font-black font-mono mt-1">{{ $stats['certificates_issued'] }}</div>
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-semibold text-emerald-700 block">Sertifikat Terbit</span>
+            <div class="text-2xl font-extrabold text-emerald-600 mt-1.5">{{ number_format($stats['certificates_issued']) }}</div>
         </div>
-        <div class="bg-[#FFE600] border-3 border-black p-4 shadow-[3px_3px_0px_0px_#000]">
-            <span class="text-xs font-black uppercase">Belum Diterbitkan</span>
-            <div class="text-3xl font-black font-mono mt-1">{{ $stats['pending_issuance'] }}</div>
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-semibold text-amber-800 block">Belum Diterbitkan</span>
+            <div class="text-2xl font-extrabold text-amber-700 mt-1.5">{{ number_format($stats['pending_issuance']) }}</div>
         </div>
     </div>
 
     <!-- Table of Attended Attendees -->
-    <div class="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_#000] space-y-4">
-        <h3 class="font-black text-base uppercase border-b-2 border-black pb-2">Peserta Terkonfirmasi Hadir</h3>
+    <div class="bg-surface rounded-2xl border border-line/60 p-6 space-y-4">
+        <h3 class="font-bold text-base text-ink pb-2 border-b border-line/60">Peserta hadir</h3>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs font-bold">
+            <table class="w-full text-left border-collapse text-sm">
                 <thead>
-                    <tr class="bg-black text-white font-mono uppercase text-[10px]">
-                        <th class="p-3 border border-black">Nama Peserta</th>
-                        <th class="p-3 border border-black">Email</th>
-                        <th class="p-3 border border-black">Tipe Tiket</th>
-                        <th class="p-3 border border-black">Waktu Check-in</th>
-                        <th class="p-3 border border-black">Nomor Sertifikat</th>
-                        <th class="p-3 border border-black text-center">Status & Aksi</th>
+                    <tr class="bg-surface-soft text-xs font-semibold text-muted uppercase tracking-wider">
+                        <th class="py-3 px-4 rounded-l-lg">Nama Peserta</th>
+                        <th class="py-3 px-4">Email</th>
+                        <th class="py-3 px-4">Tipe Tiket</th>
+                        <th class="py-3 px-4">Waktu Check-in</th>
+                        <th class="py-3 px-4">Nomor Sertifikat</th>
+                        <th class="py-3 px-4 text-center rounded-r-lg">Status & Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-line/60">
                     @forelse($attendedRegistrations as $reg)
-                        <tr class="hover:bg-zinc-50 border-b border-black">
-                            <td class="p-3 border border-black font-black text-sm">{{ $reg->user->name }}</td>
-                            <td class="p-3 border border-black font-mono">{{ $reg->user->email }}</td>
-                            <td class="p-3 border border-black">{{ $reg->ticket->name }}</td>
-                            <td class="p-3 border border-black font-mono text-[10px]">
+                        <tr class="hover:bg-surface-soft/60 transition-colors">
+                            <td class="py-3.5 px-4 font-semibold text-ink">{{ $reg->user->name }}</td>
+                            <td class="py-3.5 px-4 text-xs text-muted font-mono">{{ $reg->user->email }}</td>
+                            <td class="py-3.5 px-4 text-xs text-slate-700">{{ $reg->ticket->name }}</td>
+                            <td class="py-3.5 px-4 text-xs text-muted">
                                 {{ $reg->checkin ? $reg->checkin->checked_in_at->format('d M H:i') : 'Manual' }}
                             </td>
-                            <td class="p-3 border border-black font-mono font-black">
+                            <td class="py-3.5 px-4 text-xs font-mono">
                                 @if($reg->certificate)
-                                    <span class="bg-[#FFE600] border border-black px-2 py-0.5 text-xs">
+                                    <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-0.5 font-semibold text-brand-700">
                                         {{ $reg->certificate->certificate_number }}
                                     </span>
                                 @else
-                                    <span class="text-zinc-400">Belum Terbit</span>
+                                    <span class="text-muted">Belum Terbit</span>
                                 @endif
                             </td>
-                            <td class="p-3 border border-black text-center">
+                            <td class="py-3.5 px-4 text-center">
                                 @if($reg->certificate)
                                     <a href="{{ route('participant.certificates.download', $reg->certificate->id) }}"
-                                        class="bg-[#57EB74] hover:bg-[#43d960] border border-black px-2.5 py-1 font-black text-[10px] uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] inline-block">
-                                        📥 Unduh PDF
+                                        class="inline-flex items-center gap-1 rounded-lg bg-surface-soft px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
+                                        <x-icon name="download" class="size-3.5" /> Unduh PDF
                                     </a>
                                 @else
                                     <form action="{{ route('organizer.certificates.generate', $reg->id) }}" method="POST">
                                         @csrf
                                         <button type="submit"
-                                            class="bg-[#FFE600] hover:bg-[#ffd700] border border-black px-2.5 py-1 font-black text-[10px] uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-[1px] active:translate-y-[1px]">
-                                            ⚡ Terbitkan
+                                            class="inline-flex items-center gap-1 rounded-lg bg-brand-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-800 transition">
+                                            <x-icon name="zap" class="size-3.5" /> Terbitkan
                                         </button>
                                     </form>
                                 @endif
@@ -102,7 +96,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="p-8 text-center text-zinc-500">
+                            <td colspan="6" class="py-10 text-center text-muted">
                                 Belum ada peserta yang hadir. Peserta harus check-in terlebih dahulu sebelum sertifikat dapat diterbitkan (BR-04).
                             </td>
                         </tr>

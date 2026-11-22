@@ -78,6 +78,16 @@ Route::middleware('auth')->group(function () {
     // Event Reviews (FR-15)
     Route::post('/events/{event}/reviews', [ParticipantDashboardController::class, 'storeReview'])->name('events.reviews.store');
 
+    Route::get('/payments/{payment}/proof', [OrganizerParticipantController::class, 'showProof'])->name('payments.proof');
+
+    // Committee operational routes (F1) - authorized via EventPolicy
+    Route::get('/organizer/committee/tasks', [OrganizerCommitteeController::class, 'myTasks'])->name('organizer.committee.tasks');
+    Route::get('/organizer/events/{event}/participants', [OrganizerParticipantController::class, 'index'])->name('organizer.participants.index');
+    Route::post('/organizer/payments/{payment}/verify', [OrganizerParticipantController::class, 'verifyPayment'])->name('organizer.payments.verify');
+    Route::get('/organizer/events/{event}/participants/export', [OrganizerParticipantController::class, 'export'])->name('organizer.participants.export');
+    Route::get('/organizer/events/{event}/scanner', [OrganizerCheckinController::class, 'scanner'])->name('organizer.checkin.scanner');
+    Route::post('/organizer/events/{event}/scan', [OrganizerCheckinController::class, 'processScan'])->name('organizer.checkin.scan');
+
     /*
     |--------------------------------------------------------------------------
     | Organizer Routes (Role: organizer, admin)
@@ -100,14 +110,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/events/{event}/tickets', [OrganizerEventController::class, 'storeTicket'])->name('events.tickets.store');
         Route::delete('/events/{event}/tickets/{ticket}', [OrganizerEventController::class, 'destroyTicket'])->name('events.tickets.destroy');
 
-        // Participant Management & Payment Verifications (FR-11, FR-08)
-        Route::get('/events/{event}/participants', [OrganizerParticipantController::class, 'index'])->name('participants.index');
-        Route::post('/payments/{payment}/verify', [OrganizerParticipantController::class, 'verifyPayment'])->name('payments.verify');
-        Route::get('/events/{event}/participants/export', [OrganizerParticipantController::class, 'export'])->name('participants.export');
-
-        // QR Check-in Scanner (FR-10)
-        Route::get('/events/{event}/scanner', [OrganizerCheckinController::class, 'scanner'])->name('checkin.scanner');
-        Route::post('/events/{event}/scan', [OrganizerCheckinController::class, 'processScan'])->name('checkin.scan');
+        // (moved to auth group: F1)
 
         // Committee Delegation (FR-12)
         Route::get('/events/{event}/committee', [OrganizerCommitteeController::class, 'index'])->name('committee.index');
@@ -143,6 +146,7 @@ Route::middleware('auth')->group(function () {
         // User Management
         Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
         Route::post('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
+        Route::post('/users/{user}/verify', [AdminUserController::class, 'verify'])->name('users.verify');
 
         // Audit Logs (FR-20)
         Route::get('/audit-logs', [AdminAuditLogController::class, 'index'])->name('audit_logs.index');

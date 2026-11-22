@@ -1,107 +1,194 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'Dashboard') : EventHub</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        @media print {
+            aside, header, .no-print { display: none !important; }
+            main { padding: 0 !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-canvas text-ink antialiased" style="font-family:'Plus Jakarta Sans',sans-serif"
+      x-data="{ sidebarOpen: false, notifOpen: false }">
 
-@section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <!-- Sidebar Navigation -->
-        <aside class="lg:col-span-1 space-y-6">
-            <!-- User Status Card -->
-            <div class="bg-white border-3 border-black p-5 shadow-[5px_5px_0px_0px_#000]">
-                <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-[#FFE600] border-2 border-black flex items-center justify-center font-black text-xl shadow-[2px_2px_0px_0px_#000]">
-                        {{ substr(Auth::user()->name, 0, 2) }}
-                    </div>
-                    <div class="overflow-hidden">
-                        <h2 class="font-black text-base truncate">{{ Auth::user()->name }}</h2>
-                        <span class="inline-block bg-black text-white text-[11px] font-black px-2 py-0.5 uppercase tracking-wider">
-                            {{ Auth::user()->role }}
-                        </span>
-                    </div>
-                </div>
+    {{-- Mobile sidebar overlay --}}
+    <div x-show="sidebarOpen"
+         x-transition:enter="transition-opacity duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 z-40 bg-black/40 lg:hidden"
+         @click="sidebarOpen = false"
+         style="display:none"></div>
 
-                @if(Auth::user()->organization)
-                    <div class="mt-4 pt-3 border-t-2 border-black text-xs font-bold text-zinc-700">
-                        <p class="uppercase text-[10px] text-zinc-500">Organisasi:</p>
-                        <p class="font-black text-black">{{ Auth::user()->organization->name }}</p>
-                    </div>
-                @endif
+    <div class="flex min-h-screen">
+        {{-- Sidebar --}}
+        <aside class="fixed inset-y-0 left-0 z-40 flex w-64 h-screen flex-col bg-surface border-r border-line
+                       transition-transform duration-200 ease-in-out
+                       lg:translate-x-0"
+               :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+            {{-- Logo --}}
+            <div class="flex h-16 items-center justify-between gap-2.5 px-5 border-b border-line lg:h-[68px]">
+                <a href="{{ route('home') }}" class="flex items-center">
+                    <img src="{{ asset('images/logo.webp') }}" alt="EventHub" class="h-8 w-auto object-contain">
+                </a>
+                {{-- Close button (mobile only) --}}
+                <button class="lg:hidden p-1 rounded-md text-muted hover:text-ink" @click="sidebarOpen = false">
+                    <x-icon name="x" class="size-5" />
+                </button>
             </div>
 
-            <!-- Navigation Links Card -->
-            <nav class="bg-white border-3 border-black p-4 shadow-[5px_5px_0px_0px_#000] space-y-2">
-                @if(request()->is('admin*'))
-                    <div class="text-[11px] font-black uppercase tracking-wider text-zinc-500 px-3 py-1 bg-zinc-100 border border-black mb-2">
-                        Panel Administrator
-                    </div>
-                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2 px-3 py-2.5 font-bold text-sm border-2 transition-all {{ request()->routeIs('admin.dashboard') ? 'bg-[#FFE600] border-black shadow-[3px_3px_0px_0px_#000]' : 'border-transparent hover:bg-zinc-100 hover:border-black' }}">
-                        <span>📊</span> Overview Platform
+            {{-- Nav --}}
+            <nav class="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+                @foreach ($navigation ?? [] as $item)
+                    <a href="{{ route($item['route']) }}"
+                       @click="sidebarOpen = false"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors
+                              {{ request()->routeIs($item['active'])
+                                 ? 'bg-brand-50 text-brand-700'
+                                 : 'text-slate-600 hover:bg-surface-soft hover:text-ink' }}">
+                        <x-icon name="{{ $item['icon'] }}" class="size-4 flex-shrink-0" />
+                        {{ $item['label'] }}
                     </a>
-                    <a href="{{ route('admin.moderation.index') }}" class="flex items-center justify-between px-3 py-2.5 font-bold text-sm border-2 transition-all {{ request()->routeIs('admin.moderation.*') ? 'bg-[#FF6B4A] text-white border-black shadow-[3px_3px_0px_0px_#000]' : 'border-transparent hover:bg-zinc-100 hover:border-black' }}">
-                        <span class="flex items-center gap-2"><span>🛡️</span> Moderasi Event</span>
-                        @php $pendingCount = \App\Models\Event::where('status', 'SUBMITTED')->count(); @endphp
-                        @if($pendingCount > 0)
-                            <span class="bg-black text-white text-xs px-2 py-0.5 font-mono">{{ $pendingCount }}</span>
-                        @endif
-                    </a>
-                    <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-2 px-3 py-2.5 font-bold text-sm border-2 transition-all {{ request()->routeIs('admin.categories.*') ? 'bg-[#4DEEEA] border-black shadow-[3px_3px_0px_0px_#000]' : 'border-transparent hover:bg-zinc-100 hover:border-black' }}">
-                        <span>🏷️</span> Master Kategori
-                    </a>
-                    <a href="{{ route('admin.users.index') }}" class="flex items-center gap-2 px-3 py-2.5 font-bold text-sm border-2 transition-all {{ request()->routeIs('admin.users.*') ? 'bg-[#FF70A6] border-black shadow-[3px_3px_0px_0px_#000]' : 'border-transparent hover:bg-zinc-100 hover:border-black' }}">
-                        <span>👥</span> Manajemen User
-                    </a>
-                    <a href="{{ route('admin.audit_logs.index') }}" class="flex items-center gap-2 px-3 py-2.5 font-bold text-sm border-2 transition-all {{ request()->routeIs('admin.audit_logs.*') ? 'bg-[#57EB74] border-black shadow-[3px_3px_0px_0px_#000]' : 'border-transparent hover:bg-zinc-100 hover:border-black' }}">
-                        <span>📜</span> Audit Trail Log
-                    </a>
-                @elseif(request()->is('organizer*'))
-                    <div class="text-[11px] font-black uppercase tracking-wider text-zinc-500 px-3 py-1 bg-zinc-100 border border-black mb-2">
-                        Panel Organizer
-                    </div>
-                    <a href="{{ route('organizer.dashboard') }}" class="flex items-center gap-2 px-3 py-2.5 font-bold text-sm border-2 transition-all {{ request()->routeIs('organizer.dashboard') ? 'bg-[#4DEEEA] border-black shadow-[3px_3px_0px_0px_#000]' : 'border-transparent hover:bg-zinc-100 hover:border-black' }}">
-                        <span>📈</span> Dashboard Organizer
-                    </a>
-                    <a href="{{ route('organizer.events.index') }}" class="flex items-center gap-2 px-3 py-2.5 font-bold text-sm border-2 transition-all {{ request()->routeIs('organizer.events.index') || request()->routeIs('organizer.events.edit') || request()->routeIs('organizer.events.tickets') ? 'bg-[#FFE600] border-black shadow-[3px_3px_0px_0px_#000]' : 'border-transparent hover:bg-zinc-100 hover:border-black' }}">
-                        <span>📅</span> Event Saya
-                    </a>
-                    <a href="{{ route('organizer.events.create') }}" class="flex items-center gap-2 px-3 py-2.5 font-bold text-sm border-2 transition-all {{ request()->routeIs('organizer.events.create') ? 'bg-[#57EB74] border-black shadow-[3px_3px_0px_0px_#000]' : 'border-transparent hover:bg-zinc-100 hover:border-black' }}">
-                        <span>➕</span> Buat Event Baru
-                    </a>
-                @else
-                    <div class="text-[11px] font-black uppercase tracking-wider text-zinc-500 px-3 py-1 bg-zinc-100 border border-black mb-2">
-                        Dashboard Peserta
-                    </div>
-                    <a href="{{ route('participant.tickets.index') }}" class="flex items-center gap-2 px-3 py-2.5 font-bold text-sm border-2 transition-all {{ request()->routeIs('participant.tickets.*') ? 'bg-[#57EB74] border-black shadow-[3px_3px_0px_0px_#000]' : 'border-transparent hover:bg-zinc-100 hover:border-black' }}">
-                        <span>🎟️</span> Tiket Saya
-                    </a>
-                    <a href="{{ route('participant.certificates.index') }}" class="flex items-center gap-2 px-3 py-2.5 font-bold text-sm border-2 transition-all {{ request()->routeIs('participant.certificates.*') ? 'bg-[#FF70A6] border-black shadow-[3px_3px_0px_0px_#000]' : 'border-transparent hover:bg-zinc-100 hover:border-black' }}">
-                        <span>🎓</span> E-Sertifikat Saya
-                    </a>
-                    <a href="{{ route('participant.profile') }}" class="flex items-center gap-2 px-3 py-2.5 font-bold text-sm border-2 transition-all {{ request()->routeIs('participant.profile') ? 'bg-[#FFE600] border-black shadow-[3px_3px_0px_0px_#000]' : 'border-transparent hover:bg-zinc-100 hover:border-black' }}">
-                        <span>👤</span> Edit Profil
-                    </a>
-                @endif
-
-                <div class="pt-4 border-t-2 border-black space-y-1">
-                    @if(Auth::user()->isAdmin() && !request()->is('admin*'))
-                        <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 text-xs font-black bg-black text-white hover:bg-zinc-800 text-center">
-                            ⚙️ Masuk Menu Admin
-                        </a>
-                    @endif
-                    @if((Auth::user()->isOrganizer() || Auth::user()->isAdmin()) && !request()->is('organizer*'))
-                        <a href="{{ route('organizer.dashboard') }}" class="block px-3 py-2 text-xs font-black bg-[#4DEEEA] border border-black hover:bg-cyan-300 text-center">
-                            🏢 Masuk Menu Organizer
-                        </a>
-                    @endif
-                    <a href="{{ route('events.index') }}" class="block px-3 py-2 text-xs font-bold hover:underline text-center">
-                        ← Jelajah Event Publik
-                    </a>
-                </div>
+                @endforeach
             </nav>
+
+            <div class="border-t border-line p-3">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                        class="flex w-full items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors">
+                        <x-icon name="log-out" class="size-4 text-red-500" />
+                        Keluar
+                    </button>
+                </form>
+            </div>
         </aside>
 
-        <!-- Main Dashboard Content -->
-        <section class="lg:col-span-3">
-            @yield('dashboard_content')
-        </section>
+        {{-- Main column --}}
+        <div class="flex min-w-0 flex-1 flex-col lg:pl-64">
+            {{-- Top bar --}}
+            <header class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-line bg-surface/95 px-4 backdrop-blur-md lg:h-[68px] lg:px-6">
+                <div class="flex items-center gap-3">
+                    {{-- Hamburger (mobile only) --}}
+                    <button class="lg:hidden p-1.5 rounded-lg text-muted hover:text-ink hover:bg-surface-soft transition"
+                            @click="sidebarOpen = true">
+                        <x-icon name="menu" class="size-5" />
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2 lg:gap-3">
+                    {{-- Notification bell --}}
+                    @php
+                        $unreadCount = \App\Models\Notification::where('user_id', Auth::id())->where('is_read', false)->count();
+                        $recentNotifs = \App\Models\Notification::where('user_id', Auth::id())->latest()->limit(5)->get();
+                    @endphp
+                    <div class="relative" @click.outside="notifOpen = false">
+                        <button @click="notifOpen = !notifOpen" type="button" aria-label="Notifikasi" title="Notifikasi"
+                                class="relative p-1.5 rounded-lg text-muted hover:text-ink hover:bg-surface-soft transition">
+                            <x-icon name="bell" class="size-5" />
+                            @if($unreadCount > 0)
+                                <span class="absolute -top-0.5 -right-0.5 flex size-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white leading-none">
+                                    {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                                </span>
+                            @endif
+                        </button>
+
+                        {{-- Notification dropdown --}}
+                        <div x-show="notifOpen"
+                             x-transition:enter="transition ease-out duration-150"
+                             x-transition:enter-start="opacity-0 scale-95 translate-y-1"
+                             x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-100"
+                             x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 scale-95 translate-y-1"
+                             class="absolute right-0 top-full mt-2 w-80 origin-top-right rounded-xl border border-line bg-surface shadow-lg z-50"
+                             style="display:none">
+                            <div class="flex items-center justify-between px-4 py-3 border-b border-line">
+                                <h3 class="text-sm font-bold text-ink">Notifikasi</h3>
+                                @if($unreadCount > 0)
+                                    <form method="POST" action="{{ route('notifications.read_all') }}">
+                                        @csrf
+                                        <button type="submit" class="text-xs font-semibold text-brand-700 hover:text-brand-800">
+                                            Tandai semua dibaca
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                            <ul class="divide-y divide-line max-h-72 overflow-y-auto">
+                                @forelse($recentNotifs as $notif)
+                                    <li class="{{ $notif->is_read ? '' : 'bg-brand-50/40' }}">
+                                        <form method="POST" action="{{ route('notifications.read', $notif->id) }}">
+                                            @csrf
+                                            <button type="submit" class="w-full text-left px-4 py-3 hover:bg-surface-soft transition">
+                                                <p class="text-sm font-semibold text-ink leading-snug">{{ $notif->title }}</p>
+                                                <p class="mt-0.5 text-xs text-muted line-clamp-2">{{ $notif->message }}</p>
+                                                <p class="mt-1 text-[10px] text-muted/70">{{ $notif->created_at->diffForHumans() }}</p>
+                                            </button>
+                                        </form>
+                                    </li>
+                                @empty
+                                    <li class="px-4 py-6 text-center text-sm text-muted">Tidak ada notifikasi.</li>
+                                @endforelse
+                            </ul>
+                        </div>
+                    </div>
+
+                    @php $user = Auth::user(); @endphp
+                    <div class="flex items-center gap-3 pl-2">
+                        <div class="hidden sm:block text-right leading-tight">
+                            <p class="text-sm font-semibold text-ink">{{ $user->name }}</p>
+                            <p class="text-xs text-muted">{{ $user->roleLabel() }}</p>
+                        </div>
+                        <img
+                            src="https://api.dicebear.com/9.x/big-smile/svg?seed={{ urlencode($user->name) }}&backgroundColor=c7d2fe"
+                            alt="{{ $user->name }}"
+                            class="size-9 rounded-full bg-brand-100 object-cover"
+                            width="36"
+                            height="36"
+                        >
+                    </div>
+                </div>
+            </header>
+
+            {{-- Page content --}}
+            <main class="flex-1 p-4 lg:p-8">
+                @if (session('success'))
+                    <div class="mb-6 flex items-start gap-3 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
+                        <x-icon name="check-circle" class="size-5 flex-shrink-0 mt-0.5" />
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if (session('error'))
+                    <div class="mb-6 flex items-start gap-3 rounded-xl bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                        <x-icon name="alert-circle" class="size-5 flex-shrink-0 mt-0.5" />
+                        {{ session('error') }}
+                    </div>
+                @endif
+                @if (session('info'))
+                    <div class="mb-6 flex items-start gap-3 rounded-xl bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
+                        <x-icon name="bell" class="size-5 flex-shrink-0 mt-0.5" />
+                        {{ session('info') }}
+                    </div>
+                @endif
+
+                @yield('content')
+                @yield('dashboard_content')
+            </main>
+        </div>
     </div>
-</div>
-@endsection
+
+    @stack('scripts')
+</body>
+</html>

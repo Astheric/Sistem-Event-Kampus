@@ -1,84 +1,76 @@
 @extends('layouts.dashboard')
 
-@section('title', 'E-Sertifikat Saya — EventHub')
+@section('title', 'E-Sertifikat Saya')
 
 @section('dashboard_content')
 <div class="space-y-6">
-    <div class="bg-white border-3 border-black p-6 shadow-[5px_5px_0px_0px_#000]">
-        <div class="flex items-center gap-2 mb-2">
-            <span class="bg-[#FF70A6] border-2 border-black px-2.5 py-0.5 text-xs font-black uppercase shadow-[2px_2px_0px_0px_#000]">
-                E-Sertifikat Digital
-            </span>
-        </div>
-        <h1 class="text-3xl font-black">Sertifikat Kegiatan Kampus</h1>
-        <p class="text-xs font-bold text-zinc-600 mt-1">
-            Sertifikat resmi hanya diterbitkan untuk peserta yang telah terkonfirmasi hadir (ATTENDED) pada hari pelaksanaan event.
-        </p>
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6">
+        <h1 class="text-xl sm:text-2xl font-bold text-ink">Sertifikat saya</h1>
     </div>
 
     <!-- Attended Events / Certificates Cards -->
     <div class="space-y-4">
         @forelse($attendedRegistrations as $reg)
-            <div class="bg-white border-3 border-black p-6 shadow-[5px_5px_0px_0px_#000] flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="bg-surface rounded-2xl border border-line/60 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 transition hover:border-slate-300">
                 <div class="space-y-3">
                     <div class="flex items-center gap-2">
-                        <span class="bg-[#57EB74] border-2 border-black px-2.5 py-0.5 text-xs font-black uppercase">
-                            ✓ TERVERIFIKASI HADIR
+                        <span class="inline-flex items-center gap-1 rounded-md bg-emerald-50 border border-emerald-200/60 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                            <x-icon name="check-circle" class="size-3.5" /> Terverifikasi Hadir
                         </span>
                         @if($reg->certificate)
-                            <span class="font-mono text-xs font-black bg-[#FFE600] border border-black px-2 py-0.5">
+                            <span class="font-mono text-xs font-semibold bg-brand-50 text-brand-700 px-2.5 py-0.5 rounded">
                                 {{ $reg->certificate->certificate_number }}
                             </span>
                         @endif
                     </div>
 
                     <div>
-                        <h3 class="text-xl font-black">
-                            <a href="{{ route('events.show', $reg->event->slug) }}" class="hover:underline">
+                        <h3 class="text-xl font-bold text-ink">
+                            <a href="{{ route('events.show', $reg->event->slug) }}" class="hover:text-brand-700 transition">
                                 {{ $reg->event->title }}
                             </a>
                         </h3>
-                        <p class="text-xs font-bold text-zinc-500 mt-0.5">
-                            Penyelenggara: {{ $reg->event->organization->name }}
+                        <p class="text-xs text-muted mt-1 font-medium">
+                            Penyelenggara: <span class="text-ink font-semibold">{{ $reg->event->organization->name }}</span>
                         </p>
                     </div>
 
-                    <div class="text-xs font-bold text-zinc-600">
-                        <span>📅 Tanggal Event: {{ $reg->event->start_time->format('d M Y') }}</span>
+                    <div class="text-xs text-muted font-medium flex items-center gap-1.5">
+                        <x-icon name="calendar" class="size-4 text-slate-400" /> Tanggal Event: {{ $reg->event->start_time->format('d M Y') }}
                     </div>
                 </div>
 
                 <!-- Actions -->
-                <div class="flex flex-col sm:flex-row md:flex-col gap-2 min-w-[200px]">
+                <div class="flex flex-col sm:flex-row md:flex-col gap-2 min-w-[210px]">
                     @if($reg->certificate)
                         <a href="{{ route('participant.certificates.download', $reg->certificate->id) }}"
-                            class="text-center bg-[#57EB74] hover:bg-[#43d960] border-2 border-black py-2.5 px-4 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
-                            📥 Unduh Sertifikat PDF
+                            class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-brand-700 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-800 transition">
+                            <x-icon name="download" class="size-3.5" /> Unduh Sertifikat PDF
                         </a>
 
                         <a href="{{ route('certificates.verify.show', $reg->certificate->certificate_number) }}" target="_blank"
-                            class="text-center bg-[#00F0FF] hover:bg-[#00d8e6] border-2 border-black py-2 px-4 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
-                            🔍 Cek Verifikasi Publik ↗
+                            class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-surface-soft px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
+                            <x-icon name="search" class="size-3.5" /> Verifikasi sertifikat
                         </a>
                     @else
                         <form action="{{ route('participant.certificates.claim', $reg->id) }}" method="POST">
                             @csrf
                             <button type="submit"
-                                class="w-full bg-[#FFE600] hover:bg-[#ffd700] border-2 border-black py-2.5 px-4 font-black text-xs uppercase shadow-[3px_3px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
-                                🎓 Terbitkan / Klaim Sertifikat
+                                class="w-full inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 transition">
+                                <x-icon name="book-open" class="size-3.5" /> Terbitkan / Klaim Sertifikat
                             </button>
                         </form>
                     @endif
                 </div>
             </div>
         @empty
-            <div class="bg-white border-3 border-black p-12 text-center shadow-[4px_4px_0px_0px_#000]">
-                <span class="text-4xl block mb-2">🎓</span>
-                <h3 class="font-black text-lg">Belum Ada Sertifikat Tersedia</h3>
-                <p class="text-xs font-bold text-zinc-500 mt-1">
+            <div class="bg-surface rounded-2xl border border-line/60 p-12 text-center">
+                <x-icon name="book-open" class="size-10 mx-auto text-slate-300 mb-2" />
+                <h3 class="font-bold text-lg text-ink">Belum Ada Sertifikat Tersedia</h3>
+                <p class="text-xs text-muted mt-1 max-w-md mx-auto">
                     Sertifikat akan otomatis dapat diklaim setelah Anda hadir dan panitia memindai tiket Anda di lokasi acara.
                 </p>
-                <a href="{{ route('participant.tickets.index') }}" class="inline-block mt-4 bg-[#FFE600] border-2 border-black px-4 py-2 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000]">
+                <a href="{{ route('participant.tickets.index') }}" class="inline-flex items-center gap-1.5 mt-4 rounded-lg bg-brand-700 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-800 transition">
                     Cek Tiket Saya
                 </a>
             </div>

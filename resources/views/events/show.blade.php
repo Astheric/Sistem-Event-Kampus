@@ -1,118 +1,65 @@
-@extends('layouts.app')
+@extends(Auth::check() ? 'layouts.dashboard' : 'layouts.app')
 
-@section('title', $event->title . ' — EventHub')
+@section('title', $event->title . ' : EventHub')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-    <!-- Breadcrumbs -->
-    <div class="flex items-center gap-2 text-xs font-black uppercase text-zinc-500">
-        <a href="{{ route('home') }}" class="hover:underline">Beranda</a>
-        <span>/</span>
-        <a href="{{ route('events.index') }}" class="hover:underline">Event</a>
-        <span>/</span>
-        <span class="text-black truncate max-w-xs">{{ $event->title }}</span>
-    </div>
+<div class="{{ Auth::check() ? 'space-y-6' : 'mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8' }}">
+    <a href="{{ route('events.index') }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-ink"><x-icon name="chevron-left" class="size-3.5" /> Kembali ke daftar event</a>
 
-    <!-- Event Header Card -->
-    <div class="bg-white border-4 border-black p-6 sm:p-8 shadow-[8px_8px_0px_0px_#000]">
-        <div class="flex flex-wrap items-center gap-2 mb-4">
-            <span class="bg-[#00F0FF] border-2 border-black px-3 py-1 text-xs font-black uppercase shadow-[2px_2px_0px_0px_#000]">
-                {{ $event->category->name }}
-            </span>
-            <span class="bg-black text-white px-3 py-1 text-xs font-black uppercase font-mono">
-                STATUS: {{ $event->status }}
-            </span>
-            @if($event->average_rating > 0)
-                <span class="bg-[#FFE600] border-2 border-black px-3 py-1 text-xs font-black shadow-[2px_2px_0px_0px_#000]">
-                    ★ {{ number_format($event->average_rating, 1) }} ({{ $event->review_count }} Ulasan)
-                </span>
-            @endif
-        </div>
-
-        <h1 class="text-3xl sm:text-5xl font-black leading-tight">{{ $event->title }}</h1>
-
-        <!-- Key Meta Strip -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 pt-6 border-t-3 border-black text-xs font-bold">
-            <div class="flex items-start gap-3 bg-[#FFFDF8] border-2 border-black p-3 shadow-[3px_3px_0px_0px_#000]">
-                <span class="text-2xl">📅</span>
-                <div>
-                    <span class="text-[10px] text-zinc-500 uppercase font-black">WAKTU ACARA:</span>
-                    <p class="font-black text-sm">{{ $event->start_time->format('d M Y, H:i') }} WIB</p>
-                    <p class="text-zinc-500">Sampai {{ $event->end_time->format('d M Y, H:i') }} WIB</p>
-                </div>
-            </div>
-
-            <div class="flex items-start gap-3 bg-[#FFFDF8] border-2 border-black p-3 shadow-[3px_3px_0px_0px_#000]">
-                <span class="text-2xl">📍</span>
-                <div>
-                    <span class="text-[10px] text-zinc-500 uppercase font-black">LOKASI VENUE:</span>
-                    <p class="font-black text-sm">{{ $event->venue ? $event->venue->name : 'Daring (Online)' }}</p>
-                    @if($event->venue)
-                        <p class="text-zinc-500">{{ $event->venue->address }}, {{ $event->venue->city }}</p>
-                        @if($event->venue->maps_url)
-                            <a href="{{ $event->venue->maps_url }}" target="_blank" class="text-[#FF6B4A] underline font-black text-[11px] mt-1 inline-block">
-                                Buka Google Maps ↗
-                            </a>
-                        @endif
+    <div class="mt-6 grid gap-8 lg:grid-cols-[1.4fr_.8fr]">
+        <section class="space-y-6">
+            <div class="card p-6 sm:p-8">
+                <img src="{{ $event->bannerUrl() }}" alt="{{ $event->title }}" class="mb-6 aspect-[16/9] w-full rounded-xl object-cover bg-slate-100" loading="lazy">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="badge border border-brand-100 bg-brand-50 text-brand-700">{{ $event->category->name }}</span>
+                    <x-audience-badge :audience="$event->audience" />
+                    <span class="badge border border-line bg-surface-soft text-muted">{{ $event->status }}</span>
+                    @if($event->average_rating > 0)
+                        <span class="badge border border-amber-200 bg-amber-50 text-amber-700">{{ number_format($event->average_rating, 1) }} ({{ $event->review_count }} ulasan)</span>
                     @endif
                 </div>
+
+                <h1 class="mt-4 text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $event->title }}</h1>
+                <p class="mt-2 text-sm text-muted">Diselenggarakan oleh <span class="font-medium text-ink">{{ $event->organization->name }}</span></p>
+
+                <dl class="mt-6 grid gap-4 sm:grid-cols-2">
+                    <div class="rounded-xl border border-line bg-surface-soft p-4">
+                        <dt class="text-xs font-medium text-muted">Tanggal dan waktu</dt>
+                        <dd class="mt-1 font-semibold text-ink text-sm">{{ $event->start_time->translatedFormat('l, d F Y') }}</dd>
+                        <dd class="text-xs text-muted">{{ $event->start_time->format('H:i') }} - {{ $event->end_time->format('H:i') }} WIB</dd>
+                    </div>
+                    <div class="rounded-xl border border-line bg-surface-soft p-4">
+                        <dt class="text-xs font-medium text-muted">Lokasi</dt>
+                        <dd class="mt-1 font-semibold text-ink text-sm">{{ $event->venue ? $event->venue->name : 'Daring / Online' }}</dd>
+                        @if($event->venue)
+                            <dd class="text-xs text-muted">{{ $event->venue->address }}, {{ $event->venue->city }}</dd>
+                            @if($event->venue->maps_url)
+                                <a href="{{ $event->venue->maps_url }}" target="_blank" class="mt-2 inline-flex text-xs font-semibold text-brand-700 hover:text-brand-600">Lihat di peta</a>
+                            @endif
+                        @endif
+                    </div>
+                </dl>
             </div>
 
-            <div class="flex items-start gap-3 bg-[#FFFDF8] border-2 border-black p-3 shadow-[3px_3px_0px_0px_#000]">
-                <span class="text-2xl">🏢</span>
-                <div>
-                    <span class="text-[10px] text-zinc-500 uppercase font-black">PENYELENGGARA:</span>
-                    <p class="font-black text-sm">{{ $event->organization->name }}</p>
-                    <p class="text-zinc-500">{{ $event->organization->contact ?? 'Resmi Kampus' }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Alert if already registered (BR-01) -->
-    @if($userRegistration)
-        <div class="bg-[#57EB74] border-4 border-black p-6 shadow-[6px_6px_0px_0px_#000] flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-4">
-                <span class="text-4xl">🎟️</span>
-                <div>
-                    <h3 class="font-black text-lg">Anda Sudah Terdaftar pada Event Ini!</h3>
-                    <p class="text-xs font-bold">Kode Registrasi: <span class="font-mono font-black bg-black text-white px-2 py-0.5">{{ $userRegistration->registration_code }}</span> | Status: {{ $userRegistration->status }}</p>
-                </div>
-            </div>
-            <a href="{{ route('participant.tickets.show', $userRegistration->id) }}"
-                class="bg-white hover:bg-zinc-100 border-3 border-black px-4 py-2.5 font-black text-xs uppercase shadow-[3px_3px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none whitespace-nowrap">
-                Lihat E-Tiket & QR Code →
-            </a>
-        </div>
-    @endif
-
-    <!-- Main Grid: Description & Ticket Selection -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Event Details Description (2 Cols) -->
-        <div class="lg:col-span-2 space-y-8">
-            <div class="bg-white border-4 border-black p-6 sm:p-8 shadow-[6px_6px_0px_0px_#000]">
-                <h2 class="text-2xl font-black mb-4 border-b-3 border-black pb-2">Deskripsi & Rincian Event</h2>
-                <div class="prose max-w-none text-sm sm:text-base font-bold text-zinc-800 leading-relaxed whitespace-pre-line">
-                    {{ $event->description }}
-                </div>
-            </div>
-
-            <!-- Reviews & Rating Section (FR-15) -->
-            <div class="bg-white border-4 border-black p-6 sm:p-8 shadow-[6px_6px_0px_0px_#000] space-y-6">
-                <div class="flex items-center justify-between border-b-3 border-black pb-4">
+            @if($userRegistration)
+                <div class="rounded-xl border border-green-200 bg-green-50 p-5 sm:flex sm:items-center sm:justify-between sm:gap-4">
                     <div>
-                        <h2 class="text-2xl font-black">Ulasan & Rating Peserta</h2>
-                        <p class="text-xs font-bold text-zinc-500">Khusus ulasan dari peserta yang terverifikasi hadir.</p>
+                        <p class="font-semibold text-green-800 text-sm">Anda sudah terdaftar pada event ini</p>
+                        <p class="mt-1 text-xs text-green-700">Kode: {{ $userRegistration->registration_code }} (Status: {{ $userRegistration->status }})</p>
                     </div>
-                    <div class="text-right">
-                        <div class="text-3xl font-black text-amber-500 font-mono">
-                            ★ {{ number_format($event->average_rating, 1) }}
-                        </div>
-                        <span class="text-xs font-bold text-zinc-500">dari {{ $event->review_count }} ulasan</span>
-                    </div>
+                    <a href="{{ route('participant.tickets.show', $userRegistration->id) }}" class="btn btn-primary text-xs mt-3 sm:mt-0">Lihat tiket</a>
                 </div>
+            @endif
 
-                <!-- Review Form for Attended Participants -->
+            <div class="card p-6 sm:p-8">
+                <h2 class="text-xl font-bold text-ink">Tentang event</h2>
+                <div class="mt-4 whitespace-pre-line leading-relaxed text-muted">{{ $event->description }}</div>
+            </div>
+
+            <div class="card p-6 sm:p-8">
+                <h2 class="text-xl font-bold text-ink">Ulasan peserta</h2>
+                <p class="mt-1 text-sm text-muted">Rating rata-rata {{ number_format($event->average_rating, 1) }} dari {{ $event->review_count }} ulasan.</p>
+
                 @auth
                     @php
                         $hasAttended = \App\Models\Registration::where('event_id', $event->id)
@@ -121,139 +68,72 @@
                             ->exists();
                         $myReview = \App\Models\Review::where('event_id', $event->id)->where('user_id', Auth::id())->first();
                     @endphp
-
                     @if($hasAttended)
-                        <div class="bg-[#FFFDF8] border-3 border-black p-5 shadow-[4px_4px_0px_0px_#000]">
-                            <h3 class="font-black text-sm uppercase mb-2">
-                                {{ $myReview ? 'Perbarui Ulasan Anda' : 'Tulis Ulasan Pengalaman Anda' }}
-                            </h3>
-                            <form action="{{ route('events.reviews.store', $event->id) }}" method="POST" class="space-y-3">
-                                @csrf
-                                <div>
-                                    <label class="block font-black text-xs uppercase mb-1">Rating Bintang (1 - 5)</label>
-                                    <select name="rating" class="bg-white border-2 border-black p-2 font-black text-sm">
-                                        <option value="5" {{ ($myReview?->rating ?? 5) == 5 ? 'selected' : '' }}>★★★★★ (5 - Sangat Puas)</option>
-                                        <option value="4" {{ ($myReview?->rating ?? 5) == 4 ? 'selected' : '' }}>★★★★☆ (4 - Puas)</option>
-                                        <option value="3" {{ ($myReview?->rating ?? 5) == 3 ? 'selected' : '' }}>★★★☆☆ (3 - Cukup)</option>
-                                        <option value="2" {{ ($myReview?->rating ?? 5) == 2 ? 'selected' : '' }}>★★☆☆☆ (2 - Kurang)</option>
-                                        <option value="1" {{ ($myReview?->rating ?? 5) == 1 ? 'selected' : '' }}>★☆☆☆☆ (1 - Sangat Kurang)</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block font-black text-xs uppercase mb-1">Komentar / Saran</label>
-                                    <textarea name="comment" rows="3" required
-                                        placeholder="Bagikan pengalaman Anda mengenai pembicara, fasilitas, atau check-in..."
-                                        class="w-full bg-white border-2 border-black p-2.5 font-bold text-xs focus:outline-none focus:bg-[#FFE600]">{{ $myReview?->comment }}</textarea>
-                                </div>
-                                <button type="submit"
-                                    class="bg-[#FFE600] border-2 border-black px-4 py-2 font-black text-xs uppercase shadow-[2px_2px_0px_0px_#000] active:translate-x-1 active:translate-y-1">
-                                    Simpan Ulasan
-                                </button>
-                            </form>
-                        </div>
+                        <form action="{{ route('events.reviews.store', $event->id) }}" method="POST" class="mt-6 space-y-4 rounded-xl border border-line bg-surface-soft p-5">
+                            @csrf
+                            <div>
+                                <label for="rating" class="label">Rating</label>
+                                <select id="rating" name="rating" class="input max-w-xs">
+                                    @for($i=5;$i>=1;$i--)
+                                        <option value="{{ $i }}" {{ ($myReview?->rating ?? 5) == $i ? 'selected' : '' }}>{{ $i }} / 5</option>
+                                    @endfor
+                                </select>
+                            </div>
+                            <div>
+                                <label for="comment" class="label">Komentar</label>
+                                <textarea id="comment" name="comment" rows="4" required class="input">{{ $myReview?->comment }}</textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Simpan ulasan</button>
+                        </form>
                     @endif
                 @endauth
 
-                <!-- Reviews Feed -->
-                <div class="space-y-4">
+                <div class="mt-6 space-y-4">
                     @forelse($event->reviews as $review)
-                        <div class="border-2 border-black p-4 bg-zinc-50 space-y-2">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-7 h-7 bg-[#4DEEEA] border border-black flex items-center justify-center font-black text-xs uppercase">
-                                        {{ substr($review->user->name, 0, 2) }}
-                                    </div>
-                                    <span class="font-black text-xs">{{ $review->user->name }}</span>
-                                    <span class="bg-[#57EB74] text-black text-[9px] font-black px-1.5 py-0.2 border border-black uppercase">Terverifikasi Hadir</span>
-                                </div>
-                                <div class="text-amber-500 font-black text-sm">
-                                    {{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}
-                                </div>
+                        <div class="rounded-xl border border-line p-4">
+                            <div class="flex items-center justify-between gap-4">
+                                <p class="font-semibold text-ink">{{ $review->user->name }}</p>
+                                <p class="text-sm font-medium text-muted">{{ $review->rating }}/5</p>
                             </div>
-                            <p class="text-xs font-bold text-zinc-700 leading-relaxed">{{ $review->comment }}</p>
-                            <span class="text-[10px] font-mono text-zinc-500 block">{{ $review->created_at->diffForHumans() }}</span>
+                            <p class="mt-2 leading-relaxed text-muted">{{ $review->comment }}</p>
                         </div>
                     @empty
-                        <p class="text-xs font-bold text-zinc-500 text-center py-6">Belum ada ulasan untuk event ini.</p>
+                        <p class="text-sm text-muted">Belum ada ulasan.</p>
                     @endforelse
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Right Side: Tiered Ticket Options (FR-06) -->
-        <div class="space-y-6">
-            <div class="bg-white border-4 border-black p-6 shadow-[6px_6px_0px_0px_#000] sticky top-28">
-                <div class="border-b-3 border-black pb-3 mb-4">
-                    <span class="bg-[#FFE600] border-2 border-black px-2 py-0.5 text-xs font-black uppercase shadow-[2px_2px_0px_0px_#000]">
-                        Pilihan Tiket
-                    </span>
-                    <h2 class="text-xl font-black mt-2">Daftar Tiket Tersedia</h2>
-                    <p class="text-xs font-bold text-zinc-500">Pilih tier tiket yang sesuai dengan kebutuhan Anda.</p>
-                </div>
-
-                <div class="space-y-4">
+        <aside class="lg:sticky lg:top-24 lg:self-start">
+            <div class="card p-6">
+                <h2 class="text-lg font-bold text-ink">Tiket & pendaftaran</h2>
+                <div class="mt-5 space-y-4">
                     @forelse($event->tickets as $ticket)
-                        @php
-                            $isAvailable = $ticket->isAvailable();
-                            $percentRemaining = $ticket->quota > 0 ? round(($ticket->available_quota / $ticket->quota) * 100) : 0;
-                        @endphp
-
-                        <div class="border-3 border-black p-4 {{ $isAvailable ? 'bg-white' : 'bg-zinc-100 opacity-80' }} space-y-3">
-                            <div class="flex items-start justify-between gap-2">
+                        @php $isAvailable = $ticket->isAvailable(); @endphp
+                        <div class="rounded-xl border border-line p-4">
+                            <div class="flex items-start justify-between gap-4">
                                 <div>
-                                    <h4 class="font-black text-base leading-tight">{{ $ticket->name }}</h4>
-                                    <p class="text-xs text-zinc-500 font-mono mt-0.5">
-                                        s/d {{ $ticket->end_sale->format('d M Y') }}
-                                    </p>
+                                    <h3 class="font-semibold text-ink">{{ $ticket->name }}</h3>
+                                    <p class="mt-1 text-xs text-muted">Sisa {{ $ticket->available_quota }} dari {{ $ticket->quota }} (sampai {{ $ticket->end_sale->format('d M Y') }})</p>
                                 </div>
-                                <div class="text-right">
-                                    @if($ticket->price == 0)
-                                        <span class="bg-[#57EB74] border-2 border-black px-2 py-0.5 font-black text-xs font-mono inline-block">
-                                            GRATIS
-                                        </span>
-                                    @else
-                                        <span class="bg-[#FFE600] border-2 border-black px-2 py-0.5 font-black text-xs font-mono inline-block">
-                                            Rp {{ number_format($ticket->price, 0, ',', '.') }}
-                                        </span>
-                                    @endif
-                                </div>
+                                <p class="whitespace-nowrap text-sm font-bold text-ink">@if($ticket->price == 0) Gratis @else Rp {{ number_format($ticket->price, 0, ',', '.') }} @endif</p>
                             </div>
-
-                            <!-- Quota Progress Bar -->
-                            <div class="space-y-1">
-                                <div class="flex justify-between text-[11px] font-bold">
-                                    <span class="text-zinc-600">Sisa Kuota:</span>
-                                    <span class="font-mono font-black {{ $ticket->available_quota < 10 ? 'text-[#FF6B4A]' : '' }}">
-                                        {{ $ticket->available_quota }} / {{ $ticket->quota }} tiket
-                                    </span>
-                                </div>
-                                <div class="w-full bg-zinc-200 border-2 border-black h-2.5 overflow-hidden">
-                                    <div class="bg-[#00F0FF] h-full" style="width: {{ $percentRemaining }}%"></div>
-                                </div>
+                            <div class="mt-4">
+                                @if($userRegistration)
+                                    <span class="inline-flex w-full justify-center rounded-xl bg-surface-soft px-4 py-2.5 text-sm font-semibold text-muted">Sudah terdaftar</span>
+                                @elseif($isAvailable)
+                                    <a href="{{ route('events.checkout', ['event' => $event->id, 'ticket' => $ticket->id]) }}" class="btn btn-primary w-full text-sm">Daftar sekarang</a>
+                                @else
+                                    <button type="button" disabled class="inline-flex w-full justify-center rounded-xl bg-surface-soft px-4 py-2.5 text-sm font-semibold text-muted cursor-not-allowed">Daftar sekarang ({{ $ticket->isSoldOut() ? 'tiket habis' : 'penjualan ditutup' }})</button>
+                                @endif
                             </div>
-
-                            <!-- Booking CTA -->
-                            @if($userRegistration)
-                                <button disabled class="w-full bg-zinc-300 border-2 border-black p-2 font-black text-xs uppercase cursor-not-allowed">
-                                    Sudah Terdaftar
-                                </button>
-                            @elseif($isAvailable)
-                                <a href="{{ route('events.checkout', ['event' => $event->id, 'ticket' => $ticket->id]) }}"
-                                    class="block w-full text-center bg-[#FFE600] hover:bg-[#ffd000] border-2 border-black p-2.5 font-black text-xs uppercase tracking-wider shadow-[3px_3px_0px_0px_#000] active:translate-x-1 active:translate-y-1 active:shadow-none transition-all">
-                                    Pesan Tiket Ini →
-                                </a>
-                            @else
-                                <div class="w-full text-center bg-[#FF70A6] text-black border-2 border-black p-2 font-black text-xs uppercase">
-                                    {{ $ticket->isSoldOut() ? 'Kuota Habis' : 'Penjualan Ditutup' }}
-                                </div>
-                            @endif
                         </div>
                     @empty
-                        <p class="text-xs font-bold text-zinc-500 py-4 text-center">Belum ada tipe tiket yang dipublikasikan.</p>
+                        <p class="text-sm text-muted">Belum ada tiket tersedia untuk event ini.</p>
                     @endforelse
                 </div>
             </div>
-        </div>
+        </aside>
     </div>
 </div>
 @endsection
