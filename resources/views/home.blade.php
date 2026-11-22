@@ -146,9 +146,12 @@
                     <img src="{{ $event->bannerUrl() }}" alt="{{ $event->title }}" class="w-full aspect-[16/9] rounded-xl object-cover bg-slate-100" loading="lazy">
                     <div class="space-y-3">
                         <div class="flex items-center justify-between gap-2">
-                            <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
-                                {{ $event->category->name }}
-                            </span>
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="inline-flex items-center rounded-md bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700">
+                                    {{ $event->category->name }}
+                                </span>
+                                <x-audience-badge :audience="$event->audience" class="!px-2 !py-0.5 !rounded-md" />
+                            </div>
                             @if($event->isFree())
                                 <span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
                                     Gratis

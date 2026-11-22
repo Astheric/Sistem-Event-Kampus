@@ -39,7 +39,7 @@
                        lg:translate-x-0"
                :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
             {{-- Logo --}}
-            <div class="flex items-center justify-between gap-2.5 px-5 py-4 border-b border-line">
+            <div class="flex h-16 items-center justify-between gap-2.5 px-5 border-b border-line lg:h-[68px]">
                 <a href="{{ route('home') }}" class="flex items-center">
                     <img src="{{ asset('images/logo.webp') }}" alt="EventHub" class="h-8 w-auto object-contain">
                 </a>
@@ -79,7 +79,7 @@
         {{-- Main column --}}
         <div class="flex min-w-0 flex-1 flex-col lg:pl-64">
             {{-- Top bar --}}
-            <header class="sticky top-0 z-30 flex items-center justify-between bg-surface/95 backdrop-blur-md border-b border-line px-4 py-3 lg:px-6 lg:py-4">
+            <header class="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-line bg-surface/95 px-4 backdrop-blur-md lg:h-[68px] lg:px-6">
                 <div class="flex items-center gap-3">
                     {{-- Hamburger (mobile only) --}}
                     <button class="lg:hidden p-1.5 rounded-lg text-muted hover:text-ink hover:bg-surface-soft transition"

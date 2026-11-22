@@ -88,6 +88,7 @@ class EventController extends Controller
             'start_time' => ['required', 'date'],
             'end_time' => ['required', 'date', 'after:start_time'],
             'capacity' => ['required', 'integer', 'min:1'],
+            'audience' => ['required', 'in:ALL,STUDENT,LECTURER'],
             'banner' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:3072'],
             'action' => ['required', 'in:draft,submit'],
         ]);
@@ -116,6 +117,7 @@ class EventController extends Controller
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
             'capacity' => $validated['capacity'],
+            'audience' => $validated['audience'],
             'status' => $status,
         ]);
 
@@ -156,6 +158,7 @@ class EventController extends Controller
             'start_time' => ['required', 'date'],
             'end_time' => ['required', 'date', 'after:start_time'],
             'capacity' => ['required', 'integer', 'min:1'],
+            'audience' => ['required', 'in:ALL,STUDENT,LECTURER'],
             'banner' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:3072'],
         ]);
 

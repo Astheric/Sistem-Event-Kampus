@@ -12,6 +12,7 @@
                 <img src="{{ $event->bannerUrl() }}" alt="{{ $event->title }}" class="mb-6 aspect-[16/9] w-full rounded-xl object-cover bg-slate-100" loading="lazy">
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="badge border border-brand-100 bg-brand-50 text-brand-700">{{ $event->category->name }}</span>
+                    <x-audience-badge :audience="$event->audience" />
                     <span class="badge border border-line bg-surface-soft text-muted">{{ $event->status }}</span>
                     @if($event->average_rating > 0)
                         <span class="badge border border-amber-200 bg-amber-50 text-amber-700">{{ number_format($event->average_rating, 1) }} ({{ $event->review_count }} ulasan)</span>

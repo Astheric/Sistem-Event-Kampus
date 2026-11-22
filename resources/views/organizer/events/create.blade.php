@@ -26,7 +26,7 @@
                 @enderror
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                     <label for="category_id" class="block font-semibold text-xs text-ink mb-1.5">Kategori Event *</label>
                     <select id="category_id" name="category_id" required
@@ -44,7 +44,7 @@
                 </div>
 
                 <div>
-                    <label for="venue_id" class="block font-semibold text-xs text-ink mb-1.5">Lokasi / Venue Acara</label>
+                    <label for="venue_id" class="block font-semibold text-xs text-ink mb-1.5">Lokasi / Venue</label>
                     <select id="venue_id" name="venue_id"
                         class="w-full rounded-lg border border-line/80 bg-surface-soft/40 px-3.5 py-2.5 text-sm text-slate-700 focus:border-brand-700 focus:bg-surface focus:outline-none">
                         <option value="">Daring / Online (Zoom / GMeet)</option>
@@ -54,6 +54,19 @@
                             </option>
                         @endforeach
                     </select>
+                </div>
+
+                <div>
+                    <label for="audience" class="block font-semibold text-xs text-ink mb-1.5">Target Peserta *</label>
+                    <select id="audience" name="audience" required
+                        class="w-full rounded-lg border border-line/80 bg-surface-soft/40 px-3.5 py-2.5 text-sm text-slate-700 focus:border-brand-700 focus:bg-surface focus:outline-none">
+                        <option value="ALL" {{ old('audience', 'ALL') === 'ALL' ? 'selected' : '' }}>Semua</option>
+                        <option value="STUDENT" {{ old('audience') === 'STUDENT' ? 'selected' : '' }}>Mahasiswa</option>
+                        <option value="LECTURER" {{ old('audience') === 'LECTURER' ? 'selected' : '' }}>Dosen</option>
+                    </select>
+                    @error('audience')
+                        <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
