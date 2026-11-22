@@ -194,6 +194,6 @@ class CharacterizationTest extends TestCase
     {
         $user = User::factory()->create(['role' => 'participant']);
         $this->actingAs($user);
-        $this->get(route('admin.dashboard'))->assertStatus(403);
+        $this->get(route('admin.dashboard'))->assertRedirect(route('home'));
     }
 }

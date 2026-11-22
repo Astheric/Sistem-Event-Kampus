@@ -129,10 +129,10 @@ class EventHubCoreTest extends TestCase
         $this->actingAs($this->participant);
 
         $adminResponse = $this->get(route('admin.dashboard'));
-        $adminResponse->assertStatus(403);
+        $adminResponse->assertRedirect(route('home'));
 
         $organizerResponse = $this->get(route('organizer.dashboard'));
-        $organizerResponse->assertStatus(403);
+        $organizerResponse->assertRedirect(route('home'));
     }
 
     public function test_admin_can_access_admin_dashboard(): void
@@ -334,7 +334,7 @@ class EventHubCoreTest extends TestCase
 
         // Cannot access organizer dashboard
         $orgDashboard = $this->get(route('organizer.dashboard'));
-        $orgDashboard->assertStatus(403);
+        $orgDashboard->assertRedirect(route('home'));
     }
 
     public function test_committee_division_specific_access_control(): void
