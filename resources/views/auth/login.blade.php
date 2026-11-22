@@ -28,7 +28,10 @@
                 @csrf
                 <div>
                     <label for="email" class="label">Alamat email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="email" class="input" placeholder="nama@kampus.ac.id">
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="email" class="input @error('email') border-red-400 focus:border-red-500 focus:ring-red-200 @enderror" placeholder="nama@kampus.ac.id">
+                    @error('email')
+                        <p class="mt-1.5 text-sm font-medium text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label for="password" class="label">Kata sandi</label>
