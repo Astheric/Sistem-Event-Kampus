@@ -46,6 +46,7 @@
                             <option value="upcoming" {{ request('date', 'upcoming') === 'upcoming' ? 'selected' : '' }}>Mendatang</option>
                             <option value="today" {{ request('date') === 'today' ? 'selected' : '' }}>Hari ini</option>
                             <option value="this_week" {{ request('date') === 'this_week' ? 'selected' : '' }}>Minggu ini</option>
+                            <option value="completed" {{ request('date') === 'completed' ? 'selected' : '' }}>Selesai</option>
                         </select>
                     </div>
                 </div>

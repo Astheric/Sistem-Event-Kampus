@@ -18,8 +18,11 @@ class EventCatalogController extends Controller
      */
     public function index(Request $request): View
     {
+        $dateFilter = $request->input('date');
+        $status = $dateFilter === 'completed' ? 'COMPLETED' : 'PUBLISHED';
+
         $query = Event::with(['category', 'venue', 'tickets', 'organization'])
-            ->where('status', 'PUBLISHED');
+            ->where('status', $status);
 
         // Search keyword
         if ($search = $request->input('q')) {
@@ -58,25 +61,27 @@ class EventCatalogController extends Controller
 
         // Date filter
         $now = CarbonImmutable::now();
-        if ($dateFilter = $request->input('date')) {
-            if ($dateFilter === 'today') {
-                $query->whereDate('start_time', $now->toDateString());
-            } elseif ($dateFilter === 'this_week') {
-                $query->whereBetween('start_time', [$now->startOfWeek()->toDateTimeString(), $now->copy()->endOfWeek()->toDateTimeString()]);
-            } elseif ($dateFilter === 'upcoming') {
-                $query->where('start_time', '>=', $now);
-            }
+        if ($dateFilter === 'today') {
+            $query->whereDate('start_time', $now->toDateString());
+        } elseif ($dateFilter === 'this_week') {
+            $query->whereBetween('start_time', [$now->startOfWeek()->toDateTimeString(), $now->copy()->endOfWeek()->toDateTimeString()]);
+        } elseif ($dateFilter === 'upcoming') {
+            $query->where('start_time', '>=', $now);
+        } elseif ($dateFilter === 'completed') {
+            // Show completed events
         } else {
             // Default show upcoming and ongoing
             $query->where('end_time', '>=', $now->subHours(6));
         }
 
         // Sorting
-        $sort = $request->input('sort', 'date_asc');
+        $sort = $request->input('sort', $dateFilter === 'completed' ? 'date_desc' : 'date_asc');
         if ($sort === 'newest') {
             $query->orderBy('created_at', 'desc');
         } elseif ($sort === 'popular') {
             $query->withCount('registrations')->orderBy('registrations_count', 'desc');
+        } elseif ($sort === 'date_desc') {
+            $query->orderBy('start_time', 'desc');
         } else {
             $query->orderBy('start_time', 'asc');
         }
