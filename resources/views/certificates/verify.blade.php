@@ -1,108 +1,87 @@
 @extends('layouts.app')
 
-@section('title', 'Portal Verifikasi Sertifikat Publik — EventHub')
+@section('title', 'Verifikasi Sertifikat : EventHub')
 
 @section('content')
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-    <!-- Header -->
-    <div class="text-center space-y-3 mb-8">
-        <span class="bg-surface border border-line px-3 py-1 text-xs font-bold  tracking-wider shadow-card rounded-2xl">
-            Portal Publik Bebas Login
-        </span>
-        <h1 class="text-3xl sm:text-5xl font-bold">Verifikasi Keaslian Sertifikat</h1>
-        <p class="text-sm font-bold text-muted max-w-lg mx-auto">
-            Cek validitas nomor seri e-sertifikat kegiatan kampus untuk memastikan keaslian data penerima dan penyelenggara.
+<div class="max-w-2xl mx-auto px-4 sm:px-6 py-12 space-y-6">
+    <div class="text-center space-y-2">
+        <h1 class="text-2xl sm:text-3xl font-bold text-ink">Verifikasi sertifikat</h1>
+        <p class="text-sm text-muted max-w-md mx-auto">
+            Masukkan nomor sertifikat untuk memeriksa keabsahan penerima dan kegiatan.
         </p>
     </div>
 
-    <!-- Search / Verify Form -->
-    <div class="bg-surface border border-line p-6 sm:p-8 shadow-card mb-8 rounded-2xl">
-        <form action="{{ route('certificates.verify') }}" method="GET" class="space-y-4">
+    {{-- Form --}}
+    <div class="bg-surface border border-line p-6 rounded-xl">
+        <form action="{{ route('certificates.verify') }}" method="GET" class="space-y-3">
             <div>
-                <label for="code" class="block font-bold text-xs  mb-1">Nomor Seri Sertifikat (Certificate ID)</label>
+                <label for="code" class="block font-semibold text-xs text-ink mb-1.5">Nomor sertifikat</label>
                 <div class="flex flex-col sm:flex-row gap-2">
                     <input type="text" id="code" name="code" value="{{ $code }}" required
                         placeholder="Contoh: CERT-2026-908123"
-                        class="w-full bg-surface border border-line p-3 font-mono font-bold text-base  focus:outline-none focus:bg-surface focus:shadow-card transition-all rounded-2xl">
+                        class="w-full bg-surface border border-line px-3.5 py-2.5 rounded-lg font-mono text-sm text-ink focus:outline-none focus:border-brand-700">
                     <button type="submit"
-                        class="bg-brand-600 text-white hover:bg-brand-700 border border-line px-6 py-3 font-bold text-sm  tracking-wider shadow-card active:translate-x-1 active:translate-y-1 active:shadow-none transition-all whitespace-nowrap rounded-full">
-                        <x-icon name="search" class="size-4" /> Verifikasi
+                        class="btn btn-primary text-xs px-5 py-2.5 whitespace-nowrap">
+                        <x-icon name="search" class="size-3.5" /> Cek sertifikat
                     </button>
                 </div>
             </div>
-            <p class="text-[11px] font-bold text-muted">
-                *Tip: Anda juga dapat memindai QR Code yang tertera pada bagian bawah dokumen sertifikat fisik/PDF.
-            </p>
         </form>
     </div>
 
-    <!-- Result Box -->
+    {{-- Result --}}
     @if($searched)
         @if($certificate)
-            <!-- Valid Result Card -->
-            <div class="bg-surface border border-line shadow-card overflow-hidden rounded-2xl">
-                <div class="bg-surface border-b border-line p-6 flex items-center justify-between">
+            <div class="bg-surface border border-line rounded-xl overflow-hidden">
+                <div class="bg-surface border-b border-line p-5 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <span class="text-3xl"><x-icon name="shield" class="size-4" /></span>
+                        <span class="flex size-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
+                            <x-icon name="check" class="size-4" />
+                        </span>
                         <div>
-                            <span class="text-[10px] font-bold  tracking-widest text-muted">HASIL VERIFIKASI RESMI</span>
-                            <h2 class="text-xl sm:text-2xl font-bold">SERTIFIKAT VALID & TERDAFTAR</h2>
+                            <h2 class="text-base font-bold text-ink">SERTIFIKAT VALID & TERDAFTAR</h2>
+                            <p class="text-xs text-muted font-mono">{{ $certificate->certificate_number }}</p>
                         </div>
                     </div>
-                    <span class="bg-danger text-white border border-line px-3 py-1 font-mono font-bold text-xs">
-                        AUTHENTIC
+                    <span class="inline-flex rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800">
+                        Terverifikasi
                     </span>
                 </div>
 
-                <div class="p-6 sm:p-8 space-y-6">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-bold">
-                        <div class="bg-surface border border-line p-3">
-                            <span class="text-[10px]  text-muted font-bold block">Nama Penerima Sertifikat</span>
-                            <p class="font-bold text-base text-black mt-0.5">{{ $certificate->registration->user->name }}</p>
-                            <span class="text-muted font-mono">{{ $certificate->registration->user->email }}</span>
+                <div class="p-5 sm:p-6 space-y-4 text-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="rounded-lg border border-line bg-surface-soft p-3.5">
+                            <span class="text-xs text-muted block">Nama penerima</span>
+                            <p class="font-semibold text-ink mt-0.5">{{ $certificate->registration->user->name }}</p>
+                            <span class="text-xs text-muted">{{ $certificate->registration->user->email }}</span>
                         </div>
 
-                        <div class="bg-surface border border-line p-3">
-                            <span class="text-[10px]  text-muted font-bold block">Nomor Seri Sertifikat</span>
-                            <p class="font-mono font-bold text-base text-ink mt-0.5">{{ $certificate->certificate_number }}</p>
-                            <span class="text-muted">Diterbitkan: {{ $certificate->issued_at->format('d M Y, H:i') }} WIB</span>
+                        <div class="rounded-lg border border-line bg-surface-soft p-3.5">
+                            <span class="text-xs text-muted block">Tanggal terbit</span>
+                            <p class="font-semibold text-ink mt-0.5">{{ $certificate->issued_at->format('d M Y, H:i') }} WIB</p>
                         </div>
                     </div>
 
-                    <div class="border-t border-dashed border-line pt-4 space-y-3 text-xs font-bold">
+                    <div class="rounded-lg border border-line bg-surface-soft p-3.5 space-y-2">
                         <div>
-                            <span class="text-[10px]  text-muted font-bold block">Nama Event Kampus</span>
-                            <h3 class="font-bold text-lg text-black mt-0.5">{{ $certificate->registration->event->title }}</h3>
+                            <span class="text-xs text-muted block">Kegiatan</span>
+                            <p class="font-semibold text-ink mt-0.5">{{ $certificate->registration->event->title }}</p>
                         </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            <div>
-                                <span class="text-[10px]  text-muted font-bold block">Penyelenggara</span>
-                                <p class="font-bold">{{ $certificate->registration->event->organization->name }}</p>
-                            </div>
-                            <div>
-                                <span class="text-[10px]  text-muted font-bold block">Status Kehadiran di Lapangan</span>
-                                <span class="bg-surface border border-line px-2 py-0.5 text-xs font-bold inline-block mt-0.5">
-                                    HADIR & TERVERIFIKASI
-                                </span>
-                            </div>
+                        <div>
+                            <span class="text-xs text-muted block">Penyelenggara</span>
+                            <p class="font-semibold text-ink mt-0.5">{{ $certificate->registration->event->organization->name }}</p>
                         </div>
                     </div>
-                </div>
-
-                <div class="bg-surface-soft border-t border-line p-4 text-center text-xs font-bold text-muted">
-                    Dokumen ini sah dikeluarkan oleh Sistem Pengelolaan Event Kampus (EventHub) terintegrasi.
                 </div>
             </div>
         @else
-            <!-- Invalid Result Card -->
-            <div class="bg-surface border border-line p-8 shadow-card text-center space-y-4 rounded-2xl">
-                <div class="w-16 h-16 bg-surface border border-line flex items-center justify-center font-bold text-3xl mx-auto shadow-card rounded-2xl">
-                    <x-icon name="x" class="size-4" />
+            <div class="bg-surface border border-line p-8 text-center space-y-3 rounded-xl">
+                <div class="size-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto">
+                    <x-icon name="alert-circle" class="size-5" />
                 </div>
-                <h2 class="text-2xl font-bold">SERTIFIKAT TIDAK DITEMUKAN</h2>
-                <p class="text-xs font-bold text-muted max-w-md mx-auto">
-                    Nomor seri <span class="font-mono font-bold bg-surface px-1 border border-line">{{ $code }}</span> tidak terdaftar dalam basis data resmi EventHub Kampus. Mohon pastikan kode yang diinput sesuai huruf besar dan angka.
+                <h2 class="text-base font-bold text-ink">Sertifikat tidak ditemukan</h2>
+                <p class="text-xs text-muted max-w-sm mx-auto">
+                    Nomor seri <span class="font-mono font-semibold text-ink">{{ $code }}</span> tidak terdaftar dalam pangkalan data. Periksa kembali karakter dan format kode.
                 </p>
             </div>
         @endif

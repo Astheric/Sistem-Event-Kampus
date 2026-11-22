@@ -117,7 +117,7 @@
 <body>
     <div class="cert-border">
         <div class="cert-inner">
-            <div class="header-brand">EVENTHUB • SISTEM EVENT KAMPUS TERPADU</div>
+            <div class="header-brand">EVENTHUB • SERTIFIKAT KEGIATAN KAMPUS</div>
             <div class="main-title">SERTIFIKAT PENGHARGAAN</div>
 
             <div class="subtitle">DIBERIKAN DENGAN BANGGA KEPADA:</div>

@@ -20,7 +20,7 @@ class CategoryFactory extends Factory
         return [
             'name' => ucfirst($name),
             'slug' => Str::slug($name).'-'.fake()->unique()->numberBetween(1, 9999),
-            'icon' => fake()->randomElement(['🎤', '💻', '🎨', '🏆']),
+            'icon' => fake()->randomElement(['mic', 'code', 'aperture', 'award']),
         ];
     }
 }

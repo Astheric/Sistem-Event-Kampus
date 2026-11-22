@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Certificate;
 use App\Models\Event;
+use App\Models\EventMember;
 use App\Models\Organization;
 use App\Models\Registration;
 use App\Models\Ticket;
@@ -101,7 +102,8 @@ class EventHubCoreTest extends TestCase
     public function test_landing_page_and_catalog_are_accessible_publicly(): void
     {
         $response = $this->get(route('home'));
-        $response->assertRedirect(route('login'));
+        $response->assertStatus(200);
+        $response->assertSee('EventHub');
 
         $loginResponse = $this->get(route('login'));
         $loginResponse->assertStatus(200);
@@ -109,7 +111,17 @@ class EventHubCoreTest extends TestCase
 
         $catalogResponse = $this->get(route('events.index'));
         $catalogResponse->assertStatus(200);
-        $catalogResponse->assertSee('Jelajah Event');
+        $catalogResponse->assertSee('Katalog event');
+    }
+
+    public function test_authenticated_user_accesses_event_catalog_within_dashboard_layout(): void
+    {
+        $this->actingAs($this->participant);
+
+        $response = $this->get(route('events.index'));
+        $response->assertStatus(200);
+        $response->assertSee('Katalog event');
+        $response->assertSee('Tiket saya');
     }
 
     public function test_participant_cannot_access_admin_or_organizer_routes(): void
@@ -129,7 +141,7 @@ class EventHubCoreTest extends TestCase
 
         $response = $this->get(route('admin.dashboard'));
         $response->assertStatus(200);
-        $response->assertSee('Pusat Kendali & Pengawasan Kampus', false);
+        $response->assertSee('Ringkasan sistem', false);
     }
 
     public function test_business_rule_01_participant_cannot_register_same_event_twice(): void
@@ -291,5 +303,88 @@ class EventHubCoreTest extends TestCase
         $approveResponse = $this->post(route('admin.moderation.approve', $anotherSubmitted->id));
         $approveResponse->assertRedirect(route('admin.moderation.index'));
         $this->assertEquals('PUBLISHED', $anotherSubmitted->fresh()->status);
+    }
+
+    public function test_committee_member_can_access_committee_tasks_and_authorized_routes(): void
+    {
+        $panitia = User::create([
+            'name' => 'Panitia Test',
+            'email' => 'panitia@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'participant',
+        ]);
+
+        EventMember::create([
+            'event_id' => $this->event->id,
+            'user_id' => $panitia->id,
+            'committee_role' => 'Registration',
+        ]);
+
+        $this->actingAs($panitia);
+
+        // Can access committee tasks list
+        $tasksResponse = $this->get(route('organizer.committee.tasks'));
+        $tasksResponse->assertStatus(200);
+        $tasksResponse->assertSee('Tugas panitia', false);
+        $tasksResponse->assertSee($this->event->title);
+
+        // Registration division can access scanner
+        $scannerResponse = $this->get(route('organizer.checkin.scanner', $this->event->id));
+        $scannerResponse->assertStatus(200);
+
+        // Cannot access organizer dashboard
+        $orgDashboard = $this->get(route('organizer.dashboard'));
+        $orgDashboard->assertStatus(403);
+    }
+
+    public function test_committee_division_specific_access_control(): void
+    {
+        $financePanitia = User::create([
+            'name' => 'Finance Panitia',
+            'email' => 'finance@test.com',
+            'password' => Hash::make('password'),
+            'role' => 'participant',
+        ]);
+
+        EventMember::create([
+            'event_id' => $this->event->id,
+            'user_id' => $financePanitia->id,
+            'committee_role' => 'Finance',
+        ]);
+
+        $this->actingAs($financePanitia);
+
+        // Finance can view participants and export
+        $participantsRes = $this->get(route('organizer.participants.index', $this->event->id));
+        $participantsRes->assertStatus(200);
+
+        $exportRes = $this->get(route('organizer.participants.export', $this->event->id));
+        $exportRes->assertStatus(200);
+
+        // Finance CANNOT access QR scanner (only Registration division can)
+        $scannerRes = $this->get(route('organizer.checkin.scanner', $this->event->id));
+        $scannerRes->assertStatus(403);
+
+        // Regular participant without committee assignment cannot view participants or export
+        $this->actingAs($this->participant);
+        $unauthRes = $this->get(route('organizer.participants.index', $this->event->id));
+        $unauthRes->assertStatus(403);
+    }
+
+    public function test_admin_can_update_user_role_to_dosen_and_verify_account(): void
+    {
+        $this->actingAs($this->admin);
+
+        $updateRoleResponse = $this->post(route('admin.users.role', $this->participant->id), [
+            'role' => 'dosen',
+        ]);
+
+        $updateRoleResponse->assertRedirect();
+        $this->assertEquals('dosen', $this->participant->fresh()->role);
+
+        $verifyResponse = $this->post(route('admin.users.verify', $this->participant->id));
+        $verifyResponse->assertRedirect();
+        $this->assertNotNull($this->participant->fresh()->verified_at);
+        $this->assertTrue($this->participant->fresh()->isVerified());
     }
 }

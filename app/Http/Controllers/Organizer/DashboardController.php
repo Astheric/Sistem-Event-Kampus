@@ -19,7 +19,11 @@ class DashboardController extends Controller
         $user = Auth::user();
         $org = $user->organization;
 
-        $eventIds = $org ? $org->events()->pluck('id')->toArray() : [];
+        if ($user->isAdmin()) {
+            $eventIds = Event::pluck('id')->toArray();
+        } else {
+            $eventIds = $org ? $org->events()->pluck('id')->toArray() : [];
+        }
 
         $totalEvents = count($eventIds);
         $totalRegistrations = Registration::whereIn('event_id', $eventIds)->count();

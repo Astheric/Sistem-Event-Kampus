@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Organizer;
 
+use App\Enums\EventStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Event;
@@ -40,6 +41,13 @@ class EventController extends Controller
     public function index(): View
     {
         $user = Auth::user();
+
+        if ($user->isAdmin()) {
+            $events = Event::with(['category', 'venue', 'tickets'])->withCount('registrations')->orderBy('created_at', 'desc')->paginate(10);
+
+            return view('organizer.events.index', compact('events'));
+        }
+
         $org = $user->organization;
 
         $events = $org
@@ -201,28 +209,30 @@ class EventController extends Controller
     }
 
     /**
-     * Update event status (Publish, Complete, Cancel).
+     * Update event status (Complete or Cancel; Publish is reserved for admins).
      */
     public function updateStatus(Request $request, Event $event): RedirectResponse
     {
         $this->authorizeEvent($event);
 
         $validated = $request->validate([
-            'status' => ['required', 'in:COMPLETED,CANCELLED'],
+            'status' => ['required', 'in:PUBLISHED,COMPLETED,CANCELLED'],
         ]);
 
-        $newStatus = $validated['status'];
-        $oldStatus = $event->status;
+        $oldStatus = EventStatus::tryFrom((string) $event->status);
+        $newStatus = EventStatus::from($validated['status']);
 
-        if ($newStatus === 'COMPLETED' && $oldStatus !== 'PUBLISHED') {
-            return back()->with('error', 'Hanya event berstatus PUBLISHED yang dapat diselesaikan.');
+        if ($oldStatus === null || ! $oldStatus->canTransitionTo($newStatus)) {
+            $from = $oldStatus?->label() ?? $event->status;
+
+            return back()->with('error', 'Perubahan status dari '.$from.' ke '.$newStatus->label().' tidak diizinkan.');
         }
 
-        if ($newStatus === 'CANCELLED' && in_array($oldStatus, ['COMPLETED', 'CANCELLED'])) {
-            return back()->with('error', 'Event yang telah selesai atau sudah dibatalkan tidak dapat diubah.');
+        if ($newStatus === EventStatus::Published && ! Auth::user()->isAdmin()) {
+            return back()->with('error', 'Publikasi event dilakukan melalui persetujuan Admin.');
         }
 
-        if ($newStatus === 'CANCELLED') {
+        if ($newStatus === EventStatus::Cancelled) {
             foreach ($event->registrations()->whereIn('status', ['PENDING', 'CONFIRMED'])->get() as $registration) {
                 app(TicketService::class)->cancel($registration, 'Event dibatalkan');
                 Notification::create([
@@ -235,14 +245,14 @@ class EventController extends Controller
             }
         }
 
-        $event->update(['status' => $newStatus]);
+        $event->update(['status' => $newStatus->value]);
 
         AuditLogger::log('event.status_changed', 'Event', $event->id, [
-            'from' => $oldStatus,
-            'to' => $newStatus,
+            'from' => $oldStatus->value,
+            'to' => $newStatus->value,
         ]);
 
-        return back()->with('success', "Status event berhasil diperbarui menjadi {$newStatus}!");
+        return back()->with('success', 'Status event berhasil diperbarui menjadi '.$newStatus->label().'.');
     }
 
     /**

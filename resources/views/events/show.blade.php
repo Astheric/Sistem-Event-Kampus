@@ -1,38 +1,39 @@
-@extends('layouts.app')
+@extends(Auth::check() ? 'layouts.dashboard' : 'layouts.app')
 
-@section('title', $event->title . ' — EventHub')
+@section('title', $event->title . ' : EventHub')
 
 @section('content')
-<div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-    <a href="{{ route('events.index') }}" class="inline-flex items-center gap-2 text-sm font-medium text-muted hover:text-ink"><x-icon name="chevron-left" class="size-4" /> Kembali ke daftar event</a>
+<div class="{{ Auth::check() ? 'space-y-6' : 'mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8' }}">
+    <a href="{{ route('events.index') }}" class="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-ink"><x-icon name="chevron-left" class="size-3.5" /> Kembali ke daftar event</a>
 
     <div class="mt-6 grid gap-8 lg:grid-cols-[1.4fr_.8fr]">
         <section class="space-y-6">
             <div class="card p-6 sm:p-8">
+                <img src="{{ $event->bannerUrl() }}" alt="{{ $event->title }}" class="mb-6 aspect-[16/9] w-full rounded-xl object-cover bg-slate-100" loading="lazy">
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="badge border border-brand-100 bg-brand-50 text-brand-700">{{ $event->category->name }}</span>
                     <span class="badge border border-line bg-surface-soft text-muted">{{ $event->status }}</span>
                     @if($event->average_rating > 0)
-                        <span class="badge border border-amber-200 bg-amber-50 text-amber-700">{{ number_format($event->average_rating, 1) }} · {{ $event->review_count }} ulasan</span>
+                        <span class="badge border border-amber-200 bg-amber-50 text-amber-700">{{ number_format($event->average_rating, 1) }} ({{ $event->review_count }} ulasan)</span>
                     @endif
                 </div>
 
-                <h1 class="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">{{ $event->title }}</h1>
-                <p class="mt-2 text-muted">Diselenggarakan oleh <span class="font-medium text-ink">{{ $event->organization->name }}</span></p>
+                <h1 class="mt-4 text-2xl font-bold tracking-tight text-ink sm:text-3xl">{{ $event->title }}</h1>
+                <p class="mt-2 text-sm text-muted">Diselenggarakan oleh <span class="font-medium text-ink">{{ $event->organization->name }}</span></p>
 
                 <dl class="mt-6 grid gap-4 sm:grid-cols-2">
                     <div class="rounded-xl border border-line bg-surface-soft p-4">
-                        <dt class="text-sm font-medium text-muted">Tanggal & waktu</dt>
-                        <dd class="mt-1 font-semibold text-ink">{{ $event->start_time->translatedFormat('l, d F Y') }}</dd>
-                        <dd class="text-sm text-muted">{{ $event->start_time->format('H:i') }} – {{ $event->end_time->format('H:i') }} WIB</dd>
+                        <dt class="text-xs font-medium text-muted">Tanggal dan waktu</dt>
+                        <dd class="mt-1 font-semibold text-ink text-sm">{{ $event->start_time->translatedFormat('l, d F Y') }}</dd>
+                        <dd class="text-xs text-muted">{{ $event->start_time->format('H:i') }} - {{ $event->end_time->format('H:i') }} WIB</dd>
                     </div>
                     <div class="rounded-xl border border-line bg-surface-soft p-4">
-                        <dt class="text-sm font-medium text-muted">Lokasi</dt>
-                        <dd class="mt-1 font-semibold text-ink">{{ $event->venue ? $event->venue->name : 'Daring / Online' }}</dd>
+                        <dt class="text-xs font-medium text-muted">Lokasi</dt>
+                        <dd class="mt-1 font-semibold text-ink text-sm">{{ $event->venue ? $event->venue->name : 'Daring / Online' }}</dd>
                         @if($event->venue)
-                            <dd class="text-sm text-muted">{{ $event->venue->address }}, {{ $event->venue->city }}</dd>
+                            <dd class="text-xs text-muted">{{ $event->venue->address }}, {{ $event->venue->city }}</dd>
                             @if($event->venue->maps_url)
-                                <a href="{{ $event->venue->maps_url }}" target="_blank" class="mt-2 inline-flex text-sm font-semibold text-brand-700 hover:text-brand-600">Lihat di peta</a>
+                                <a href="{{ $event->venue->maps_url }}" target="_blank" class="mt-2 inline-flex text-xs font-semibold text-brand-700 hover:text-brand-600">Lihat di peta</a>
                             @endif
                         @endif
                     </div>
@@ -42,10 +43,10 @@
             @if($userRegistration)
                 <div class="rounded-xl border border-green-200 bg-green-50 p-5 sm:flex sm:items-center sm:justify-between sm:gap-4">
                     <div>
-                        <p class="font-semibold text-green-800">Anda sudah terdaftar pada event ini</p>
-                        <p class="mt-1 text-sm text-green-700">Kode: {{ $userRegistration->registration_code }} · Status: {{ $userRegistration->status }}</p>
+                        <p class="font-semibold text-green-800 text-sm">Anda sudah terdaftar pada event ini</p>
+                        <p class="mt-1 text-xs text-green-700">Kode: {{ $userRegistration->registration_code }} (Status: {{ $userRegistration->status }})</p>
                     </div>
-                    <a href="{{ route('participant.tickets.show', $userRegistration->id) }}" class="btn btn-primary mt-4 sm:mt-0">Lihat tiket</a>
+                    <a href="{{ route('participant.tickets.show', $userRegistration->id) }}" class="btn btn-primary text-xs mt-3 sm:mt-0">Lihat tiket</a>
                 </div>
             @endif
 
@@ -112,17 +113,17 @@
                             <div class="flex items-start justify-between gap-4">
                                 <div>
                                     <h3 class="font-semibold text-ink">{{ $ticket->name }}</h3>
-                                    <p class="mt-1 text-xs text-muted">Sisa {{ $ticket->available_quota }} dari {{ $ticket->quota }} · s/d {{ $ticket->end_sale->format('d M Y') }}</p>
+                                    <p class="mt-1 text-xs text-muted">Sisa {{ $ticket->available_quota }} dari {{ $ticket->quota }} (sampai {{ $ticket->end_sale->format('d M Y') }})</p>
                                 </div>
                                 <p class="whitespace-nowrap text-sm font-bold text-ink">@if($ticket->price == 0) Gratis @else Rp {{ number_format($ticket->price, 0, ',', '.') }} @endif</p>
                             </div>
                             <div class="mt-4">
                                 @if($userRegistration)
-                                    <span class="inline-flex w-full justify-center rounded-full bg-surface-soft px-4 py-2.5 text-sm font-semibold text-muted">Sudah terdaftar</span>
+                                    <span class="inline-flex w-full justify-center rounded-xl bg-surface-soft px-4 py-2.5 text-sm font-semibold text-muted">Sudah terdaftar</span>
                                 @elseif($isAvailable)
-                                    <a href="{{ route('events.checkout', ['event' => $event->id, 'ticket' => $ticket->id]) }}" class="btn btn-primary w-full">Daftar / pesan tiket</a>
+                                    <a href="{{ route('events.checkout', ['event' => $event->id, 'ticket' => $ticket->id]) }}" class="btn btn-primary w-full text-sm">Pesan tiket</a>
                                 @else
-                                    <span class="inline-flex w-full justify-center rounded-full bg-surface-soft px-4 py-2.5 text-sm font-semibold text-muted">{{ $ticket->isSoldOut() ? 'Tiket habis' : 'Penjualan ditutup' }}</span>
+                                    <span class="inline-flex w-full justify-center rounded-xl bg-surface-soft px-4 py-2.5 text-sm font-semibold text-muted">{{ $ticket->isSoldOut() ? 'Tiket habis' : 'Penjualan ditutup' }}</span>
                                 @endif
                             </div>
                         </div>

@@ -1,107 +1,111 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Dashboard Administrator — EventHub')
+@section('title', 'Dashboard Admin')
 
 @section('dashboard_content')
 <div class="space-y-8">
-    <!-- Header -->
-    <div class="bg-surface border border-line p-6 shadow-card rounded-2xl">
-        <div class="flex items-center gap-2 mb-1">
-            <span class="bg-surface border border-line px-2.5 py-0.5 text-xs font-bold  shadow-card rounded-2xl">
-                Super Administrator
-            </span>
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold text-ink">Ringkasan sistem</h1>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.moderation.index') }}" class="btn btn-primary text-xs py-2 px-3.5">
+                    <x-icon name="check-circle" class="size-3.5" />
+                    Antrean moderasi ({{ $metrics['pending_approvals'] }})
+                </a>
+            </div>
         </div>
-        <h1 class="text-3xl font-bold">Pusat Kendali & Pengawasan Kampus</h1>
-        <p class="text-xs font-bold text-muted mt-1">
-            Moderasi publikasi event, kelola master data kategori, dan pantau log audit seluruh sistem.
-        </p>
     </div>
 
     <!-- Health Metrics Grid (FR-18) -->
-    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 text-center">
-        <div class="bg-surface border border-line p-4 shadow-card rounded-2xl">
-            <span class="text-[10px]  font-bold text-muted">Total Pengguna</span>
-            <div class="text-3xl font-bold font-mono mt-1">{{ $metrics['total_users'] }}</div>
+    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-medium text-muted">Total Pengguna</span>
+            <div class="text-3xl font-extrabold tracking-tight text-ink mt-2">{{ number_format($metrics['total_users']) }}</div>
+            <span class="text-xs text-muted mt-1 block">Civitas aktif</span>
         </div>
 
-        <div class="bg-surface border border-line p-4 shadow-card rounded-2xl">
-            <span class="text-[10px]  font-bold text-muted">Total Event</span>
-            <div class="text-3xl font-bold font-mono mt-1">{{ $metrics['total_events'] }}</div>
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-medium text-muted">Total Event</span>
+            <div class="text-3xl font-extrabold tracking-tight text-ink mt-2">{{ number_format($metrics['total_events']) }}</div>
+            <span class="text-xs text-muted mt-1 block">Semua status</span>
         </div>
 
-        <div class="bg-surface text-white border border-line p-4 shadow-card rounded-2xl">
-            <span class="text-[10px]  font-bold">Antrean Moderasi</span>
-            <div class="text-3xl font-bold font-mono mt-1">{{ $metrics['pending_approvals'] }}</div>
+        <div class="bg-amber-50/50 rounded-2xl border border-amber-200/60 p-5">
+            <span class="text-xs font-semibold text-amber-800">Antrean Moderasi</span>
+            <div class="text-3xl font-extrabold tracking-tight text-amber-900 mt-2">{{ number_format($metrics['pending_approvals']) }}</div>
+            <span class="text-xs text-amber-700 mt-1 block">Menunggu verifikasi</span>
         </div>
 
-        <div class="bg-surface border border-line p-4 shadow-card rounded-2xl">
-            <span class="text-[10px]  font-bold">Total Pendaftaran</span>
-            <div class="text-3xl font-bold font-mono mt-1">{{ $metrics['total_registrations'] }}</div>
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-medium text-muted">Total Pendaftaran</span>
+            <div class="text-3xl font-extrabold tracking-tight text-ink mt-2">{{ number_format($metrics['total_registrations']) }}</div>
+            <span class="text-xs text-muted mt-1 block">Tiket dipesan</span>
         </div>
 
-        <div class="bg-surface border border-line p-4 shadow-card rounded-2xl">
-            <span class="text-[10px]  font-bold">Sertifikat Terbit</span>
-            <div class="text-3xl font-bold font-mono mt-1">{{ $metrics['total_certificates'] }}</div>
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-medium text-muted">Sertifikat Terbit</span>
+            <div class="text-3xl font-extrabold tracking-tight text-ink mt-2">{{ number_format($metrics['total_certificates']) }}</div>
+            <span class="text-xs text-muted mt-1 block">Verifikasi hadir</span>
         </div>
     </div>
 
-    <!-- Pending Moderation Queue (FR-19) -->
-    <div class="bg-surface border border-line p-6 shadow-card space-y-4 rounded-2xl">
-        <div class="flex items-center justify-between border-b border-line pb-2">
-            <div>
-                <h3 class="font-bold text-lg">Antrean Event Menunggu Persetujuan</h3>
-                <p class="text-xs font-bold text-muted">Event berstatus SUBMITTED memerlukan tinjauan Admin sebelum terbit ke publik.</p>
-            </div>
-            <a href="{{ route('admin.moderation.index') }}" class="font-bold text-xs hover:underline">
-                Lihat Semua Antrean →
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6 space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-line">
+            <h3 class="font-bold text-base text-ink">Event menunggu persetujuan</h3>
+            <a href="{{ route('admin.moderation.index') }}" class="font-semibold text-xs text-brand-700 hover:text-brand-800">
+                Semua antrean
             </a>
         </div>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs font-bold">
+            <table class="w-full text-left border-collapse text-sm">
                 <thead>
-                    <tr class="bg-danger text-white font-mono  text-[10px]">
-                        <th class="p-3 border border-line">Judul Event</th>
-                        <th class="p-3 border border-line">Penyelenggara</th>
-                        <th class="p-3 border border-line">Kategori</th>
-                        <th class="p-3 border border-line">Jadwal</th>
-                        <th class="p-3 border border-line text-center">Aksi Moderasi</th>
+                    <tr class="bg-surface-soft text-xs font-semibold text-muted uppercase tracking-wider">
+                        <th class="py-3 px-4 rounded-l-lg">Judul Event</th>
+                        <th class="py-3 px-4">Penyelenggara</th>
+                        <th class="py-3 px-4">Kategori</th>
+                        <th class="py-3 px-4">Jadwal Acara</th>
+                        <th class="py-3 px-4 text-center rounded-r-lg">Aksi Moderasi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-line/60">
                     @forelse($pendingEvents as $event)
-                        <tr class="hover:bg-surface-soft border-b border-line">
-                            <td class="p-3 border border-line font-bold text-sm">{{ $event->title }}</td>
-                            <td class="p-3 border border-line">{{ $event->organization->name }}</td>
-                            <td class="p-3 border border-line">
-                                <span class="bg-surface border border-line px-1.5 py-0.5 text-[10px] font-bold ">
+                        <tr class="hover:bg-surface-soft/60 transition-colors">
+                            <td class="py-3.5 px-4 font-semibold text-ink">{{ $event->title }}</td>
+                            <td class="py-3.5 px-4 text-slate-600">{{ $event->organization->name }}</td>
+                            <td class="py-3.5 px-4">
+                                <span class="inline-flex items-center rounded-md bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">
                                     {{ $event->category->name }}
                                 </span>
                             </td>
-                            <td class="p-3 border border-line font-mono text-[10px]">
-                                {{ $event->start_time->format('d M Y, H:i') }}
+                            <td class="py-3.5 px-4 text-xs text-muted">
+                                {{ $event->start_time->format('d M Y, H:i') }} WIB
                             </td>
-                            <td class="p-3 border border-line text-center">
+                            <td class="py-3.5 px-4 text-center">
                                 <div class="flex items-center justify-center gap-2">
                                     <form action="{{ route('admin.moderation.approve', $event->id) }}" method="POST">
                                         @csrf
                                         <button type="submit"
-                                            class="bg-brand-600 text-white hover:bg-brand-700 border border-line px-2.5 py-1 font-bold text-[10px]  shadow-card active:translate-x-[1px] active:translate-y-[1px] rounded-full">
-                                            <x-icon name="check" class="size-4" /> Setujui
+                                            class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 transition">
+                                            <x-icon name="check" class="size-3.5" /> Setujui
                                         </button>
                                     </form>
 
                                     <a href="{{ route('admin.moderation.show', $event->id) }}"
-                                        class="bg-brand-600 text-white border border-line px-2.5 py-1 font-bold text-[10px]  shadow-card active:translate-x-[1px] active:translate-y-[1px] rounded-full">
-                                        Tinjau <x-icon name="search" class="size-4" />
+                                        class="inline-flex items-center gap-1 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-200 transition">
+                                        Tinjau <x-icon name="search" class="size-3.5" />
                                     </a>
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="p-6 text-center text-muted font-bold">
-                                <x-icon name="star" class="size-4" /> Tidak ada event yang menunggu persetujuan saat ini.
+                            <td colspan="5" class="py-10 text-center text-muted">
+                                <x-icon name="check-circle" class="size-8 mx-auto text-emerald-500 mb-2" />
+                                <p class="text-sm font-medium text-ink">Tidak ada event yang menunggu persetujuan</p>
+                                <p class="text-xs text-muted mt-1">Semua pengajuan event telah ditinjau.</p>
                             </td>
                         </tr>
                     @endforelse
@@ -110,34 +114,30 @@
         </div>
     </div>
 
-    <!-- Recent Audit Logs (FR-20) -->
-    <div class="bg-surface border border-line p-6 shadow-card space-y-4 rounded-2xl">
-        <div class="flex items-center justify-between border-b border-line pb-2">
-            <div>
-                <h3 class="font-bold text-lg">Aktivitas Audit Log Sistem Terbaru</h3>
-                <p class="text-xs font-bold text-muted">Pencatatan transparan seluruh mutasi data krusial sistem.</p>
-            </div>
-            <a href="{{ route('admin.audit_logs.index') }}" class="font-bold text-xs hover:underline">
-                Buka Log Lengkap →
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6 space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-line">
+            <h3 class="font-bold text-base text-ink">Log aktivitas terbaru</h3>
+            <a href="{{ route('admin.audit_logs.index') }}" class="font-semibold text-xs text-brand-700 hover:text-brand-800">
+                Semua log
             </a>
         </div>
 
-        <div class="space-y-2">
+        <div class="space-y-2.5">
             @forelse($recentLogs as $log)
-                <div class="p-3 border border-line bg-surface flex items-center justify-between text-xs font-bold">
+                <div class="p-3.5 rounded-xl bg-surface-soft/60 border border-line/40 flex items-center justify-between text-sm">
                     <div class="flex items-center gap-3">
-                        <span class="bg-danger text-white px-2 py-0.5 text-[10px] font-mono font-bold ">
+                        <span class="inline-flex items-center rounded-md bg-slate-200/80 px-2.5 py-1 text-xs font-semibold text-slate-700">
                             {{ $log->action }}
                         </span>
                         <div>
-                            <span class="font-bold">{{ $log->user ? $log->user->name : 'Sistem' }}</span>
-                            <span class="text-muted">• {{ $log->entity_type }} #{{ $log->entity_id }}</span>
+                            <span class="font-semibold text-ink">{{ $log->user ? $log->user->name : 'Sistem' }}</span>
+                            <span class="text-xs text-muted ml-1.5">• {{ $log->entity_type }} #{{ $log->entity_id }}</span>
                         </div>
                     </div>
-                    <span class="font-mono text-[10px] text-muted">{{ $log->created_at->diffForHumans() }}</span>
+                    <span class="text-xs text-muted">{{ $log->created_at->diffForHumans() }}</span>
                 </div>
             @empty
-                <p class="text-xs font-bold text-muted py-4 text-center">Belum ada catatan log audit.</p>
+                <p class="text-sm text-muted py-6 text-center">Belum ada catatan log audit.</p>
             @endforelse
         </div>
     </div>

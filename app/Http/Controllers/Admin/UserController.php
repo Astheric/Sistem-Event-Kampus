@@ -46,7 +46,7 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'role' => ['required', 'in:admin,organizer,participant'],
+            'role' => ['required', 'in:admin,organizer,participant,dosen'],
         ]);
 
         $oldRole = $user->role;

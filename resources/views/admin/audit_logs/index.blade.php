@@ -1,88 +1,80 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Audit Trail Log — Admin EventHub')
+@section('title', 'Audit Log Sistem')
 
 @section('dashboard_content')
 <div class="space-y-6">
-    <!-- Header -->
-    <div class="bg-surface border border-line p-6 shadow-card rounded-2xl">
-        <div class="flex items-center gap-2 mb-1">
-            <span class="bg-surface border border-line px-2.5 py-0.5 text-xs font-bold  shadow-card rounded-2xl">
-                Transparansi Sistem (FR-20, BR-08)
-            </span>
-        </div>
-        <h1 class="text-3xl font-bold">Audit Trail & Log Aktivitas</h1>
-        <p class="text-xs font-bold text-muted mt-1">
-            Riwayat otomatis setiap aksi krusial sistem: check-in QR, verifikasi pembayaran, moderasi event, dan penerbitan sertifikat.
-        </p>
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6">
+        <h1 class="text-xl sm:text-2xl font-bold text-ink">Log audit sistem</h1>
     </div>
 
     <!-- Filter Bar -->
     <form action="{{ route('admin.audit_logs.index') }}" method="GET"
-        class="bg-surface border border-line p-4 shadow-card flex flex-wrap items-center gap-3 rounded-2xl">
-        <select name="action" class="bg-surface border border-line p-2 font-bold text-xs focus:outline-none">
-            <option value="">Semua Aksi (All Actions)</option>
+        class="bg-surface rounded-xl border border-line p-4 flex flex-wrap items-center gap-3">
+        <select name="action" class="rounded-lg border border-line/80 bg-surface px-3 py-2 text-sm text-slate-700 focus:border-brand-700 focus:outline-none">
+            <option value="">Semua aksi</option>
             @foreach($actions as $act)
                 <option value="{{ $act }}" {{ request('action') === $act ? 'selected' : '' }}>{{ $act }}</option>
             @endforeach
         </select>
 
-        <button type="submit" class="bg-brand-600 text-white border border-line px-4 py-2 font-bold text-xs  shadow-card rounded-full">
+        <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg bg-brand-700 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-800 transition">
+            <x-icon name="filter" class="size-3.5" />
             Filter Log
         </button>
     </form>
 
     <!-- Audit Logs Table -->
-    <div class="bg-surface border border-line p-6 shadow-card space-y-4 rounded-2xl">
+    <div class="bg-surface rounded-2xl border border-line/60 p-6 space-y-4">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs font-bold">
+            <table class="w-full text-left border-collapse text-sm">
                 <thead>
-                    <tr class="bg-danger text-white font-mono  text-[10px]">
-                        <th class="p-3 border border-line">Waktu</th>
-                        <th class="p-3 border border-line">Pengguna</th>
-                        <th class="p-3 border border-line">Aksi / Event</th>
-                        <th class="p-3 border border-line">Target Entitas</th>
-                        <th class="p-3 border border-line">Alamat IP</th>
-                        <th class="p-3 border border-line">Rincian Metadata (JSON)</th>
+                    <tr class="bg-surface-soft text-xs font-semibold text-muted uppercase tracking-wider">
+                        <th class="py-3 px-4 rounded-l-lg">Waktu</th>
+                        <th class="py-3 px-4">Pengguna</th>
+                        <th class="py-3 px-4">Aksi / Event</th>
+                        <th class="py-3 px-4">Target Entitas</th>
+                        <th class="py-3 px-4">Alamat IP</th>
+                        <th class="py-3 px-4 rounded-r-lg">Rincian Metadata</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-line/60">
                     @forelse($logs as $log)
-                        <tr class="hover:bg-surface-soft border-b border-line">
-                            <td class="p-3 border border-line font-mono text-[11px]">
+                        <tr class="hover:bg-surface-soft/60 transition-colors">
+                            <td class="py-3.5 px-4 text-xs text-muted whitespace-nowrap">
                                 {{ $log->created_at->format('d M Y, H:i:s') }}
                             </td>
-                            <td class="p-3 border border-line">
-                                <span class="font-bold">{{ $log->user ? $log->user->name : 'Sistem / Anonim' }}</span>
+                            <td class="py-3.5 px-4">
+                                <span class="font-semibold text-ink text-xs block">{{ $log->user ? $log->user->name : 'Sistem / Anonim' }}</span>
                                 @if($log->user)
-                                    <span class="text-[10px] text-muted font-mono block">{{ $log->user->email }}</span>
+                                    <span class="text-xs text-muted block">{{ $log->user->email }}</span>
                                 @endif
                             </td>
-                            <td class="p-3 border border-line">
-                                <span class="bg-surface border border-line px-2 py-0.5 text-[10px] font-mono font-bold ">
+                            <td class="py-3.5 px-4">
+                                <span class="inline-flex items-center rounded-md bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
                                     {{ $log->action }}
                                 </span>
                             </td>
-                            <td class="p-3 border border-line font-mono text-[11px]">
-                                {{ $log->entity_type }} #{{ $log->entity_id ?? '-' }}
+                            <td class="py-3.5 px-4 text-xs text-slate-700 font-mono">
+                                {{ $log->entity_type }} #{{ $log->entity_id ?? '—' }}
                             </td>
-                            <td class="p-3 border border-line font-mono text-[11px] text-muted">
-                                {{ $log->ip_address ?? '-' }}
+                            <td class="py-3.5 px-4 text-xs text-muted font-mono">
+                                {{ $log->ip_address ?? '—' }}
                             </td>
-                            <td class="p-3 border border-line font-mono text-[10px] max-w-xs truncate">
+                            <td class="py-3.5 px-4 text-xs max-w-xs truncate">
                                 @if($log->details)
-                                    <code class="bg-surface-soft p-1 border border-zinc-300 block truncate">
+                                    <code class="rounded bg-surface-soft px-2 py-1 text-xs font-mono text-slate-600 block truncate">
                                         {{ json_encode($log->details) }}
                                     </code>
                                 @else
-                                    <span class="text-muted">-</span>
+                                    <span class="text-muted">—</span>
                                 @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="p-8 text-center text-muted font-bold">
-                                Belum ada aktivitas audit log yang tercatat.
+                            <td colspan="6" class="py-10 text-center text-muted">
+                                <p class="text-sm font-medium text-ink">Belum ada aktivitas audit log yang tercatat</p>
                             </td>
                         </tr>
                     @endforelse

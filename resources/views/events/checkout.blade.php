@@ -1,18 +1,17 @@
-@extends('layouts.app')
+@extends(Auth::check() ? 'layouts.dashboard' : 'layouts.app')
 
-@section('title', 'Pendaftaran Tiket — ' . $event->title)
+@section('title', 'Pendaftaran tiket : ' . $event->title)
 
 @section('content')
-<div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8" x-data="{ paymentMethod: 'Bank Transfer (BCA)' }">
+<div class="{{ Auth::check() ? 'space-y-6 max-w-5xl' : 'mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8' }}" x-data="{ paymentMethod: 'Bank Transfer (BCA)' }">
     <div>
-        <h1 class="text-3xl font-extrabold tracking-tight text-ink">Pendaftaran & Pemesanan Tiket</h1>
-        <p class="mt-2 text-sm text-muted">Periksa detail event dan lengkapi informasi pendaftaran sebelum konfirmasi.</p>
+        <h1 class="text-2xl font-bold text-ink">Pendaftaran tiket</h1>
     </div>
 
-    <div class="mt-8 grid gap-8 lg:grid-cols-[.9fr_1.1fr]">
+    <div class="mt-6 grid gap-8 lg:grid-cols-[.9fr_1.1fr]">
         <aside class="card h-fit p-6 lg:sticky lg:top-24">
-            <h2 class="text-sm font-semibold uppercase tracking-wide text-muted">Ringkasan</h2>
-            <h3 class="mt-3 text-xl font-bold leading-snug text-ink">{{ $event->title }}</h3>
+            <h2 class="text-xs font-bold text-ink">Ringkasan</h2>
+            <h3 class="mt-3 text-lg font-bold leading-snug text-ink">{{ $event->title }}</h3>
             <p class="mt-1 text-sm text-muted">{{ $event->organization->name }}</p>
 
             <dl class="mt-5 space-y-3 text-sm">

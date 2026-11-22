@@ -1,22 +1,19 @@
 @extends('layouts.app')
 
-@section('title', 'Masuk — EventHub')
+@section('title', 'Masuk : EventHub')
 @section('plain', true)
 
 @section('content')
 <div class="min-h-screen bg-canvas px-4 py-10 sm:px-6 sm:py-16">
     <div class="mx-auto w-full max-w-md">
         <div class="mb-8 text-center">
-            <div class="mx-auto inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-700 text-white">
-                <x-icon name="calendar" class="size-6" />
-            </div>
-            <h1 class="mt-4 text-2xl font-semibold text-ink">EventHub</h1>
-            <p class="mt-1 text-sm text-muted">Sistem Manajemen Event Kampus</p>
+            <a href="{{ route('home') }}" class="inline-block">
+                <img src="{{ asset('images/logo.webp') }}" alt="EventHub" class="mx-auto h-8 w-auto object-contain">
+            </a>
         </div>
 
         <div class="card p-6 sm:p-8">
-            <h2 class="text-xl font-semibold text-ink">Masuk ke akun</h2>
-            <p class="mt-1 text-sm text-muted">Silakan masukkan kredensial Anda untuk melanjutkan.</p>
+            <h1 class="text-xl font-bold text-ink">Masuk ke akun</h1>
 
             @if ($errors->any())
                 <div class="mt-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">

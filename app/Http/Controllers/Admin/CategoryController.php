@@ -29,7 +29,7 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
-            'icon' => ['nullable', 'string', 'max:10'],
+            'icon' => ['nullable', 'string', 'max:50', 'regex:/^[a-z0-9-]+$/'],
         ]);
 
         $slug = Str::slug($validated['name']);
@@ -40,7 +40,7 @@ class CategoryController extends Controller
         $category = Category::create([
             'name' => $validated['name'],
             'slug' => $slug,
-            'icon' => $validated['icon'] ?? '📌',
+            'icon' => $validated['icon'] ?? 'tag',
         ]);
 
         AuditLogger::log('category.created', 'Category', $category->id, ['name' => $category->name]);
@@ -55,7 +55,7 @@ class CategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
-            'icon' => ['nullable', 'string', 'max:10'],
+            'icon' => ['nullable', 'string', 'max:50', 'regex:/^[a-z0-9-]+$/'],
         ]);
 
         $category->update($validated);

@@ -81,6 +81,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/payments/{payment}/proof', [OrganizerParticipantController::class, 'showProof'])->name('payments.proof');
 
     // Committee operational routes (F1) - authorized via EventPolicy
+    Route::get('/organizer/committee/tasks', [OrganizerCommitteeController::class, 'myTasks'])->name('organizer.committee.tasks');
     Route::get('/organizer/events/{event}/participants', [OrganizerParticipantController::class, 'index'])->name('organizer.participants.index');
     Route::post('/organizer/payments/{payment}/verify', [OrganizerParticipantController::class, 'verifyPayment'])->name('organizer.payments.verify');
     Route::get('/organizer/events/{event}/participants/export', [OrganizerParticipantController::class, 'export'])->name('organizer.participants.export');

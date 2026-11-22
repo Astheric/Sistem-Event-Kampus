@@ -7,6 +7,7 @@ use App\Models\Payment;
 use App\Policies\EventPolicy;
 use App\Policies\PaymentPolicy;
 use App\View\Composers\NavigationComposer;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -24,5 +25,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Payment::class, PaymentPolicy::class);
 
         View::composer('*', NavigationComposer::class);
+
+        Paginator::defaultView('vendor.pagination.tailwind');
+        Paginator::defaultSimpleView('vendor.pagination.simple-tailwind');
     }
 }

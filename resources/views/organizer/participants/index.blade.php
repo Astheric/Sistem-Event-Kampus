@@ -1,57 +1,55 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Manajemen Peserta — ' . $event->title)
+@section('title', 'Peserta: ' . $event->title)
 
 @section('dashboard_content')
 <div class="space-y-6" x-data="{ modalOpen: false, activePayment: null, activeRegistration: null }">
-    <!-- Header -->
-    <div class="bg-surface border border-line p-6 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl">
+    <div class="bg-surface rounded-xl border border-line p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <span class="bg-surface border border-line px-2.5 py-0.5 text-xs font-bold  shadow-card rounded-2xl">
-                Data Peserta & Transaksi
-            </span>
-            <h1 class="text-3xl font-bold mt-2">Daftar Peserta Event</h1>
-            <p class="text-xs font-bold text-muted mt-1">{{ $event->title }}</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-ink">Peserta event</h1>
+            <p class="text-xs sm:text-sm text-muted mt-0.5">{{ $event->title }}</p>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2.5">
             <a href="{{ route('organizer.participants.export', $event->id) }}"
-                class="bg-brand-600 text-white hover:bg-brand-600 text-white border border-line px-4 py-2 font-bold text-xs  shadow-card active:translate-x-1 active:translate-y-1 active:shadow-none transition-all rounded-full">
-                <x-icon name="download" class="size-4" /> Ekspor Data CSV
+                class="btn btn-secondary text-xs py-2 px-3.5">
+                <x-icon name="download" class="size-3.5" /> Ekspor CSV
             </a>
-            <a href="{{ route('organizer.events.index') }}" class="bg-surface border border-line px-3 py-2 font-bold text-xs  shadow-card rounded-2xl">
-                ← Kembali
+            <a href="{{ Auth::user()->isOrganizer() || Auth::user()->isAdmin() ? route('organizer.events.index') : route('organizer.committee.tasks') }}" class="btn btn-secondary text-xs py-2 px-3.5">
+                Kembali
             </a>
         </div>
     </div>
 
     <!-- Stats Bar -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-        <div class="bg-surface border border-line p-3 shadow-card rounded-2xl">
-            <span class="text-[10px]  font-bold text-muted">Total Pendaftar</span>
-            <div class="text-2xl font-bold font-mono mt-0.5">{{ $stats['total'] }}</div>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-medium text-muted block">Total Pendaftar</span>
+            <div class="text-2xl font-extrabold text-ink mt-1.5">{{ number_format($stats['total']) }}</div>
         </div>
-        <div class="bg-surface border border-line p-3 shadow-card rounded-2xl">
-            <span class="text-[10px]  font-bold">Terkonfirmasi</span>
-            <div class="text-2xl font-bold font-mono mt-0.5">{{ $stats['confirmed'] }}</div>
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-semibold text-emerald-700 block">Terkonfirmasi</span>
+            <div class="text-2xl font-extrabold text-emerald-600 mt-1.5">{{ number_format($stats['confirmed']) }}</div>
         </div>
-        <div class="bg-surface border border-line p-3 shadow-card rounded-2xl">
-            <span class="text-[10px]  font-bold">Menunggu Bayar</span>
-            <div class="text-2xl font-bold font-mono mt-0.5">{{ $stats['pending'] }}</div>
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-semibold text-amber-800 block">Menunggu Bayar</span>
+            <div class="text-2xl font-extrabold text-amber-700 mt-1.5">{{ number_format($stats['pending']) }}</div>
         </div>
-        <div class="bg-surface border border-line p-3 shadow-card rounded-2xl">
-            <span class="text-[10px]  font-bold">Telah Check-in</span>
-            <div class="text-2xl font-bold font-mono mt-0.5">{{ $stats['attended'] }}</div>
+        <div class="bg-surface rounded-2xl border border-line/60 p-5">
+            <span class="text-xs font-semibold text-brand-700 block">Telah Check-in</span>
+            <div class="text-2xl font-extrabold text-brand-700 mt-1.5">{{ number_format($stats['attended']) }}</div>
         </div>
     </div>
 
     <!-- Filter Toolbar -->
     <form action="{{ route('organizer.participants.index', $event->id) }}" method="GET"
-        class="bg-surface border border-line p-4 shadow-card flex flex-wrap items-center gap-3 rounded-2xl">
-        <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama, email, kode..."
-            class="bg-surface border border-line p-2 font-bold text-xs flex-grow focus:outline-none focus:bg-surface">
+        class="bg-surface rounded-2xl border border-line/60 p-4 flex flex-wrap items-center gap-3">
+        <div class="flex-grow min-w-[200px]">
+            <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama, email, kode registrasi..."
+                class="w-full rounded-lg border border-line/80 bg-surface-soft/40 px-3.5 py-2 text-sm focus:border-brand-700 focus:bg-surface focus:outline-none focus:ring-1 focus:ring-brand-700">
+        </div>
 
-        <select name="status" class="bg-surface border border-line p-2 font-bold text-xs focus:outline-none">
+        <select name="status" class="rounded-lg border border-line/80 bg-surface-soft/40 px-3 py-2 text-sm text-slate-700 focus:border-brand-700 focus:bg-surface focus:outline-none">
             <option value="">Semua Status</option>
             <option value="CONFIRMED" {{ request('status') === 'CONFIRMED' ? 'selected' : '' }}>CONFIRMED (Aktif)</option>
             <option value="PENDING" {{ request('status') === 'PENDING' ? 'selected' : '' }}>PENDING (Menunggu)</option>
@@ -59,87 +57,96 @@
             <option value="CANCELLED" {{ request('status') === 'CANCELLED' ? 'selected' : '' }}>CANCELLED (Batal)</option>
         </select>
 
-        <select name="ticket_id" class="bg-surface border border-line p-2 font-bold text-xs focus:outline-none">
+        <select name="ticket_id" class="rounded-lg border border-line/80 bg-surface-soft/40 px-3 py-2 text-sm text-slate-700 focus:border-brand-700 focus:bg-surface focus:outline-none">
             <option value="">Semua Tipe Tiket</option>
             @foreach($tickets as $t)
                 <option value="{{ $t->id }}" {{ request('ticket_id') == $t->id ? 'selected' : '' }}>{{ $t->name }}</option>
             @endforeach
         </select>
 
-        <button type="submit" class="bg-brand-600 text-white border border-line px-4 py-2 font-bold text-xs  shadow-card rounded-full">
-            Filter
+        <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg bg-brand-700 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-800 transition">
+            <x-icon name="search" class="size-3.5" /> Filter
         </button>
     </form>
 
     <!-- Table -->
-    <div class="bg-surface border border-line p-6 shadow-card space-y-4 rounded-2xl">
+    <div class="bg-surface rounded-2xl border border-line/60 p-6 space-y-4">
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-xs font-bold">
+            <table class="w-full text-left border-collapse text-sm">
                 <thead>
-                    <tr class="bg-danger text-white font-mono  text-[10px]">
-                        <th class="p-3 border border-line">Kode</th>
-                        <th class="p-3 border border-line">Nama Peserta</th>
-                        <th class="p-3 border border-line">Tipe Tiket</th>
-                        <th class="p-3 border border-line">Biaya</th>
-                        <th class="p-3 border border-line">Status Tiket</th>
-                        <th class="p-3 border border-line">Pembayaran</th>
-                        <th class="p-3 border border-line">Kehadiran</th>
-                        <th class="p-3 border border-line text-center">Verifikasi</th>
+                    <tr class="bg-surface-soft text-xs font-semibold text-muted uppercase tracking-wider">
+                        <th class="py-3 px-4 rounded-l-lg">Kode</th>
+                        <th class="py-3 px-4">Nama Peserta</th>
+                        <th class="py-3 px-4">Tipe Tiket</th>
+                        <th class="py-3 px-4">Biaya</th>
+                        <th class="py-3 px-4">Status Tiket</th>
+                        <th class="py-3 px-4">Pembayaran</th>
+                        <th class="py-3 px-4">Kehadiran</th>
+                        <th class="py-3 px-4 text-center rounded-r-lg">Verifikasi</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-line/60">
                     @forelse($registrations as $reg)
-                        <tr class="hover:bg-surface-soft border-b border-line">
-                            <td class="p-3 border border-line font-mono font-bold">{{ $reg->registration_code }}</td>
-                            <td class="p-3 border border-line">
-                                <p class="font-bold text-sm">{{ $reg->user->name }}</p>
-                                <span class="text-muted font-mono text-[10px]">{{ $reg->user->email }}</span>
+                        @php
+                            $statusBadge = match($reg->status) {
+                                'CONFIRMED' => 'bg-emerald-50 text-emerald-700 border-emerald-200/60',
+                                'ATTENDED' => 'bg-brand-50 text-brand-700 border-brand-200/60',
+                                'PENDING' => 'bg-amber-50 text-amber-800 border-amber-200/60',
+                                'CANCELLED' => 'bg-red-50 text-red-700 border-red-200/60',
+                                default => 'bg-slate-100 text-slate-700 border-slate-200',
+                            };
+                        @endphp
+                        <tr class="hover:bg-surface-soft/60 transition-colors">
+                            <td class="py-3.5 px-4 font-mono font-semibold text-xs text-ink">{{ $reg->registration_code }}</td>
+                            <td class="py-3.5 px-4">
+                                <p class="font-semibold text-ink text-sm">{{ $reg->user->name }}</p>
+                                <span class="text-xs text-muted font-mono block">{{ $reg->user->email }}</span>
                             </td>
-                            <td class="p-3 border border-line">{{ $reg->ticket->name }}</td>
-                            <td class="p-3 border border-line font-mono">
+                            <td class="py-3.5 px-4 text-xs text-slate-700">{{ $reg->ticket->name }}</td>
+                            <td class="py-3.5 px-4 text-xs font-semibold text-ink">
                                 @if($reg->ticket->price == 0)
-                                    <span class="text-ink">Gratis</span>
+                                    <span class="text-emerald-700">Gratis</span>
                                 @else
                                     Rp {{ number_format($reg->ticket->price, 0, ',', '.') }}
                                 @endif
                             </td>
-                            <td class="p-3 border border-line">
-                                <span class="px-2 py-0.5 border border-line text-[10px] font-bold  {{ $reg->status === 'CONFIRMED' ? 'bg-surface' : ($reg->status === 'ATTENDED' ? 'bg-surface' : ($reg->status === 'PENDING' ? 'bg-surface' : 'bg-surface')) }}">
+                            <td class="py-3.5 px-4">
+                                <span class="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold {{ $statusBadge }}">
                                     {{ $reg->status }}
                                 </span>
                             </td>
-                            <td class="p-3 border border-line">
+                            <td class="py-3.5 px-4 text-xs">
                                 @if($reg->payment)
-                                    <span class="block text-[10px] font-bold">{{ $reg->payment->payment_method }}</span>
-                                    <span class="px-1.5 py-0.2 border border-line text-[9px] font-bold  {{ $reg->payment->isVerified() ? 'bg-surface' : ($reg->payment->isPending() ? 'bg-surface' : 'bg-surface') }}">
+                                    <span class="block font-medium text-slate-700">{{ $reg->payment->payment_method }}</span>
+                                    <span class="inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold {{ $reg->payment->isVerified() ? 'bg-emerald-50 text-emerald-700' : ($reg->payment->isPending() ? 'bg-amber-50 text-amber-800' : 'bg-slate-100 text-slate-600') }}">
                                         {{ $reg->payment->status }}
                                     </span>
                                 @else
-                                    <span class="text-muted font-mono">-</span>
+                                    <span class="text-muted">—</span>
                                 @endif
                             </td>
-                            <td class="p-3 border border-line">
+                            <td class="py-3.5 px-4 text-xs">
                                 @if($reg->checkin)
-                                    <span class="text-ink font-bold"><x-icon name="check" class="size-4" /> Hadir</span>
-                                    <span class="text-[10px] text-muted font-mono block">{{ $reg->checkin->checked_in_at->format('H:i') }} WIB</span>
+                                    <span class="inline-flex items-center gap-1 font-semibold text-emerald-700"><x-icon name="check" class="size-3.5" /> Hadir</span>
+                                    <span class="text-xs text-muted block">{{ $reg->checkin->checked_in_at->format('H:i') }} WIB</span>
                                 @else
                                     <span class="text-muted">Belum Check-in</span>
                                 @endif
                             </td>
-                            <td class="p-3 border border-line text-center">
+                            <td class="py-3.5 px-4 text-center">
                                 @if($reg->payment && $reg->payment->isPending())
                                     <button @click="activePayment = {{ json_encode($reg->payment) }}; activeRegistration = {{ json_encode($reg) }}; modalOpen = true;"
-                                        class="bg-brand-600 text-white border border-line px-2.5 py-1 font-bold text-[10px]  shadow-card active:translate-x-[1px] active:translate-y-[1px] rounded-full">
-                                        Verifikasi <x-icon name="search" class="size-4" />
+                                        class="inline-flex items-center gap-1 rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white transition">
+                                        Verifikasi <x-icon name="search" class="size-3" />
                                     </button>
                                 @else
-                                    <span class="text-muted text-[10px] font-mono">Selesai</span>
+                                    <span class="text-muted text-xs">Selesai</span>
                                 @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="p-8 text-center text-muted">Tidak ada peserta yang ditemukan.</td>
+                            <td colspan="8" class="py-10 text-center text-muted">Tidak ada peserta yang ditemukan.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -149,21 +156,21 @@
         <div>{{ $registrations->links() }}</div>
     </div>
 
-    <!-- Verification Modal (Neo-Brutalism Pop-up) -->
-    <div x-show="modalOpen" x-cloak class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-        <div @click.outside="modalOpen = false" class="bg-surface border border-line p-6 sm:p-8 max-w-lg w-full shadow-card space-y-4 rounded-2xl">
-            <div class="flex items-center justify-between border-b border-line pb-3">
-                <h3 class="font-bold text-lg">Verifikasi Pembayaran Simulasi</h3>
-                <button @click="modalOpen = false" class="border border-line px-2 py-0.5 font-bold text-xs"><x-icon name="x" class="size-4" /></button>
+    <!-- Verification Modal -->
+    <div x-show="modalOpen" x-cloak class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div @click.outside="modalOpen = false" class="bg-surface rounded-2xl border border-line/60 p-6 sm:p-8 max-w-lg w-full shadow-xl space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-line/60">
+                <h3 class="font-bold text-lg text-ink">Verifikasi pembayaran</h3>
+                <button @click="modalOpen = false" class="text-slate-400 hover:text-ink"><x-icon name="x" class="size-5" /></button>
             </div>
 
-            <div class="text-xs font-bold space-y-2 bg-surface border border-line p-4">
-                <p>Kode Tiket: <span class="font-mono font-bold" x-text="activeRegistration?.registration_code"></span></p>
-                <p>Metode: <span class="font-bold" x-text="activePayment?.payment_method"></span></p>
-                <p>Nominal: <span class="font-bold font-mono" x-text="'Rp ' + Number(activePayment?.amount || 0).toLocaleString('id-ID')"></span></p>
-                <div x-show="activePayment?.proof_file" class="pt-2">
-                    <span class="block  text-[10px] text-muted mb-1">Bukti Transfer:</span>
-                    <a :href="'/storage/' + activePayment?.proof_file" target="_blank" class="text-ink underline font-bold">
+            <div class="rounded-xl border border-line/60 bg-surface-soft/50 p-4 text-xs space-y-2">
+                <p class="text-slate-600">Kode Tiket: <span class="font-mono font-semibold text-ink" x-text="activeRegistration?.registration_code"></span></p>
+                <p class="text-slate-600">Metode: <span class="font-semibold text-ink" x-text="activePayment?.payment_method"></span></p>
+                <p class="text-slate-600">Nominal: <span class="font-bold text-ink" x-text="'Rp ' + Number(activePayment?.amount || 0).toLocaleString('id-ID')"></span></p>
+                <div x-show="activePayment?.proof_file" class="pt-2 border-t border-line/40">
+                    <span class="block text-muted text-xs mb-1">Bukti Transfer:</span>
+                    <a :href="'/storage/' + activePayment?.proof_file" target="_blank" class="inline-flex items-center gap-1 font-semibold text-brand-700 hover:underline">
                         Lihat Gambar Bukti Transfer ↗
                     </a>
                 </div>
@@ -172,20 +179,20 @@
             <form :action="'/organizer/payments/' + (activePayment?.id || 0) + '/verify'" method="POST" class="space-y-4">
                 @csrf
                 <div>
-                    <label class="block font-bold text-xs  mb-1">Catatan Panitia (Opsional)</label>
-                    <textarea name="notes" rows="2" placeholder="Nominal sesuai / bukti sah..."
-                        class="w-full bg-surface border border-line p-2 font-bold text-xs"></textarea>
+                    <label class="block font-semibold text-xs text-ink mb-1">Catatan Panitia (Opsional)</label>
+                    <textarea name="notes" rows="2" placeholder="Nominal sesuai / bukti transfer valid..."
+                        class="w-full rounded-lg border border-line/80 bg-surface-soft/40 p-2.5 text-xs focus:border-brand-700 focus:bg-surface focus:outline-none"></textarea>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3 pt-2">
                     <button type="submit" name="action" value="reject"
-                        class="bg-brand-600 text-white hover:bg-pink-400 border border-line p-2.5 font-bold text-xs  shadow-card active:translate-x-1 active:translate-y-1 rounded-full">
-                        <x-icon name="x" class="size-4" /> Tolak Pembayaran
+                        class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-red-50 text-red-700 border border-red-200/60 hover:bg-red-100 p-2.5 text-xs font-semibold transition">
+                        <x-icon name="x" class="size-3.5" /> Tolak Pembayaran
                     </button>
 
                     <button type="submit" name="action" value="approve"
-                        class="bg-brand-600 text-white hover:bg-brand-600 text-white border border-line p-2.5 font-bold text-xs  shadow-card active:translate-x-1 active:translate-y-1 rounded-full">
-                        <x-icon name="check" class="size-4" /> Setujui (Konfirmasi)
+                        class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white p-2.5 text-xs font-semibold transition">
+                        <x-icon name="check" class="size-3.5" /> Setujui (Konfirmasi)
                     </button>
                 </div>
             </form>

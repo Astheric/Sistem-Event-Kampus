@@ -2,30 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Category;
+use App\Models\Certificate;
+use App\Models\Event;
+use App\Models\Organization;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\View\View;
 
 class HomeController extends Controller
 {
     /**
-     * Redirect users to authentication or their workspace.
+     * Display the EventHub campus landing page.
      */
-    public function index(): RedirectResponse
+    public function index(): View
     {
-        if (! Auth::check()) {
-            return redirect()->route('login');
-        }
+        $categories = Category::withCount(['events' => function ($q) {
+            $q->where('status', 'PUBLISHED');
+        }])->get();
 
-        $user = Auth::user();
+        $featuredEvents = Event::with(['category', 'venue', 'tickets', 'organization'])
+            ->where('status', 'PUBLISHED')
+            ->where('end_time', '>=', Carbon::now())
+            ->orderBy('start_time', 'asc')
+            ->take(6)
+            ->get();
 
-        if ($user->isAdmin()) {
-            return redirect()->route('admin.dashboard');
-        }
+        $pastEvents = Event::with(['category', 'venue', 'reviews'])
+            ->where('status', 'COMPLETED')
+            ->orderBy('end_time', 'desc')
+            ->take(3)
+            ->get();
 
-        if ($user->isOrganizer()) {
-            return redirect()->route('organizer.dashboard');
-        }
+        $stats = [
+            'total_events' => Event::whereIn('status', ['PUBLISHED', 'COMPLETED'])->count(),
+            'total_participants' => User::where('role', 'participant')->count(),
+            'certificates_issued' => Certificate::count(),
+            'active_organizers' => Organization::count(),
+        ];
 
-        return redirect()->route('participant.tickets.index');
+        return view('home', compact('categories', 'featuredEvents', 'pastEvents', 'stats'));
     }
 }

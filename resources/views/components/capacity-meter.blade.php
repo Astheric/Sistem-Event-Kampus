@@ -1,6 +1,9 @@
 @props(['capacity'])
 
 @php
+if ($capacity instanceof \App\Models\Event) {
+    $capacity = $capacity->capacity();
+}
 $percent = $capacity->percent;
 $state = $capacity->state;
 $color = match ($state->value) {

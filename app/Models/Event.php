@@ -115,4 +115,54 @@ class Event extends Model
     {
         return $this->min_price == 0 && $this->max_price == 0;
     }
+
+    public function bannerUrl(): string
+    {
+        if ($this->banner) {
+            if (str_starts_with($this->banner, 'http://') || str_starts_with($this->banner, 'https://')) {
+                return $this->banner;
+            }
+
+            return asset('storage/'.$this->banner);
+        }
+
+        $categorySlug = strtolower($this->category?->slug ?? '');
+        $title = strtolower($this->title ?? '');
+
+        if (str_contains($categorySlug, 'workshop') || str_contains($title, 'workshop') || str_contains($title, 'bootcamp')) {
+            return 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=1200&q=80';
+        }
+
+        if (str_contains($categorySlug, 'kompetisi') || str_contains($title, 'hackathon') || str_contains($title, 'lomba')) {
+            return 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80';
+        }
+
+        if (str_contains($categorySlug, 'festival') || str_contains($categorySlug, 'seni') || str_contains($title, 'musik')) {
+            return 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80';
+        }
+
+        if (str_contains($categorySlug, 'expo') || str_contains($title, 'karir') || str_contains($title, 'job')) {
+            return 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=1200&q=80';
+        }
+
+        if (str_contains($categorySlug, 'webinar') || str_contains($title, 'online')) {
+            return 'https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?auto=format&fit=crop&w=1200&q=80';
+        }
+
+        if (str_contains($title, 'ai') || str_contains($title, 'cyber') || str_contains($title, 'tech')) {
+            return 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80';
+        }
+
+        if (str_contains($title, 'pemimpin') || str_contains($title, 'etika') || str_contains($categorySlug, 'seminar')) {
+            return 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80';
+        }
+
+        $fallbacks = [
+            'https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1200&q=80',
+            'https://images.unsplash.com/photo-1515187029135-18ee286d815b?auto=format&fit=crop&w=1200&q=80',
+            'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80',
+        ];
+
+        return $fallbacks[($this->id ?? 1) % count($fallbacks)];
+    }
 }
