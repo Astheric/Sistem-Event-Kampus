@@ -52,6 +52,10 @@ class AuthController extends Controller
                 return redirect()->intended(route('organizer.dashboard'));
             }
 
+            if ($user->role === 'dosen') {
+                return redirect()->intended(route('home'));
+            }
+
             return redirect()->intended(route('participant.tickets.index'));
         }
 
